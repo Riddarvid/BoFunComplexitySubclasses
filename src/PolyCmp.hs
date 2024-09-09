@@ -1,15 +1,18 @@
-{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE ConstraintKinds  #-}
 {-# LANGUAGE RebindableSyntax #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module PolyCmp (module PolyCmp) where
-import qualified Prelude as P
-import Prelude hiding (map, Num(..),Fractional(..), fromIntegral, sum, product)
-import Data.Ratio ((%))
-import qualified Data.Set as S (Set, fromList, size)
-import DSLsofMath.Algebra -- (Ring, Field, negate, fromInteger, ifThenElse)
-import DSLsofMath.PSDS (Poly(P,unP), evalP, xP, degree, normalPoly, isZero, fromOne,
-                        divModP, comP, derP, derL, gcdP, eqPoly, comparePoly,
-                        yun)
-import Debug.Trace (trace)
+import           Data.Ratio         ((%))
+import qualified Data.Set           as S (Set, fromList, size)
+import           Debug.Trace        (trace)
+import           DSLsofMath.Algebra
+import           DSLsofMath.PSDS    (Poly (P, unP), comP, comparePoly, degree,
+                                     derL, derP, divModP, eqPoly, evalP,
+                                     fromOne, gcdP, isZero, normalPoly, xP, yun)
+import           Prelude            hiding (Fractional (..), Num (..),
+                                     fromIntegral, map, product, sum)
+import qualified Prelude            as P
+import           Thin               (Thin (cmp))
 ----------------
 -- Start of (partial) ordering of polynomial by their values in the interval [0,1].
 
@@ -196,7 +199,7 @@ bisection p | not (squareFree p) = error "bisection requires a square-free polyn
 
 
 bisection' :: (Ord a, Ring a) => Int -> [Work a] -> [Interval a] -> [Interval a]
-bisection' n [] isol = isol
+bisection' n [] isol            = isol
 bisection' n (i@(c,k,q):l) isol = bisectStep1 n i l isol
 
 bisectStep1 :: (Ord a, Ring a) => Int -> Work a -> [Work a] -> [Interval a] -> [Interval a]
@@ -204,7 +207,7 @@ bisectStep1 n i@(c,k,q) l isol =
   case zeroAtZero q of
     Just qdivx -> bisectStep2 (n-1) (c,k,qdivx) l ((c,k,zero):isol)
       -- "rational root found"
-    Nothing -> bisectStep2 n i l isol
+    Nothing    -> bisectStep2 n i l isol
 
 zeroAtZero :: (Eq a, Ring a) => Poly a -> Maybe (Poly a)
 zeroAtZero (P []) = Just (P []) -- should never happen

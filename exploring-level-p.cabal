@@ -24,19 +24,18 @@ source-repository head
 
 library
   exposed-modules:
-      Algor
       Algorithm.Algor
       Algorithm.GenAlg
-      All
       BDD
+      BDDInstances
       BoFun
       Computing
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS
-      Memo
       PiecewisePoly
       PolyCmp
+      PolyInstances
       PolynomialExtra
       Subclasses.Even
       Subclasses.Explore
