@@ -10,16 +10,14 @@ import           Control.Arrow       ((>>>))
 import           Control.Monad       (forM_, guard)
 import           Data.Bifunctor      (Bifunctor (..), bimap)
 import           Data.Function       ((&))
-import           Data.Maybe          (fromJust, fromMaybe, isJust)
+import           Data.Maybe          (fromJust, fromMaybe)
 import           Data.Ratio          (numerator, (%))
-import qualified Data.Set            as S (Set, fromList, size)
-import           Debug.Trace         (trace, traceShow)
 import           Prelude             hiding (Fractional (..), Num (..),
                                       fromIntegral, min, product, sum)
 import qualified Prelude
 
 import           DSLsofMath.Algebra
-import           DSLsofMath.PSDS     (Poly (P, unP), comP, degree, evalP, gcdP)
+import           DSLsofMath.PSDS     (Poly (unP), comP, degree, evalP)
 
 import           PolynomialExtra
 import           Utils

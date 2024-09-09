@@ -5,24 +5,22 @@
 {-# LANGUAGE UndecidableInstances   #-}
 module Threshold where
 
-import           Control.Arrow         (first, (>>>))
+import           Control.Arrow         ((>>>))
 import           Control.Monad.Free    (Free (..))
-import           Data.Bifunctor        (bimap)
-import           Data.Either           (partitionEithers)
 import           Data.Function         ((&))
 import           Data.Function.Memoize (Memoizable (..), deriveMemoizable,
                                         deriveMemoize)
 import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
-                                        Ord2 (..), Show1 (..), Show2 (..),
-                                        showsBinaryWith)
-import           Data.Maybe            (Maybe (..))
+                                        Ord2 (..), Show1 (..), showsBinaryWith)
 import qualified Data.MultiSet         as MultiSet
 import           Prelude               hiding (negate, sum, (+), (-))
 
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
-import           BoFun
-import           Utils
+import           BoFun                 (BoFun (..))
+import           Utils                 (Square, boolToInt, chooseMany,
+                                        duplicate, lookupBool, naturals,
+                                        squareToList, tabulateBool)
 
 
 -- | A threshold for a Boolean function.

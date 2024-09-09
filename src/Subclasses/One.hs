@@ -2,8 +2,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
 module Subclasses.One () where
+import           Algorithm.GenAlgPW    (computeMin)
 import           BoFun                 (BoFun (..))
-import           Computing             (computeMin)
 import           Data.Function.Memoize (deriveMemoizable)
 import           PiecewisePoly         (PiecewisePoly, showPW)
 

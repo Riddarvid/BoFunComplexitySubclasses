@@ -1,17 +1,22 @@
 {-# LANGUAGE DeriveFunctor #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module PolynomialExtra where
 
 import           Control.Arrow      (second, (***), (>>>))
 import           Data.Maybe         (fromJust, isJust)
 import           Data.Monoid        (Sum (..))
-import           Data.Ratio         (Ratio (..), denominator, numerator, (%))
+import           Data.Ratio         (Ratio, denominator, numerator, (%))
 import           Prelude            hiding (negate, quot, recip, (*), (+), (-))
 import qualified Prelude            ((*))
 
-import           DSLsofMath.Algebra hiding (sum)
-import           DSLsofMath.PSDS
+import           DSLsofMath.Algebra (AddGroup (negate), Additive (..),
+                                     Euclidean, Field, MulGroup (recip),
+                                     Multiplicative (one, (*)), Ring, generator,
+                                     quot)
+import           DSLsofMath.PSDS    (Poly (..), comP, gcdP, normalPoly, scaleL,
+                                     scaleP, xP, yun)
 
-import           Utils
+import           Utils              (Group (..), boolToMaybe, fromJustMonoid)
 
 
 -- The compositional monoidal structure.

@@ -1,14 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Utils where
 
-import Control.Arrow ((>>>), (&&&))
-import Control.Monad (forM_, unless)
-import Control.Monad.State (MonadState(..), execState)
-import Data.Function.Memoize (Memoizable(..))
-import Data.Functor.Classes (Eq1(..), Ord1(..), Show1(..), Eq2(..), Ord2(..), Show2(..))
-import qualified Data.MultiSet as MultiSet
-import qualified Data.Set as Set
-import Debug.Trace (trace)
+import           Control.Arrow         ((&&&), (>>>))
+import           Control.Monad         (forM_, unless)
+import           Control.Monad.State   (MonadState (..), execState)
+import           Data.Function.Memoize (Memoizable (..))
+import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
+                                        Ord2 (..), Show1 (..), Show2 (..))
+import qualified Data.MultiSet         as MultiSet
+import qualified Data.Set              as Set
 
 -- Debugging.
 
@@ -23,7 +24,7 @@ shouldTrace _ = id
 
 fromJustMonoid :: Monoid a => Maybe a -> a
 fromJustMonoid (Just x) = x
-fromJustMonoid Nothing = mempty
+fromJustMonoid Nothing  = mempty
 
 class (Monoid a) => Group a where
   invert :: a -> a
@@ -56,7 +57,7 @@ instance Show1 MultiSet.MultiSet where
 -- Combinatorics.
 
 naturals :: (Integral i) => [i]
-naturals = iterate (+ 1) 0 
+naturals = iterate (+ 1) 0
 
 -- Number of order-independent choices of k elements from n.
 choose :: Integer -> Integer -> Integer
@@ -95,7 +96,7 @@ squareToList (a, b) = [a, b]
 
 boolToInt :: Bool -> Int
 boolToInt False = 0
-boolToInt True = 1
+boolToInt True  = 1
 
 boolToMaybe :: Bool -> a -> Maybe a
 boolToMaybe v x = if v then Just x else Nothing

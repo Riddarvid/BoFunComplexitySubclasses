@@ -2,17 +2,16 @@
 {-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module PolyCmp (module PolyCmp) where
-import           Data.Ratio         ((%))
 import qualified Data.Set           as S (Set, fromList, size)
-import           Debug.Trace        (trace)
-import           DSLsofMath.Algebra
-import           DSLsofMath.PSDS    (Poly (P, unP), comP, comparePoly, degree,
-                                     derL, derP, divModP, eqPoly, evalP,
-                                     fromOne, gcdP, isZero, normalPoly, xP, yun)
+import           DSLsofMath.Algebra (AddGroup (negate), Additive (..), Field,
+                                     MulGroup ((/)), Multiplicative (one, (*)),
+                                     Ring, fromInteger, fromIntegral,
+                                     ifThenElse, sum, two, (-), (^+))
+import           DSLsofMath.PSDS    (Poly (P, unP), comP, degree, derP, divModP,
+                                     evalP, gcdP, isZero, normalPoly, xP, yun)
 import           Prelude            hiding (Fractional (..), Num (..),
                                      fromIntegral, map, product, sum)
 import qualified Prelude            as P
-import           Thin               (Thin (cmp))
 ----------------
 -- Start of (partial) ordering of polynomial by their values in the interval [0,1].
 

@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE InstanceSigs          #-}
 module PolyInstances () where
 import           Algorithm.Algor    (Algor (..))
 import           DSLsofMath.Algebra (Additive (zero, (+)),
@@ -12,10 +13,13 @@ import           Thin               (Thin (cmp))
 
 
 instance OrdField a => Thin (Poly a) where
+  cmp :: Poly a -> Poly a -> Maybe Ordering
   cmp = cmpPoly
 
 instance Ring a => Algor (Poly a) Int where
+  res :: Bool -> Poly a
   res = resPoly
+  pic :: Int -> Poly a -> Poly a -> Poly a
   pic = pickPoly
 
 resPoly :: Ring a => Bool -> a

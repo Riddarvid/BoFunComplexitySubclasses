@@ -26,10 +26,9 @@ library
   exposed-modules:
       Algorithm.Algor
       Algorithm.GenAlg
-      BDD
+      Algorithm.GenAlgPW
       BDDInstances
       BoFun
-      Computing
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS
@@ -38,9 +37,9 @@ library
       PolyInstances
       PolynomialExtra
       Subclasses.Even
-      Subclasses.Explore
       Subclasses.Monotone
       Subclasses.One
+      Subclasses.Symmetric
       Thin
       Threshold
       Utils

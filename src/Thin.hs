@@ -1,4 +1,6 @@
-module Thin where
+module Thin (
+  Thin(..)
+) where
 import qualified Data.Set as S
 class Ord a => Thin a where
   cmp  :: a -> a -> Maybe Ordering
