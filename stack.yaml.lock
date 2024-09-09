@@ -3,7 +3,21 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: decision-diagrams-0.2.0.0@sha256:9f82d39f7331f6836784fa89354986e436a4d62d810b8fb2b44dd10c6a0beb85,3415
+    pantry-tree:
+      sha256: 36696cfd2af10c44fc0b7d8746c57d94c476eef4ba16f6ac98c2d6dae04f4b36
+      size: 866
+  original:
+    hackage: decision-diagrams-0.2.0.0@sha256:9f82d39f7331f6836784fa89354986e436a4d62d810b8fb2b44dd10c6a0beb85,3415
+- completed:
+    hackage: memoize-1.1.2@sha256:d7701b55ed63434d1e8b507d0a76bb58f2fe31b7ce329132e1ca808c7001da49,1928
+    pantry-tree:
+      sha256: 8c99f1a87a270c8b8fb2238a0a94b346a986cb502753162dab909ed8b2ff44ad
+      size: 687
+  original:
+    hackage: memoize-1.1.2@sha256:d7701b55ed63434d1e8b507d0a76bb58f2fe31b7ce329132e1ca808c7001da49,1928
 snapshots:
 - completed:
     sha256: a81fb3877c4f9031e1325eb3935122e608d80715dc16b586eb11ddbff8671ecd

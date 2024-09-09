@@ -39,8 +39,9 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
-
+extra-deps:
+  - decision-diagrams-0.2.0.0@sha256:9f82d39f7331f6836784fa89354986e436a4d62d810b8fb2b44dd10c6a0beb85,3415
+  - memoize-1.1.2@sha256:d7701b55ed63434d1e8b507d0a76bb58f2fe31b7ce329132e1ca808c7001da49,1928
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

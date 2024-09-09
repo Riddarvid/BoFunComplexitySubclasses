@@ -16,10 +16,16 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description: Please see the README on GitHub at <https://github.com/Riddarvid/exploring-level-p#readme>
+description: Please see the README on GitHub at <https://github.com/Riddarvid/BoFunComplexitySubclasses#readme>
 
 dependencies:
-  - base >= 4.7 && < 5
+  - base >= 4.13 && < 4.19
+  - containers >= 0.6.7
+  - decision-diagrams >= 0.2.0.0
+  - multiset >= 0.3.4.3
+  - memoize >= 1.1
+  - mtl >= 2.2
+  - free >= 5.1.10
 
 ghc-options:
   - -Wall
