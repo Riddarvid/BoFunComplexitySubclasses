@@ -24,6 +24,7 @@ source-repository head
 
 library
   exposed-modules:
+      Algebraic
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
@@ -60,6 +61,7 @@ library
     , decision-diagrams >=0.2.0.0
     , dsp >=0.2.5.2
     , free >=5.1.10
+    , linear >=1.22
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
@@ -81,6 +83,7 @@ executable exploring-level-p-exe
     , dsp >=0.2.5.2
     , exploring-level-p
     , free >=5.1.10
+    , linear >=1.22
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
@@ -103,6 +106,7 @@ test-suite exploring-level-p-test
     , dsp >=0.2.5.2
     , exploring-level-p
     , free >=5.1.10
+    , linear >=1.22
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3

@@ -1,4 +1,4 @@
-module Subclasses.Monotone where
+module Subclasses.Monotone () where
 
 -- Wikipedia:
 -- a Boolean function is monotonic if, for every combination of inputs, switching one

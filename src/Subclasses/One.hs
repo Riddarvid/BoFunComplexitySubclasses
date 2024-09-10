@@ -1,11 +1,11 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-module Subclasses.One () where
+module Subclasses.One (test) where
 import           Algorithm.GenAlgPW    (computeMin)
 import           BoFun                 (BoFun (..))
 import           Data.Function.Memoize (deriveMemoizable)
-import           Poly.PiecewisePoly    (PiecewisePoly, showPW)
+import           Poly.PiecewisePoly    (showPW)
 
 -- For an n-bit function, the list of bools has n elements.
 -- One [] represent a constant function with the value True
@@ -30,7 +30,7 @@ instance BoFun One Int where
     where
       deleteAt :: Int -> [a] -> [a]
       deleteAt _ []       = []
-      deleteAt 0 (x :xs)  = xs
+      deleteAt 0 (_ :xs)  = xs
       deleteAt n (x : xs) = x : deleteAt (n - 1) xs
   setBit _ OFalse = OFalse
 

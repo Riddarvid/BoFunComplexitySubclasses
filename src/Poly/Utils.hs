@@ -6,16 +6,14 @@ module Poly.Utils (
   countPieces,
   minDegree
 ) where
-import           Data.Complex       (Complex ((:+)), realPart)
+import           Algebraic          (fromPWAlgebraic, toAlgebraic)
 import           Data.Either        (isLeft)
-import           Data.Foldable      (find)
-import           Data.Maybe         (fromJust)
 import           DSLsofMath.Algebra (AddGroup, Additive (zero), MulGroup,
                                      Multiplicative)
 import           DSLsofMath.PSDS    (Poly (P), derP, evalP)
 import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly, Separation,
-                                     Separation' (..), linearizePW)
-import           Polynomial.Roots   (roots)
+                                     linearizePW)
+import qualified Poly.PiecewisePoly as PW
 
 countMaxima :: (Real a) => PiecewisePoly a -> Int
 countMaxima pw = countMaxima' $ linearizePW (fmap realToFrac pw :: PiecewisePoly Double)
@@ -33,17 +31,17 @@ countMaxima' _ = 0
 -- Another problem is that the root should be a real number but currently
 -- we're casting it to a rational number, which of course changes the value.
 -- Really, we should make the function work with real numbers instead.
-hasMaximum :: (RealFloat a, AddGroup a, Multiplicative a) => Poly a -> Poly a -> Separation a -> Bool
-hasMaximum p1 p2 s = evalP p1' (p - 0.001) > zero && evalP p2' (p + 0.001) < zero
+hasMaximum :: (Real a, AddGroup a, Multiplicative a) => Poly a -> Poly a -> Separation a -> Bool
+hasMaximum p1 p2 s = case s of
+  PW.Dyadic x    -> evalP p1' x > zero && evalP p2' x < zero
+  PW.Algebraic x -> let
+    x' = fromPWAlgebraic x
+    p1'' = evalP (fmap toAlgebraic p1') x'
+    p2'' = evalP (fmap toAlgebraic p2') x'
+    in p1'' > zero && p2'' < zero
   where
     p1' = derP p1
     p2' = derP p2
-    p = case s of
-      Dyadic p'                        -> p'
-      Algebraic (P pPoly, (low, high)) -> root
-        where
-          pRoots = map realPart $ roots 1e-16 1000 $ map (:+ zero) pPoly
-          root = fromJust $ find (\n -> low < n && n < high) pRoots
 
 -- Degree finding
 
