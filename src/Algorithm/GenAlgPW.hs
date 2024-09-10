@@ -10,7 +10,7 @@ import           Data.Maybe            (isJust)
 import           Data.Monoid           (Endo (Endo, appEndo))
 import           DSLsofMath.Algebra    (Additive (..),
                                         Multiplicative (one, (*)), (-))
-import           PiecewisePoly         (PiecewisePoly, minPWs)
+import           Poly.PiecewisePoly    (PiecewisePoly, minPWs)
 import           Prelude               hiding ((*), (+), (-))
 
 computeMinStep :: (BoFun f i) =>Endo (f -> PiecewisePoly Rational)
@@ -26,3 +26,4 @@ computeMinStep = Endo $ \recCall fun -> if isJust (isConst fun)
 
 computeMin :: (BoFun f i, Memoizable f) =>f -> PiecewisePoly Rational
 computeMin = fix $ appEndo computeMinStep >>> memoize
+

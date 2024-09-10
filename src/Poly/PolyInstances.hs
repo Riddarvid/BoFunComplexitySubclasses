@@ -2,12 +2,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE InstanceSigs          #-}
-module PolyInstances () where
+module Poly.PolyInstances () where
 import           Algorithm.Algor    (Algor (..))
 import           DSLsofMath.Algebra (Additive (zero, (+)),
                                      Multiplicative (one, (*)), Ring, (-))
 import           DSLsofMath.PSDS    (Poly, xP)
-import           PolyCmp            (OrdField, cmpPoly)
+import           Poly.PolyCmp       (OrdField, cmpPoly)
 import           Prelude            hiding ((*), (+), (-))
 import           Thin               (Thin (cmp))
 

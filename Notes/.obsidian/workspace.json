@@ -85,7 +85,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "TODO för veckan.md",
+                "file": "Observation about PPs.md",
                 "mode": "source",
                 "source": false
               }
@@ -158,7 +158,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "TODO för veckan.md",
+                "file": "Observation about PPs.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -175,7 +175,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "TODO för veckan.md",
+                "file": "Observation about PPs.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -198,7 +198,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "TODO för veckan.md"
+                "file": "Observation about PPs.md"
               }
             }
           }
@@ -221,8 +221,10 @@
   },
   "active": "e0ee25f165084a06",
   "lastOpenFiles": [
-    "TODO generell.md",
+    "Pasted image 20240905093302.png",
+    "Pasted image 20240906154104.png",
     "TODO för veckan.md",
+    "TODO generell.md",
     "TODO Arvid.md",
     "Readme.md",
     "Observation about PPs.md",
@@ -230,8 +232,6 @@
     "Analysis of classes.md",
     "Egenskaper hos boolska funktioner.md",
     "Förklaring av arbetet.md",
-    "Pasted image 20240905093302.png",
-    "Pasted image 20240906154104.png",
     "Welcome.md"
   ]
 }

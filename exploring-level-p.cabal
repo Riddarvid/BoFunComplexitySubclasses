@@ -30,14 +30,16 @@ library
       BDD
       BDD.BDDInstances
       BoFun
-      ComputeAll
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS
-      PiecewisePoly
-      PolyCmp
-      PolyInstances
-      PolynomialExtra
+      Filters
+      LibMain
+      Poly.PiecewisePoly
+      Poly.PolyCmp
+      Poly.PolyInstances
+      Poly.PolynomialExtra
+      Poly.Utils
       Subclasses.Even
       Subclasses.Monotone
       Subclasses.One
@@ -56,6 +58,7 @@ library
       base >=4.13 && <4.19
     , containers >=0.6.7
     , decision-diagrams >=0.2.0.0
+    , dsp >=0.2.5.2
     , free >=5.1.10
     , memoize >=1.1
     , mtl >=2.2
@@ -75,6 +78,7 @@ executable exploring-level-p-exe
       base >=4.13 && <4.19
     , containers >=0.6.7
     , decision-diagrams >=0.2.0.0
+    , dsp >=0.2.5.2
     , exploring-level-p
     , free >=5.1.10
     , memoize >=1.1
@@ -96,6 +100,7 @@ test-suite exploring-level-p-test
       base >=4.13 && <4.19
     , containers >=0.6.7
     , decision-diagrams >=0.2.0.0
+    , dsp >=0.2.5.2
     , exploring-level-p
     , free >=5.1.10
     , memoize >=1.1

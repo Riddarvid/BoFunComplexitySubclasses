@@ -2,25 +2,27 @@
 {-# LANGUAGE DeriveFunctor          #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE InstanceSigs           #-}
 {-# LANGUAGE MultiWayIf             #-}
 {-# LANGUAGE RankNTypes             #-}
-module PiecewisePoly where
+module Poly.PiecewisePoly where
 
-import           Control.Applicative (Applicative (..))
-import           Control.Arrow       ((>>>))
-import           Control.Monad       (forM_, guard)
-import           Data.Bifunctor      (Bifunctor (..), bimap)
-import           Data.Function       ((&))
-import           Data.Maybe          (fromJust, fromMaybe)
-import           Data.Ratio          (numerator, (%))
-import           Prelude             hiding (Fractional (..), Num (..),
-                                      fromIntegral, min, product, sum)
+import           Control.Applicative  (Applicative (..))
+import           Control.Arrow        ((>>>))
+import           Control.Monad        (forM_, guard)
+import           Data.Bifunctor       (Bifunctor (..), bimap)
+import           Data.Function        ((&))
+import           Data.Maybe           (fromJust, fromMaybe)
+import           Data.Ratio           (numerator, (%))
+import           Prelude              hiding (Fractional (..), Num (..),
+                                       fromIntegral, min, product, sum)
 import qualified Prelude
 
 import           DSLsofMath.Algebra
-import           DSLsofMath.PSDS     (Poly (unP), comP, degree, evalP)
+import           DSLsofMath.PSDS      (Poly (unP), comP, degree, evalP)
 
-import           PolynomialExtra
+import           Algorithm.Algor      (DecTree)
+import           Poly.PolynomialExtra
 import           Utils
 
 
@@ -629,3 +631,10 @@ main :: IO ()
 main = do
   printPW s'
   printPW t'
+
+data BothPW a = BothPW (PiecewisePoly a) [(Poly a, DecTree)]
+
+instance (AddGroup a, MulGroup a, Eq a, Show a) => Show (BothPW a) where
+  show :: BothPW a -> String
+  show (BothPW pw lookupPolys) = showPWAny pw ++ "\n" ++ unlines
+    (map (\(poly, al) -> show poly ++ ":\t\t" ++ show al) lookupPolys)

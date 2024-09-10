@@ -6,7 +6,7 @@ module Subclasses.Symmetric (main) where
 import           Algorithm.GenAlgPW    (computeMin)
 import           BoFun                 (BoFun (..))
 import           Data.Function.Memoize (deriveMemoizable)
-import           PiecewisePoly         (showPW)
+import           Poly.PiecewisePoly    (showPW)
 
 
 newtype Symmetric = Symmetric [Bool]

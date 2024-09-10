@@ -26,6 +26,7 @@ dependencies:
   - memoize >= 1.1
   - mtl >= 2.2
   - free >= 5.1.10
+  - dsp >= 0.2.5.2
 
 ghc-options:
   - -Wall

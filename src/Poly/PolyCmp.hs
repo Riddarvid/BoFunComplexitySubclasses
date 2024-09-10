@@ -2,7 +2,7 @@
 {-# LANGUAGE ConstraintKinds  #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module PolyCmp (module PolyCmp) where
+module Poly.PolyCmp (module Poly.PolyCmp) where
 import qualified Data.Set           as S (Set, fromList, size)
 import           DSLsofMath.Algebra (AddGroup (negate), Additive (..), Field,
                                      MulGroup ((/)), Multiplicative (one, (*)),

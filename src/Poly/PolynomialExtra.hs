@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveFunctor #-}
-module PolynomialExtra where
+module Poly.PolynomialExtra where
 
 import           Control.Arrow      (second, (***), (>>>))
 import           Data.Maybe         (fromJust, isJust)

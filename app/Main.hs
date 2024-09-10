@@ -1,5 +1,5 @@
 module Main (main) where
-import           ComputeAll (genAllBoths)
+import qualified LibMain (main)
 
 main :: IO ()
-main = mapM_ print $ genAllBoths 3
+main = LibMain.main

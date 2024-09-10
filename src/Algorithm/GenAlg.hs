@@ -3,17 +3,23 @@ module Algorithm.GenAlg (
   genAlg,
   genAlgMemo,
   genAlgThinMemo,
-  genAlgThinMemoPoly
+  genAlgThinMemoPoly,
+  piecewiseBoth,
+  genAllBoths
 ) where
-import           Algorithm.Algor       (Algor (pic), res)
-import           BDD.BDDInstances      ()
-import           BoFun                 (BoFun (isConst, setBit, variables))
-import           Data.Function.Memoize (Memoizable, memoFix)
-import qualified Data.Set              as S
-import           DSLsofMath.Algebra    ()
-import           DSLsofMath.PSDS       (Poly)
-import           PolyInstances         ()
-import           Thin                  (Thin (thin))
+import           Algorithm.Algor          (Algor (pic), res)
+import           BDD                      (BDDFun, allBDDFuns, bddAsc)
+import           BDD.BDDInstances         ()
+import           BoFun                    (BoFun (isConst, setBit, variables))
+import           Data.DecisionDiagram.BDD (ItemOrder)
+import           Data.Function.Memoize    (Memoizable, memoFix)
+import qualified Data.Set                 as S
+import           DSLsofMath.Algebra       (AddGroup, MulGroup)
+import           DSLsofMath.PSDS          (Poly)
+import           Poly.PiecewisePoly       (BothPW (BothPW), minPWs,
+                                           piecewiseFromPoly)
+import           Poly.PolyInstances       ()
+import           Thin                     (Thin (thin))
 
 -- Naive
 genAlg :: (BoFun fun i, Algor a, Ord a) => fun -> S.Set a
@@ -54,3 +60,19 @@ genAlgStepThin ::
   (fun -> S.Set a) ->
   (fun -> S.Set a)
 genAlgStepThin genAlg' f = thin (genAlgStep genAlg' f)
+
+-- Generate all
+
+-- Computes the PWs via genAlgBoth but then converts the resulting set of polynomials
+-- to a PW, and gives a lookup table from poly to decision tree.
+piecewiseBoth :: (ItemOrder o, Show a, AddGroup a, MulGroup a, Ord a) => BDDFun o -> BothPW a
+piecewiseBoth f = BothPW pw lookupTable
+  where
+    boths = S.toList $ genAlgThinMemo f
+
+    lookupTable = map (\(poly, al) -> (poly, al)) boths
+
+    pw = minPWs $ map (\(poly, _) -> piecewiseFromPoly poly) boths
+
+genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) => Int -> [BothPW a]
+genAllBoths n = map (piecewiseBoth . bddAsc) $ allBDDFuns n
