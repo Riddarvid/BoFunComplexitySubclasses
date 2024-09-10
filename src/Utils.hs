@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-missing-export-lists #-}
 module Utils where
 
 import           Control.Arrow         ((&&&), (>>>))
@@ -10,15 +11,6 @@ import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
                                         Ord2 (..), Show1 (..), Show2 (..))
 import qualified Data.MultiSet         as MultiSet
 import qualified Data.Set              as Set
-
--- Debugging.
-
-mayTrace _ = id
---mayTrace = trace
-
-shouldTrace _ = id
---shouldTrace = trace
-
 
 -- Monoids.
 

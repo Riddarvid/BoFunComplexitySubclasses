@@ -27,8 +27,10 @@ library
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
-      BDDInstances
+      BDD
+      BDD.BDDInstances
       BoFun
+      ComputeAll
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS

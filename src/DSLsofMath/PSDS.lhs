@@ -1,4 +1,5 @@
 \begin{code}
+{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE TypeSynonymInstances #-}
 -- {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RebindableSyntax #-}

@@ -1,5 +1,5 @@
+{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveFunctor #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
 module PolynomialExtra where
 
 import           Control.Arrow      (second, (***), (>>>))

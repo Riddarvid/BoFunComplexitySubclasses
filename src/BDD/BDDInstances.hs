@@ -3,15 +3,14 @@
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module BDDInstances () where
+module BDD.BDDInstances () where
+import           BDD                      (BDDFun)
 import           BoFun                    (BoFun (..))
 import           Data.DecisionDiagram.BDD (BDD (..), ItemOrder, Sig, inSig,
                                            outSig, restrict, support)
 import           Data.Function.Memoize    (Memoizable (memoize),
                                            deriveMemoizable)
 import qualified Data.IntSet              as IS
-
-type BDDFun o = BDD o
 
 $(deriveMemoizable ''Sig)
 

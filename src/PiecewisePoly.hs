@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveFunctor          #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}

@@ -16,7 +16,7 @@ instance OrdField a => Thin (Poly a) where
   cmp :: Poly a -> Poly a -> Maybe Ordering
   cmp = cmpPoly
 
-instance Ring a => Algor (Poly a) Int where
+instance Ring a => Algor (Poly a) where
   res :: Bool -> Poly a
   res = resPoly
   pic :: Int -> Poly a -> Poly a -> Poly a

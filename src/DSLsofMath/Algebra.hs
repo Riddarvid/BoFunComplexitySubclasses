@@ -1,12 +1,13 @@
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
+{-# LANGUAGE ConstraintKinds   #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE ConstraintKinds #-}
 module DSLsofMath.Algebra where
+import           Data.Complex
 import qualified Data.Ratio
+import           Prelude      (Bool (..), Double, Foldable (foldr), Int,
+                               Integer, Rational, const, error, otherwise, (.),
+                               (<), (==))
 import qualified Prelude
-import Prelude (Double, Rational, Int, Integer, Bool(..), otherwise,
-                Foldable(foldr), (.), const, (==), (<), error)
-import Data.Complex
 
 -------------------------------
 -- Classes

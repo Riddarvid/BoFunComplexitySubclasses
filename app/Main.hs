@@ -1,4 +1,5 @@
 module Main (main) where
+import           ComputeAll (genAllBoths)
 
 main :: IO ()
-main = undefined
+main = mapM_ print $ genAllBoths 3

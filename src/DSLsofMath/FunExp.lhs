@@ -1,4 +1,5 @@
 \begin{code}
+{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 module DSLsofMath.FunExp where
 import DSLsofMath.Algebra
 import Prelude (Eq, Ord, Show, Double, id, const, (.), toRational)
