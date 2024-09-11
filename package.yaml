@@ -27,7 +27,7 @@ dependencies:
   - mtl >= 2.2
   - free >= 5.1.10
   - dsp >= 0.2.5.2
-  - linear >= 1.22
+  - hmatrix >= 0.20.2
 
 ghc-options:
   - -Wall

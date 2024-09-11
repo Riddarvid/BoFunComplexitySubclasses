@@ -93,6 +93,45 @@ By the same logic as above, we get 2^(2^(n-1)) even functions. The visual patter
 With n bits, we have 2^n possible inputs. We must choose exactly (2^n) / 2 = 2^(n-1) of these to assign 1s to, and the rest will be 0s. This gives us 
 $$ \binom{2^n}{2^{n-1}} $$
 functions of this class. We have not found a good way to simplify this expression.
+
+## Pure threshold functions
+
+A 000
+B 001
+B 010
+C 011
+B 100
+C 101
+C 110
+D 111
+
+Vi kan välja om thresholdet ska vara vid A, B, C, D, alternativt att threshold är högre än 3, funktionen blir då const3 False.
+
+Från detta följer att vi har 5 potentiella punkter att sätta gränsen.
+
+För n bitar finns det n + 1 olika antal ettor vi kan ha (0, 1, ... , n - 1, n). Vi kan sätta vårt threshold vid vilken som av dessa, samt vid n + 1. Detta ger oss totalt n + 2 olika threshold functions.
+
+## Implemented threshold functions
+
+En thresholdfunction består av ett threshold och ett set av funktioner.
+
+För en n-bitars funktion måste summan av nf och nt vara lika med n. Vi måste även ha att summan av arityn av delfunktionerna vara lika med n.
+
+Delfunktionerna måste ha arity > 0, annars skulle de vara konstanta.
+
+Antalet threshold functions kan då beskrivas av antalet sätt att välja threshold multiplicerat med antalet sätt att välja delfunktioner.
+
+Vi kan välja threshold på (n + 1) olika sätt.
+
+Antalet sätt att välja subfunktioner är vid första anblick mer komplicerat. För det första måste vi bestämma antalet sätt att välja arity för de delfunktionerna, sedan måste vi även ta hänsyn till antalet funktioner som finns av den arityn.
+
+Ett uttryck för antalet funktioner borde vara något i stil med:
+$$f(0) = 0, f(1) = 4$$
+Ty med en bit kan vi endast välja en sub-function med 
+$$f(n) = \Sum_{i=1}^{n} 2^{2^i} \cdot f(n-i)$$
+
+Något är fel, vi får för höga tal.
+
 ## Other observations
 
 A function can be both symmetric and monotonic: Ex. AND
@@ -102,7 +141,7 @@ A function can be symmetric but not monotonic:
 00 1
 01 1
 10 1
-00 0
+11 0
 
 (NAND)
 
@@ -117,13 +156,26 @@ A function can be monotonic but not symmetric:
 
 ## Number of functions
 
-|                              | 2-bit |     | 3-bit |     | 4-bit |     | n-bit              |
-| ---------------------------- | ----- | --- | ----- | --- | ----- | --- | ------------------ |
-| Total                        | 16    |     | 256   |     | 65536 |     | 2^2^n              |
-| Symmetric                    | 8     | 50% | 16    | 6%  | 32    | 0%  | 2^(n+1)            |
-| Monotonic                    | 6     | 38% | 20    | 8%  | 168   |     | Not known          |
-| Odd                          | 4     | 25% | 16    | 6%  | 256   | 0%  | 2^(2^(n-1))        |
-| Even                         | 4     | 25% | 16    | 6%  | 256   | 0%  | 2^(2^(n-1))        |
-| Same number of 0/1           | 6     | 38% | 70    | 27% | 12870 | 20% | 2^n choose 2^(n-1) |
-| Exactly one 1                | 4     | 25% | 8     | 3%  | 16    | 0%  | 2^n                |
-| Threshold/Iterated threshold |       |     |       |     |       |     |                    |
+|                    | 2-bit |     | 3-bit |     | 4-bit |     | n-bit              |
+| ------------------ | ----- | --- | ----- | --- | ----- | --- | ------------------ |
+| Total              | 16    |     | 256   |     | 65536 |     | 2^2^n              |
+| Symmetric          | 8     | 50% | 16    | 6%  | 32    | 0%  | 2^(n+1)            |
+| Monotonic          | 6     | 38% | 20    | 8%  | 168   |     | Not known          |
+| Odd                | 4     | 25% | 16    | 6%  | 256   | 0%  | 2^(2^(n-1))        |
+| Even               | 4     | 25% | 16    | 6%  | 256   | 0%  | 2^(2^(n-1))        |
+| Same number of 0/1 | 6     | 38% | 70    | 27% | 12870 | 20% | 2^n choose 2^(n-1) |
+| Exactly one 1      | 4     | 25% | 8     | 3%  | 16    | 0%  | 2^n                |
+| Threshold          | 4     | 25% | 5     | 2%  | 6     | 0%  | n + 2              |
+
+
+| Type                   | Closed under setBit (Hereditery) |
+| ---------------------- | -------------------------------- |
+| Generic                | Yes                              |
+| Symmetric              | Yes                              |
+| Monotonic              | Yes                              |
+| Odd                    | No                               |
+| Even                   | No                               |
+| Same number of 0/1s    | No                               |
+| Exactly one 1          | No                               |
+| Exactly zero or one 1s | Yes                              |
+| Threshold              | Yes                              |

@@ -1,0 +1,2 @@
+- Algebraiska tal
+- Antal threshold-functions

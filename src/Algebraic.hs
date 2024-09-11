@@ -3,20 +3,28 @@ module Algebraic (
   fromPWAlgebraic,
   toAlgebraic
 ) where
-import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
-                                     Multiplicative (..), (-))
-import           DSLsofMath.PSDS    (Poly (P), evalP)
-import           Prelude            hiding (negate, (-))
+import           DSLsofMath.Algebra         (AddGroup (..), Additive (..),
+                                             MulGroup ((/)),
+                                             Multiplicative (..), (-))
+import           DSLsofMath.PSDS            (Poly (P), evalP)
+import           Numeric.LinearAlgebra      (kronecker)
+import           Numeric.LinearAlgebra.Data (Matrix)
+import           Poly.PolyCmp               (numRoots)
+import           Prelude                    hiding (negate, (*), (-), (/))
 
 data Algebraic = Algebraic (Poly Rational) (Rational, Rational)
 
 fromPWAlgebraic :: (Real a) => (Poly a, (a, a)) -> Algebraic
 fromPWAlgebraic (p, (low, high)) = Algebraic (fmap toRational p) (toRational low, toRational high)
 
--- Converts a rational number to a dyadic number
--- TODO
+-- Converts a rational number to an algebraic number
+-- Simply uses the polynomial p(x) = x - x'
+-- and the interval (-x, x) which is guaranteed to contain x'
 toAlgebraic :: (Real a) => a -> Algebraic
-toAlgebraic x = undefined
+toAlgebraic x = Algebraic (P [x', one]) interval
+  where
+    x' = toRational x
+    interval = if x' < 0 then (x', 0) else (0, x')
 
 instance Additive Algebraic where
   zero :: Algebraic
@@ -40,13 +48,11 @@ instance Multiplicative Algebraic where
   one :: Algebraic
   one = toAlgebraic (one :: Int)
   (*) :: Algebraic -> Algebraic -> Algebraic
-  (*) = undefined
+  (*) = mulAlgebraic
 
 instance Eq Algebraic where
   (==) :: Algebraic -> Algebraic -> Bool
-  a == b = let
-    Algebraic c (low, high) = a - b
-    in low < zero && zero < high && evalP c zero == zero
+  a == b = compare a b == EQ
 
 instance Ord Algebraic where
   compare :: Algebraic -> Algebraic -> Ordering
@@ -54,6 +60,29 @@ instance Ord Algebraic where
     | low > zero = GT
     | high < zero = LT
     | evalP c zero == zero = EQ
-    | otherwise = undefined -- TODO count roots in (low, zero). If 1, then LT, otherwise GT.
+    | otherwise = case numRoots c' of
+      0 -> LT
+      1 -> GT
+      _ -> error "Should only be able to have 0 or 1 roots"
     where
       Algebraic c (low, high) = a - b
+      c' = transCoeff c high
+
+-- Transforms a polynomial p(x) to p(x/factor).
+transCoeff :: (MulGroup a) =>Poly a -> a -> Poly a
+transCoeff (P coeffs) factor = P $ go one coeffs
+  where
+    go _ []                    = []
+    go factorAcc (coeff : coeffs') = (coeff / factorAcc) : go (factorAcc * factor) coeffs'
+
+-- TODO add QuickCheck properties to test the implementation
+
+mulAlgebraic :: Algebraic -> Algebraic -> Algebraic
+mulAlgebraic (Algebraic a intA) (Algebraic b intB) = undefined
+  where
+    aMatrix = toCharacteristicMatrix a
+    bMatrix = toCharacteristicMatrix b
+    abMatrix = undefined --kronecker aMatrix bMatrix
+
+toCharacteristicMatrix :: Poly a -> Matrix Integer
+toCharacteristicMatrix = undefined

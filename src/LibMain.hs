@@ -1,4 +1,4 @@
-module LibMain (main) where
+module LibMain (main, waysToChooseSubFunctions) where
 import           Algorithm.GenAlg   (genAllBoths)
 import           DSLsofMath.Algebra (AddGroup, MulGroup)
 import           Filters            (degreePred, maximaPred)
@@ -17,3 +17,8 @@ findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
 
 toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
+
+waysToChooseSubFunctions :: Integer -> Integer
+waysToChooseSubFunctions 0 = 0
+waysToChooseSubFunctions 1 = 4
+waysToChooseSubFunctions n = sum $ map (\i -> 2^(2^i) * waysToChooseSubFunctions (n - i)) [1 .. n]
