@@ -1,12 +1,15 @@
 module LibMain (main, waysToChooseSubFunctions) where
+import           Algebraic          (Algebraic (Algebraic), toAlgebraic)
 import           Algorithm.GenAlg   (genAllBoths)
-import           DSLsofMath.Algebra (AddGroup, MulGroup)
+import           DSLsofMath.Algebra (AddGroup, MulGroup, (*))
+import           DSLsofMath.PSDS    (Poly (P))
 import           Filters            (degreePred, maximaPred)
 import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly)
 import           Poly.Utils         (minDegree)
+import           Prelude            hiding ((*))
 
 main :: IO ()
-main = mapM_ print (findSimplest :: [BothPW Rational])
+main = print $ Algebraic (P [-1, 0, 2]) (0, 10) * Algebraic (P [-1, 0, 3]) (0, 10)
 
 findSimplest :: (AddGroup a, MulGroup a, Real a, Show a) => [BothPW a]
 findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
@@ -22,3 +25,4 @@ waysToChooseSubFunctions :: Integer -> Integer
 waysToChooseSubFunctions 0 = 0
 waysToChooseSubFunctions 1 = 4
 waysToChooseSubFunctions n = sum $ map (\i -> 2^(2^i) * waysToChooseSubFunctions (n - i)) [1 .. n]
+

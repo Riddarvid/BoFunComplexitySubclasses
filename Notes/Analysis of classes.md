@@ -88,7 +88,7 @@ This is very similar to odd functions, except we instead get:
 
 By the same logic as above, we get 2^(2^(n-1)) even functions. The visual pattern is also similar, the bottom half of outputs is simply a reflection of the top half.
 
-## Same number of 0s and 1s in output
+## Same number of 0s and 1s in output (Balanced)
 
 With n bits, we have 2^n possible inputs. We must choose exactly (2^n) / 2 = 2^(n-1) of these to assign 1s to, and the rest will be 0s. This gives us 
 $$ \binom{2^n}{2^{n-1}} $$
@@ -131,6 +131,18 @@ Ty med en bit kan vi endast välja en sub-function med
 $$f(n) = \Sum_{i=1}^{n} 2^{2^i} \cdot f(n-i)$$
 
 Något är fel, vi får för höga tal.
+
+## Gates
+
+With a basis consisting only of AND, you can only build n-bit AND-gates. (You can also ignore some bits of the input but this is not a very interesting case.)
+
+The same logic with OR.
+
+With only NOT you can construct the not-function or id.
+
+With NAND or NOR we can construct every boolean function.
+
+With AND and OR we can construct exactly the set of monotonic functions.
 
 ## Other observations
 
@@ -179,3 +191,4 @@ A function can be monotonic but not symmetric:
 | Exactly one 1          | No                               |
 | Exactly zero or one 1s | Yes                              |
 | Threshold              | Yes                              |
+| Read-once              | Yes                              |

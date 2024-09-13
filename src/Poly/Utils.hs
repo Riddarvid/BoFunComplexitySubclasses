@@ -4,7 +4,8 @@ module Poly.Utils (
   findDegreePW,
   findDegreePoly,
   countPieces,
-  minDegree
+  minDegree,
+  dropZeroes
 ) where
 import           Algebraic          (fromPWAlgebraic, toAlgebraic)
 import           Data.Either        (isLeft)

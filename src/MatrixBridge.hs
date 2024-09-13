@@ -88,6 +88,7 @@ import qualified Data.Vector               as V
 import qualified Data.Vector.Fusion.Bundle as Bundle
 import           Data.Vector.Generic       (Vector, stream)
 import qualified Data.Vector.Mutable       as MV
+import           Debug.Trace               (traceShow, traceShowId)
 import           DSLsofMath.Algebra        (AddGroup, Additive, MulGroup,
                                             Multiplicative)
 import qualified DSLsofMath.Algebra        as A
@@ -1214,13 +1215,13 @@ switchCols c1 c2 (M n m ro co w vs) = M n m ro co w $ V.modify (\mv -> do
 -- > luDecomp ( 2 0 2 ) = ( ( 0 0  2 ) , (   0 1 1 ) , ( 0 1 0 ) , 1 )
 --
 --   'Nothing' is returned if no LU decomposition exists.
-luDecomp :: (MulGroup a, Ord a, AddGroup a) => Matrix a -> Maybe (Matrix a,Matrix a,Matrix a,a)
+luDecomp :: (Show a, MulGroup a, Ord a, AddGroup a) => Matrix a -> Maybe (Matrix a,Matrix a,Matrix a,a)
 luDecomp a = recLUDecomp a i i A.one 1 n
  where
   i = identity $ nrows a
   n = min (nrows a) (ncols a)
 
-recLUDecomp ::  ( Eq a, Ord a, AddGroup a, MulGroup a)
+recLUDecomp ::  (Show a, Eq a, Ord a, AddGroup a, MulGroup a)
             =>  Matrix a -- ^ U
             ->  Matrix a -- ^ L
             ->  Matrix a -- ^ P
@@ -1261,7 +1262,7 @@ recLUDecomp u l p d k n =
          in  go (combineRows j (A.negate x) k u_) (setElem x (j,k) l_) (j+1)
 
 -- | Unsafe version of 'luDecomp'. It fails when the input matrix is singular.
-luDecompUnsafe :: (Ord a, MulGroup a, AddGroup a) => Matrix a -> (Matrix a, Matrix a, Matrix a, a)
+luDecompUnsafe :: (Show a, Ord a, MulGroup a, AddGroup a) => Matrix a -> (Matrix a, Matrix a, Matrix a, a)
 luDecompUnsafe m = case luDecomp m of
   Just x -> x
   _      -> error "luDecompUnsafe of singular matrix."
@@ -1420,7 +1421,7 @@ detLaplace m = sum1 [ (-1)^(i-1) * m ! (i,1) * detLaplace (minorMatrix i 1 m) | 
 
 -- | Matrix determinant using LU decomposition.
 --   It works even when the input matrix is singular.
-detLU :: ( Ord a, MulGroup a, AddGroup a) =>Matrix a -> a
+detLU :: (Show a, Ord a, MulGroup a, AddGroup a) =>Matrix a -> a
 detLU m = case luDecomp m of
   Just (u,_,_,d) -> d A.* diagProd u
   Nothing        -> A.zero

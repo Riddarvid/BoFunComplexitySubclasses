@@ -76,8 +76,10 @@ oneL :: Ring a => [a];      oneL = [one]
 addP :: Additive a => Poly a -> Poly a -> Poly a
 addP (P as) (P bs) = P (addL as bs)
 
+-- Problem: If the largest terms cancel each other out, then the list will grow longer 
+-- than necessary. We could try clearing zeroes.
 addL :: Additive a => [a] -> [a] -> [a]
-addL = zipWithLonger (+)
+addL a b = zipWithLonger (+) a b
 
 zipWithLonger :: (a->a->a) -> ([a] -> [a] -> [a])
 zipWithLonger op = zWL
