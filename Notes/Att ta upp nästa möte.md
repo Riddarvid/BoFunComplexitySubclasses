@@ -1,8 +1,0 @@
-- Demonstrera multiplikation av algebraiska tal
-- Visa vår tabell över closed under setBit
-	- Diskutera hur man kan hitta större klasser, eller om det är någon annan egenskap som är bättre att fokusera på
-- Fråga om vår beräkning av antal threshold-functions
-	- Vad blir fel i vår funktion
-- Hur går vi vidare nästa vecka?
-	- Faktiskt börja hitta klasser att implementera
-- Påminn om att han har fått inbjudan till repot

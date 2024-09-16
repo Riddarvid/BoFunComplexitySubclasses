@@ -1,6 +1,7 @@
 
 - Algebraiska tal
 	- Implementera intervall-shrinking
+		- Teori: Vi borde kunna utnyttja highA * highB som nytt högstaintervall.
 	- Implementera addition
 	- Skriv QuickCheck properties för att testa korrektheten i vår implementation.
 	- Nyttja den nya implementation av algebraiska tal för att hitta maxima (specifikt kunna bestämma derivatan i en viss punkt exakt).

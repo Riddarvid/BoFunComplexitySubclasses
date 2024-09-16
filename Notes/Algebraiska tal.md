@@ -14,4 +14,14 @@ Den approach vi har hittat för att multiplicera algebraiska tal ser ut såhär:
 https://math.stackexchange.com/questions/2911256/a-way-to-represent-algebraic-numbers-in-a-computer
 
 
+TODO:
 
+1. Addition
+2. Kontrollera att denna implementation tar bort false positives i vår hasMaximum-funktion
+3. QuickCheck properties
+
+Cleanup:
+
+- Använd normalPoly istället för dropZeros
+- Använd toMonic direkt
+- Fundera på hur mycket vi vill använda MatrixBridge, i alla fall ta bort reglerna.

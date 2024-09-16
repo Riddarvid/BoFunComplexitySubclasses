@@ -13,7 +13,19 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Att ta upp nästa möte.md",
+                "file": "Algebraiska tal.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "2ab3e76148d1f1fb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Frågor till nästa möte.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Att ta upp nästa möte.md",
+                "file": "Algebraiska tal.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Att ta upp nästa möte.md",
+                "file": "Algebraiska tal.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Att ta upp nästa möte.md"
+                "file": "Algebraiska tal.md"
               }
             }
           }
@@ -148,14 +160,15 @@
   },
   "active": "698759cd1ad0f525",
   "lastOpenFiles": [
-    "TODO för veckan.md",
-    "Att ta upp nästa möte.md",
-    "Analysis of classes.md",
-    "TODO Arvid.md",
+    "Frågor till nästa möte.md",
+    "Algebraiska tal.md",
+    "Svar från mötet.md",
     "TODO generell.md",
+    "Analysis of classes.md",
+    "TODO för veckan.md",
+    "TODO Arvid.md",
     "Things to put in the paper.md",
     "Funktioner som är stängda under setBit.md",
-    "Algebraiska tal.md",
     "Observation about PPs.md",
     "Pasted image 20240905093302.png",
     "Pasted image 20240906154104.png",

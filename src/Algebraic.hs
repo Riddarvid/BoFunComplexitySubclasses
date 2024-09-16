@@ -5,15 +5,15 @@ module Algebraic (
   toAlgebraic
 ) where
 import           Data.Foldable      (find)
-import           Debug.Trace        (trace, traceShow, traceShowId)
+import           Data.Maybe         (fromJust)
 import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
-                                     MulGroup ((/)), Multiplicative (..), (-),
-                                     (^+))
-import           DSLsofMath.PSDS    (Poly (P), evalP, xP)
-import           MatrixBridge       (Matrix (nrows), detLU, elementwise,
-                                     flatten, fromLists, identity, toLists)
+                                     MulGroup ((/)), Multiplicative (..),
+                                     product, (-), (^+))
+import           DSLsofMath.PSDS    (Poly (P), evalP, xP, yun)
+import           MatrixBridge       (Matrix (nrows), elementwise, flatten,
+                                     fromLists, identity, toLists)
 import           Poly.PolyCmp       (numRoots)
-import           Prelude            hiding (negate, (*), (+), (-), (/))
+import           Prelude            hiding (negate, product, (*), (+), (-), (/))
 
 data Algebraic = Algebraic (Poly Rational) (Rational, Rational)
   deriving (Show)
@@ -82,13 +82,14 @@ transCoeff (P coeffs) factor = P $ go one coeffs
 -- TODO add QuickCheck properties to test the implementation
 
 mulAlgebraic :: Algebraic -> Algebraic -> Algebraic
-mulAlgebraic (Algebraic a (lowA, highA)) (Algebraic b (lowB, highB)) = Algebraic ab intAB
+mulAlgebraic a@(Algebraic pa _) b@(Algebraic pb _) = Algebraic ab' intAB
   where
-    aMatrix = toCharacteristicMatrix a
-    bMatrix = toCharacteristicMatrix b
+    aMatrix = toCharacteristicMatrix pa
+    bMatrix = toCharacteristicMatrix pb
     abMatrix = outerProduct aMatrix bMatrix
     ab = toCharacteristicPoly abMatrix
-    intAB = shrinkInterval (min lowA lowB, max highA highB) ab
+    ab' = removeDoubleRoots ab
+    intAB = intervalMul a b ab'
 
 -- Uses the companion matrix
 toCharacteristicMatrix :: (AddGroup a, Eq a, MulGroup a) => Poly a -> Matrix a
@@ -136,9 +137,6 @@ toCharacteristicPoly m = myUDet $ MyMatrix $ toLists mSubLambdaI
 (^-^) :: (AddGroup a) => Matrix a -> Matrix a -> Matrix a
 a ^-^ b = elementwise (-) a b
 
-shrinkInterval :: (a, a) -> Poly a -> (a, a)
-shrinkInterval int _ = int
-
 newtype MyMatrix a = MyMatrix [[a]]
 
 instance (Show a) => Show (MyMatrix a) where
@@ -166,7 +164,6 @@ myUDecomp m@(MyMatrix rows) = myUDecomp' m 0 (length rows) one one
 -- as well as the purpose of moving multiplications to a separate variable
 myUDecomp' :: (AddGroup a, Eq a, Multiplicative a, Show a) => MyMatrix a -> Int -> Int -> a -> a -> Maybe (MyMatrix a, a, a)
 myUDecomp' u@(MyMatrix rows) i ncols f s
-  -- | traceShow f False = undefined
   | i >= ncols = Just (u, f, s)
   | otherwise = do
       pivotIndex <- fmap fst $ find (\(_, row) -> row !! i /= zero) $ drop i $ zip [0 ..] rows
@@ -204,5 +201,83 @@ setRow (MyMatrix rows) i row = case end of
   (_: end') -> MyMatrix (start ++ row : end')
   where
     (start, end) = splitAt i rows
+
+------------ Double root removal ---------------------------
+
+-- TODO QuickCheck
+removeDoubleRoots :: (Eq a, MulGroup a, AddGroup a) => Poly a -> Poly a
+removeDoubleRoots p = product polys
+  where
+    polys = yun p
+
+------------ Interval shrinking ----------------------------
+
+-- Shrink the interval by dividing it into two pieces and checking which
+-- one has a root.
+shrinkInterval :: Algebraic -> Algebraic
+shrinkInterval (Algebraic p (low, high)) = case numRootsInInterval p (low, mid) of
+  0 -> Algebraic p (mid, high)
+  1 -> Algebraic p (low, mid)
+  _ -> error "Original interval should contain exactly one root"
+  where
+    mid = (low + high) / 2
+
+-- Calculate the new interval after having performed a multiplication.
+-- This is done by first calculating a bounding interval which is guaranteed
+-- to contain the desired root.
+-- We then check whather the interval contains exactly one root.
+-- If it does, we are done. Otherwise, we shrink the factors' intervals and try again.
+intervalMul :: Algebraic -> Algebraic -> Poly Rational -> (Rational, Rational)
+intervalMul a b = intervalMul' (sameSignInt a) (sameSignInt b)
+
+sameSignInt :: Algebraic -> Algebraic
+sameSignInt x@(Algebraic p (low, high))
+  | low <= 0 && high <= 0 = x
+  | low >= 0 && high >= 0 = x
+  -- Here we assume low < 0 && high > 0
+  | otherwise = case compare x zero of
+    EQ -> zero
+    LT -> Algebraic p (low, 0)
+    GT -> Algebraic p (0, high)
+
+-- Assumes that low and high in the intervals have the same sign.
+intervalMul' :: Algebraic -> Algebraic -> Poly Rational -> (Rational, Rational)
+intervalMul' a@(Algebraic _ intA) b@(Algebraic _ intB) pab =
+  case numRootsInInterval pab intAB of
+    0 -> error "Should have at least one root"
+    1 -> intAB
+    _ -> intervalMul' (shrinkInterval a) (shrinkInterval b) pab
+  where
+    intAB = boundInt intA intB
+
+boundInt :: (Multiplicative a, Additive a, Ord a) => (a, a) -> (a, a) -> (a, a)
+boundInt intA@(lowA, highA) intB@(lowB, highB) = case sa of
+  Neg -> case sb of
+    Neg -> (highA * highB, lowA * lowB)
+    Pos -> (lowA * highB, lowB * highA)
+  Pos -> case sb of
+    Neg -> boundInt intB intA
+    Pos -> (lowA * lowB, highA * highB)
+  where
+    sa = fromJust $ intSign intA
+    sb = fromJust $ intSign intB
+
+data Sign = Neg | Pos
+  deriving (Eq)
+
+intSign :: (Additive a, Ord a) => (a, a) -> Maybe Sign
+intSign (low, high)
+  | low >= zero = Just Pos
+  | high <= zero = Just Neg
+  | otherwise = Nothing
+
+-- Transforms the polynomial p(x) into p((x - a) / diff) in order to be able
+-- to use numRoots.
+numRootsInInterval :: ( AddGroup a, MulGroup a, Ord a, Show a) =>Poly a -> (a, a) -> Int
+numRootsInInterval p (low, high) = numRoots p''
+  where
+    diff = high - low
+    p' = fmap (\c -> P [c]) p
+    p'' = evalP p' (P [low, diff])
 
 -- TODO: QuickCheck properties for LUDecomp

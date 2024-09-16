@@ -47,6 +47,9 @@ class Multiplicative a where
   one :: a
   (*) :: a -> a -> a
 
+product :: (Foldable t, Multiplicative a) => t a -> a
+product = foldr (*) one
+
 two :: (Additive a, Multiplicative a) => a
 two = one+one
 
