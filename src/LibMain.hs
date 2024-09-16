@@ -9,7 +9,7 @@ import           Poly.Utils         (minDegree)
 import           Prelude            hiding ((*))
 
 main :: IO ()
-main = print $ Algebraic (P [-1, 0, 2]) (0, 10) * Algebraic (P [-1, 0, 3]) (0, 10)
+main = mapM_ print $ filter (toBoth (maximaPred (== 2))) (genAllBoths 4 :: [BothPW Rational])
 
 findSimplest :: (AddGroup a, MulGroup a, Real a, Show a) => [BothPW a]
 findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima

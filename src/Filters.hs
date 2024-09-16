@@ -17,5 +17,5 @@ piecesPred p = countPieces >>> p
 degreePred :: (Eq a, AddGroup a, MulGroup a) => (Int -> Bool) -> (PiecewisePoly a -> Bool)
 degreePred p = findDegreePW >>> p
 
-maximaPred :: Real a => (Int -> Bool) -> (PiecewisePoly a -> Bool)
+maximaPred :: (Real a, AddGroup a, MulGroup a, Show a) => (Int -> Bool) -> (PiecewisePoly a -> Bool)
 maximaPred p = countMaxima >>> p

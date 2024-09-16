@@ -7,7 +7,6 @@ module Algebraic (
 import           Data.Foldable      (find)
 import           Data.Maybe         (fromJust)
 import           Data.Ratio         ((%))
-import           Debug.Trace        (traceShow)
 import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
                                      MulGroup ((/)), Multiplicative (..),
                                      product, (-), (^+))
@@ -16,6 +15,7 @@ import           MatrixBridge       (Matrix (nrows), elementwise, flatten,
                                      fromLists, identity, toLists)
 import           Poly.PolyCmp       (numRoots)
 import           Prelude            hiding (negate, product, (*), (+), (-), (/))
+import           Test.QuickCheck    (Property, (===))
 
 data Algebraic = Algebraic (Poly Rational) (Rational, Rational)
   deriving (Show)
@@ -27,10 +27,9 @@ fromPWAlgebraic (p, (low, high)) = Algebraic (fmap toRational p) (toRational low
 -- Simply uses the polynomial p(x) = x - x'
 -- and the interval (-x, x) which is guaranteed to contain x'
 toAlgebraic :: (Real a) => a -> Algebraic
-toAlgebraic x = Algebraic (P [negate x', one]) interval
+toAlgebraic x = Algebraic (P [negate x', one]) (x', x')
   where
     x' = toRational x
-    interval = if x' < 0 then (x', 0) else (0, x')
 
 instance Additive Algebraic where
   zero :: Algebraic
@@ -277,8 +276,13 @@ intSign (low, high)
 
 -- Transforms the polynomial p(x) into p((x - a) / diff) in order to be able
 -- to use numRoots.
-numRootsInInterval :: ( AddGroup a, MulGroup a, Ord a, Show a) =>Poly a -> (a, a) -> Int
-numRootsInInterval p (low, high) = numRoots p''
+numRootsInInterval :: ( AddGroup a, MulGroup a, Ord a, Show a) => Poly a -> (a, a) -> Int
+numRootsInInterval p (low, high)
+  -- If the interval is a single point, then we can't scale it up to the range [0,1].
+  -- Instead, we simply check the value of the polynomial in that point, and if
+  -- the result is zero, then by definition it has a root there, otherwise it has no roots.
+  | diff == zero = if evalP p low == zero then 1 else 0
+  | otherwise = numRoots p''
   where
     diff = high - low
     p' = fmap (\c -> P [c]) p
@@ -291,3 +295,15 @@ shrinkTest = a + b
   where
     a = Algebraic (P [6, - 5, 1]) (21 % 10, 1000)
     b = Algebraic (P [8, -6, 1]) (1, 39 % 10)
+
+--------------- QuickCheck for Algebraic numbers -----------------------
+
+sumOfRationalsProp :: Rational -> Rational -> Property
+sumOfRationalsProp a b = toAlgebraic a + toAlgebraic b === toAlgebraic (a + b)
+
+productOfRationalsProp :: Rational -> Rational -> Property
+productOfRationalsProp a b = toAlgebraic a * toAlgebraic b === toAlgebraic (a * b)
+
+-- TODO
+addCommProp :: Algebraic -> Algebraic -> Property
+addCommProp a b = undefined

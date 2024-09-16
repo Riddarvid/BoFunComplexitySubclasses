@@ -88,7 +88,6 @@ import qualified Data.Vector               as V
 import qualified Data.Vector.Fusion.Bundle as Bundle
 import           Data.Vector.Generic       (Vector, stream)
 import qualified Data.Vector.Mutable       as MV
-import           Debug.Trace               (traceShow, traceShowId)
 import           DSLsofMath.Algebra        (AddGroup, Additive, MulGroup,
                                             Multiplicative)
 import qualified DSLsofMath.Algebra        as A
@@ -782,11 +781,6 @@ joinBlocks (tl,tr,bl,br) =
           numLoop 1 mr $ \j -> wr (en (i',j+m)) $ br ! (i,j)
         return v
 
-{-# RULES
-"matrix/splitAndJoin"
-   forall i j m. joinBlocks (splitBlocks i j m) = m
-  #-}
-
 -- | Horizontally join two matrices. Visually:
 --
 -- > ( A ) <|> ( B ) = ( A | B )
@@ -1373,14 +1367,6 @@ cholDecomp a
 -------------------------------------------------------
 ---- PROPERTIES
 
-{-# RULES
-"matrix/traceOfSum"
-    forall a b. trace (a + b) = trace a + trace b
-
-"matrix/traceOfScale"
-    forall k a. trace (scaleMatrix k a) = k * trace a
-  #-}
-
 -- | Sum of the elements in the diagonal. See also 'getDiag'.
 --   Example:
 --
@@ -1400,14 +1386,6 @@ diagProd :: Multiplicative a => Matrix a -> a
 diagProd = vProduct . getDiag
 
 -- DETERMINANT
-
-{-# RULES
-"matrix/detLaplaceProduct"
-    forall a b. detLaplace (a*b) = detLaplace a * detLaplace b
-
-"matrix/detLUProduct"
-    forall a b. detLU (a A.* b) = detLU a A.* detLU b
-  #-}
 
 -- | Matrix determinant using Laplace expansion.
 --   If the elements of the 'Matrix' are instance of 'Ord' and 'Fractional'

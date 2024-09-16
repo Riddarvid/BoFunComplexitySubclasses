@@ -9,15 +9,16 @@ module Poly.Utils (
 ) where
 import           Algebraic          (fromPWAlgebraic, toAlgebraic)
 import           Data.Either        (isLeft)
+import           Debug.Trace        (trace, traceShow, traceShowId)
 import           DSLsofMath.Algebra (AddGroup, Additive (zero), MulGroup,
                                      Multiplicative)
 import           DSLsofMath.PSDS    (Poly (P), derP, evalP)
 import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly, Separation,
-                                     linearizePW)
+                                     linearizePW, showPWAny)
 import qualified Poly.PiecewisePoly as PW
 
-countMaxima :: (Real a) => PiecewisePoly a -> Int
-countMaxima pw = countMaxima' $ linearizePW (fmap realToFrac pw :: PiecewisePoly Double)
+countMaxima :: (Real a, AddGroup a, MulGroup a, Show a) => PiecewisePoly a -> Int
+countMaxima pw = trace (showPWAny pw) $ countMaxima' $ linearizePW (fmap realToFrac pw :: PiecewisePoly Double)
 
 countMaxima' :: (RealFloat a, AddGroup a, Multiplicative a) => [Either (Poly a) (Separation a)] -> Int
 countMaxima' (Right _ : xs) = countMaxima' xs
@@ -28,6 +29,7 @@ countMaxima' (Left p1 : Right s : Left p2 : xs)
     rest = countMaxima' (Left p2 : xs)
 countMaxima' _ = 0
 
+-- TODO maybe better naming of variables?
 -- The problem right now is finding the correct root.
 -- Another problem is that the root should be a real number but currently
 -- we're casting it to a rational number, which of course changes the value.
