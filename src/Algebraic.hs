@@ -6,10 +6,12 @@ module Algebraic (
 ) where
 import           Data.Foldable      (find)
 import           Data.Maybe         (fromJust)
+import           Data.Ratio         ((%))
+import           Debug.Trace        (traceShow)
 import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
                                      MulGroup ((/)), Multiplicative (..),
                                      product, (-), (^+))
-import           DSLsofMath.PSDS    (Poly (P), evalP, xP, yun)
+import           DSLsofMath.PSDS    (Poly (P), evalP, toMonic, xP, yun)
 import           MatrixBridge       (Matrix (nrows), elementwise, flatten,
                                      fromLists, identity, toLists)
 import           Poly.PolyCmp       (numRoots)
@@ -34,7 +36,7 @@ instance Additive Algebraic where
   zero :: Algebraic
   zero = toAlgebraic (zero :: Int)
   (+) :: Algebraic -> Algebraic -> Algebraic
-  (+) = undefined
+  (+) = addAlgebraic
 
 instance AddGroup Algebraic where
   negate :: Algebraic -> Algebraic
@@ -64,20 +66,12 @@ instance Ord Algebraic where
     | low > zero = GT
     | high < zero = LT
     | evalP c zero == zero = EQ
-    | otherwise = case numRoots c' of
+    | otherwise = case numRootsInInterval c (zero, high) of
       0 -> LT
       1 -> GT
       _ -> error "Should only be able to have 0 or 1 roots"
     where
       Algebraic c (low, high) = a - b
-      c' = transCoeff c high
-
--- Transforms a polynomial p(x) to p(x/factor).
-transCoeff :: (MulGroup a) =>Poly a -> a -> Poly a
-transCoeff (P coeffs) factor = P $ go one coeffs
-  where
-    go _ []                    = []
-    go factorAcc (coeff : coeffs') = (coeff / factorAcc) : go (factorAcc * factor) coeffs'
 
 -- TODO add QuickCheck properties to test the implementation
 
@@ -91,27 +85,25 @@ mulAlgebraic a@(Algebraic pa _) b@(Algebraic pb _) = Algebraic ab' intAB
     ab' = removeDoubleRoots ab
     intAB = intervalMul a b ab'
 
+addAlgebraic :: Algebraic -> Algebraic -> Algebraic
+addAlgebraic a@(Algebraic pa _) b@(Algebraic pb _) = Algebraic aPlusB' intAB
+  where
+    aM = toCharacteristicMatrix pa
+    bM = toCharacteristicMatrix pb
+    n = nrows aM
+    aiM = outerProduct aM (identity n)
+    ibM = outerProduct (identity n) bM
+    aPlusBM = aiM ^+^ ibM
+    aPlusB = toCharacteristicPoly aPlusBM
+    aPlusB' = removeDoubleRoots aPlusB
+    intAB = intervalAdd a b aPlusB'
+
 -- Uses the companion matrix
 toCharacteristicMatrix :: (AddGroup a, Eq a, MulGroup a) => Poly a -> Matrix a
 toCharacteristicMatrix p = fromLists $ zipWith (createRow (n - 1)) [-1 ..] $ init coeffs'
   where
     (P coeffs') = toMonic p
     n = length coeffs'
-
-toMonic :: (Eq a, Additive a, MulGroup a) => Poly a -> Poly a
-toMonic (P coeffs)
-  | lastCoeff == one = P coeffs
-  | otherwise = P $ map (/ lastCoeff) coeffs
-  where
-    lastCoeff = last $ dropZeroes coeffs
-
-dropZeroes :: (Eq a, Additive a) => [a] -> [a]
-dropZeroes [] = []
-dropZeroes (n : ns)
-  | n == zero = case dropZeroes ns of
-    []  -> []
-    ns' -> n : ns'
-  | otherwise = n : dropZeroes ns
 
 createRow :: (AddGroup a, Multiplicative a) => Int -> Int -> a -> [a]
 createRow n (-1) c = replicate (n - 1) zero ++ [negate c]
@@ -136,6 +128,9 @@ toCharacteristicPoly m = myUDet $ MyMatrix $ toLists mSubLambdaI
 
 (^-^) :: (AddGroup a) => Matrix a -> Matrix a -> Matrix a
 a ^-^ b = elementwise (-) a b
+
+(^+^) :: (AddGroup a) => Matrix a -> Matrix a -> Matrix a
+a ^+^ b = elementwise (+) a b
 
 newtype MyMatrix a = MyMatrix [[a]]
 
@@ -250,6 +245,15 @@ intervalMul' a@(Algebraic _ intA) b@(Algebraic _ intB) pab =
   where
     intAB = boundInt intA intB
 
+intervalAdd :: Algebraic -> Algebraic -> Poly Rational -> (Rational, Rational)
+intervalAdd a@(Algebraic _ (lowA, highA)) b@(Algebraic _ (lowB, highB)) pab =
+  case numRootsInInterval pab intAPlusB of
+    0 -> error "Should have at least one root"
+    1 -> intAPlusB
+    _ -> intervalAdd (shrinkInterval a) (shrinkInterval b) pab
+  where
+    intAPlusB = (lowA + lowB, highA + highB)
+
 boundInt :: (Multiplicative a, Additive a, Ord a) => (a, a) -> (a, a) -> (a, a)
 boundInt intA@(lowA, highA) intB@(lowB, highB) = case sa of
   Neg -> case sb of
@@ -281,3 +285,9 @@ numRootsInInterval p (low, high) = numRoots p''
     p'' = evalP p' (P [low, diff])
 
 -- TODO: QuickCheck properties for LUDecomp
+
+shrinkTest :: Algebraic
+shrinkTest = a + b
+  where
+    a = Algebraic (P [6, - 5, 1]) (21 % 10, 1000)
+    b = Algebraic (P [8, -6, 1]) (1, 39 % 10)
