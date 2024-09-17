@@ -1,24 +1,61 @@
 {-# LANGUAGE InstanceSigs #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant guard" #-}
 module Algebraic (
   Algebraic(Algebraic),
   fromPWAlgebraic,
   toAlgebraic
 ) where
-import           Data.Foldable      (find)
-import           Data.Maybe         (fromJust)
-import           Data.Ratio         ((%))
-import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
-                                     MulGroup ((/)), Multiplicative (..),
-                                     product, (-), (^+))
-import           DSLsofMath.PSDS    (Poly (P), evalP, toMonic, xP, yun)
-import           MatrixBridge       (Matrix (nrows), elementwise, flatten,
-                                     fromLists, identity, toLists)
-import           Poly.PolyCmp       (numRoots)
-import           Prelude            hiding (negate, product, (*), (+), (-), (/))
-import           Test.QuickCheck    (Property, (===))
+import           Control.Monad             (replicateM)
+import           Data.Foldable             (find)
+import           Data.List                 (nub, sort)
+import           Data.Maybe                (fromJust)
+import           Data.Ratio                ((%))
+import           Debug.Trace               (trace, traceShow, traceShowId)
+import           DSLsofMath.Algebra        (AddGroup (..), Additive (..),
+                                            MulGroup ((/)), Multiplicative (..),
+                                            product, sum, (-), (^+))
+import           DSLsofMath.PSDS           (Poly (P), evalP, normalPoly,
+                                            toMonic, xP, yun)
+import           MatrixBridge              (Matrix (nrows), elementwise,
+                                            flatten, fromLists, identity,
+                                            toLists)
+import           Poly.PolyCmp              (numRootsInclusive)
+import           Prelude                   hiding (negate, product, sum, (*),
+                                            (+), (-), (/))
+import           Test.QuickCheck           (Arbitrary (arbitrary), Gen,
+                                            Property, choose, chooseInt, within,
+                                            (===))
+import           Test.QuickCheck.Arbitrary (Arbitrary (shrink))
 
 data Algebraic = Algebraic (Poly Rational) (Rational, Rational)
   deriving (Show)
+
+instance Arbitrary Algebraic where
+  arbitrary :: Gen Algebraic
+  arbitrary = do
+    n <- chooseInt (1, 2)
+    (polys, roots) <- unzip <$> replicateM n genRootPoly
+    let poly = removeDoubleRoots $ product polys
+    int <- chooseInterval $ nub $ sort roots
+    return $ Algebraic poly int
+
+-- roots must be sorted and nubbed
+chooseInterval :: [Rational] -> Gen (Rational, Rational)
+chooseInterval roots = do
+  i <- chooseInt (0, length roots - 1)
+  let root = roots !! i
+  let leftRoot = if i == 0 then root - 100 else roots !! (i - 1)
+  let rightRoot = if i == length roots - 1 then root + 100 else roots !! (i + 1)
+  let low = leftRoot + (root - leftRoot) * (1 % 10)
+  let high = rightRoot - (rightRoot - root) * (1 % 10)
+  return (low, high)
+
+genRootPoly :: (Arbitrary a, AddGroup a, Multiplicative a) => Gen (Poly a, a)
+genRootPoly = do
+  n <- arbitrary
+  return (P [negate n, one], n)
+
 
 fromPWAlgebraic :: (Real a) => (Poly a, (a, a)) -> Algebraic
 fromPWAlgebraic (p, (low, high)) = Algebraic (fmap toRational p) (toRational low, toRational high)
@@ -62,8 +99,8 @@ instance Eq Algebraic where
 instance Ord Algebraic where
   compare :: Algebraic -> Algebraic -> Ordering
   compare a b
-    | low > zero = GT
-    | high < zero = LT
+    | trace ("comp\n" ++ show a ++ "\n" ++ show b) $ low > zero = GT
+    | trace "second" $ high < zero = LT
     | evalP c zero == zero = EQ
     | otherwise = case numRootsInInterval c (zero, high) of
       0 -> LT
@@ -77,18 +114,22 @@ instance Ord Algebraic where
 mulAlgebraic :: Algebraic -> Algebraic -> Algebraic
 mulAlgebraic a@(Algebraic pa _) b@(Algebraic pb _) = Algebraic ab' intAB
   where
-    aMatrix = toCharacteristicMatrix pa
-    bMatrix = toCharacteristicMatrix pb
+    aMatrix = toCharacteristicMatrix $ toMonic pa
+    bMatrix = toCharacteristicMatrix $ toMonic pb
     abMatrix = outerProduct aMatrix bMatrix
     ab = toCharacteristicPoly abMatrix
     ab' = removeDoubleRoots ab
     intAB = intervalMul a b ab'
 
 addAlgebraic :: Algebraic -> Algebraic -> Algebraic
-addAlgebraic a@(Algebraic pa _) b@(Algebraic pb _) = Algebraic aPlusB' intAB
+addAlgebraic a@(Algebraic pa _) b@(Algebraic pb _)
+  | trace ("add\n" ++ show a ++ "\n" ++ show b) False = undefined
+  -- | pb == zero = undefined -- Sanity check
+  | otherwise = Algebraic aPlusB' intAB
   where
-    aM = toCharacteristicMatrix pa
-    bM = toCharacteristicMatrix pb
+    (pa', pb') = rootPad pa pb
+    aM = toCharacteristicMatrix $ toMonic pa'
+    bM = toCharacteristicMatrix $ toMonic pb'
     n = nrows aM
     aiM = outerProduct aM (identity n)
     ibM = outerProduct (identity n) bM
@@ -97,12 +138,23 @@ addAlgebraic a@(Algebraic pa _) b@(Algebraic pb _) = Algebraic aPlusB' intAB
     aPlusB' = removeDoubleRoots aPlusB
     intAB = intervalAdd a b aPlusB'
 
--- Uses the companion matrix
-toCharacteristicMatrix :: (AddGroup a, Eq a, MulGroup a) => Poly a -> Matrix a
-toCharacteristicMatrix p = fromLists $ zipWith (createRow (n - 1)) [-1 ..] $ init coeffs'
+rootPad :: (Eq a, Additive a, Show a) => Poly a -> Poly a -> (Poly a, Poly a)
+rootPad pa pb = {-traceShow (pa, pb) $ traceShowId $-} case compare lenA lenB of
+  EQ -> (pa', pb')
+  LT -> (P (replicate (lenB - lenA) zero ++ coeffsA), pb')
+  GT -> (pa', P (replicate (lenA - lenB) zero ++ coeffsB))
   where
-    (P coeffs') = toMonic p
-    n = length coeffs'
+    pa'@(P coeffsA) = normalPoly pa
+    pb'@(P coeffsB) = normalPoly pb
+    lenA = length coeffsA
+    lenB = length coeffsB
+
+-- Uses the companion matrix
+-- The input polynomial must be monic
+toCharacteristicMatrix :: (AddGroup a, MulGroup a) => Poly a -> Matrix a
+toCharacteristicMatrix (P coeffs) = fromLists $ zipWith (createRow (n - 1)) [-1 ..] $ init coeffs
+  where
+    n = length coeffs
 
 createRow :: (AddGroup a, Multiplicative a) => Int -> Int -> a -> [a]
 createRow n (-1) c = replicate (n - 1) zero ++ [negate c]
@@ -158,13 +210,14 @@ myUDecomp m@(MyMatrix rows) = myUDecomp' m 0 (length rows) one one
 -- as well as the purpose of moving multiplications to a separate variable
 myUDecomp' :: (AddGroup a, Eq a, Multiplicative a, Show a) => MyMatrix a -> Int -> Int -> a -> a -> Maybe (MyMatrix a, a, a)
 myUDecomp' u@(MyMatrix rows) i ncols f s
+  | traceShow (i, ncols, f) False = undefined
   | i >= ncols = Just (u, f, s)
   | otherwise = do
       pivotIndex <- fmap fst $ find (\(_, row) -> row !! i /= zero) $ drop i $ zip [0 ..] rows
       let s' = if pivotIndex == i then s else negate s
       let u'@(MyMatrix rows') = swapRows u i pivotIndex
       let pivotElement = (rows' !! i) !! i -- Could be done in an earlier step
-      let f' = f * (pivotElement ^+ (ncols - i - 1))
+      let f' = f * (pivotElement ^+ (ncols - i - 1)) -- This step seems to be what's slowing down the entire computation. It involves raising polynomials to potentially very large powers.
       let u'' = eliminiateSubRows u' i pivotElement
       myUDecomp' u'' (i + 1) ncols f' s'
 
@@ -209,12 +262,17 @@ removeDoubleRoots p = product polys
 -- Shrink the interval by dividing it into two pieces and checking which
 -- one has a root.
 shrinkInterval :: Algebraic -> Algebraic
-shrinkInterval (Algebraic p (low, high)) = case numRootsInInterval p (low, mid) of
+shrinkInterval (Algebraic p (low, high))
+  | nRoots > 1 || nRoots < 0 = error "Interval has too many roots"
+  |otherwise = case numRootsInInterval p (low, mid) of
   0 -> Algebraic p (mid, high)
   1 -> Algebraic p (low, mid)
   _ -> error "Original interval should contain exactly one root"
   where
     mid = (low + high) / 2
+    rootsLeft = numRootsInInterval p (low, mid)
+    rootsRight = numRootsInInterval p (mid, high)
+    nRoots = rootsLeft + rootsRight
 
 -- Calculate the new interval after having performed a multiplication.
 -- This is done by first calculating a bounding interval which is guaranteed
@@ -245,7 +303,9 @@ intervalMul' a@(Algebraic _ intA) b@(Algebraic _ intB) pab =
     intAB = boundInt intA intB
 
 intervalAdd :: Algebraic -> Algebraic -> Poly Rational -> (Rational, Rational)
-intervalAdd a@(Algebraic _ (lowA, highA)) b@(Algebraic _ (lowB, highB)) pab =
+intervalAdd a@(Algebraic _ (lowA, highA)) b@(Algebraic _ (lowB, highB)) pab
+  -- | traceShow (pab, intAPlusB, a, b) False = undefined
+  | otherwise =
   case numRootsInInterval pab intAPlusB of
     0 -> error "Should have at least one root"
     1 -> intAPlusB
@@ -281,8 +341,9 @@ numRootsInInterval p (low, high)
   -- If the interval is a single point, then we can't scale it up to the range [0,1].
   -- Instead, we simply check the value of the polynomial in that point, and if
   -- the result is zero, then by definition it has a root there, otherwise it has no roots.
+  -- | traceShow p'' False = undefined
   | diff == zero = if evalP p low == zero then 1 else 0
-  | otherwise = numRoots p''
+  | otherwise = numRootsInclusive p''
   where
     diff = high - low
     p' = fmap (\c -> P [c]) p
@@ -301,9 +362,20 @@ shrinkTest = a + b
 sumOfRationalsProp :: Rational -> Rational -> Property
 sumOfRationalsProp a b = toAlgebraic a + toAlgebraic b === toAlgebraic (a + b)
 
+sum2prop :: [Rational] -> Property
+sum2prop xs = sum (map toAlgebraic xs) === toAlgebraic (sum xs)
+
 productOfRationalsProp :: Rational -> Rational -> Property
 productOfRationalsProp a b = toAlgebraic a * toAlgebraic b === toAlgebraic (a * b)
 
--- TODO
 addCommProp :: Algebraic -> Algebraic -> Property
-addCommProp a b = undefined
+addCommProp a b = within 5000000 $ a + b === b + a
+
+mulCommProp :: Algebraic -> Algebraic -> Property
+mulCommProp a b = a * b === b * a
+
+negateProp :: Algebraic -> Property
+negateProp a = a - a === zero
+
+assocProp :: Algebraic -> Algebraic -> Algebraic -> Property
+assocProp a b c = a + (b + c) === (a + b) + c

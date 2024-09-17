@@ -20,6 +20,7 @@ import DSLsofMath.Algebra (Additive((+),zero), AddGroup(negate), (-),
                            Algebraic(sqrt),
                            Transcendental(pi,sin,cos,exp),
                            ifThenElse)
+import Debug.Trace (traceShow)
 \end{code}
 
 Chapter 6. Taylor and Maclaurin series
@@ -45,7 +46,7 @@ evalP (P cs) = evalL cs
 
 evalL :: Ring a => [a] -> (a -> a)
 evalL []      = zero
-evalL (a:as)  = evalCons a (evalL as)
+evalL (a:as)  = {-traceShow (length as)-} evalCons a (evalL as)
 
 evalCons :: Ring a => a -> (a -> a) -> (a -> a)
 evalCons a0 p = \x -> a0 + x * p x

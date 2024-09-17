@@ -173,6 +173,13 @@ squareFree p = degree g <= 0
   -- check g = gcd p (derP p): if 1 then squareFree, else roots of g
   -- are multiple roots of p and they can be handled separately
 
+-- Like numRoots but in [0, 1]
+numRootsInclusive :: OrdField a => Poly a -> Int
+numRootsInclusive p = numRoots p + zeroRoot + oneRoot
+  where
+    zeroRoot = if evalP p zero == zero then 1 else 0
+    oneRoot = if evalP p one == zero then 1 else 0
+
 -- numRoots computes the number of roots in the interval (0,1)
 numRoots :: OrdField a => Poly a -> Int
 numRoots = sum . numRoots'

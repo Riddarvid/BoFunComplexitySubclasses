@@ -18,9 +18,9 @@ import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly, Separation,
 import qualified Poly.PiecewisePoly as PW
 
 countMaxima :: (Real a, AddGroup a, MulGroup a, Show a) => PiecewisePoly a -> Int
-countMaxima pw = trace (showPWAny pw) $ countMaxima' $ linearizePW (fmap realToFrac pw :: PiecewisePoly Double)
+countMaxima pw = countMaxima' $ linearizePW (fmap realToFrac pw :: PiecewisePoly Double)
 
-countMaxima' :: (RealFloat a, AddGroup a, Multiplicative a) => [Either (Poly a) (Separation a)] -> Int
+countMaxima' :: (RealFloat a, AddGroup a, Multiplicative a, Show a) => [Either (Poly a) (Separation a)] -> Int
 countMaxima' (Right _ : xs) = countMaxima' xs
 countMaxima' (Left p1 : Right s : Left p2 : xs)
   | hasMaximum p1 p2 s = 1 + rest
@@ -34,8 +34,8 @@ countMaxima' _ = 0
 -- Another problem is that the root should be a real number but currently
 -- we're casting it to a rational number, which of course changes the value.
 -- Really, we should make the function work with real numbers instead.
-hasMaximum :: (Real a, AddGroup a, Multiplicative a) => Poly a -> Poly a -> Separation a -> Bool
-hasMaximum p1 p2 s = case s of
+hasMaximum :: (Real a, AddGroup a, Multiplicative a, Show a) => Poly a -> Poly a -> Separation a -> Bool
+hasMaximum p1 p2 s = {-trace ("Examining:\n" ++ show p1 ++ "\nand\n" ++ show p2 ++ "\nseparated by\n" ++ show s)-} case s of
   PW.Dyadic x    -> evalP p1' x > zero && evalP p2' x < zero
   PW.Algebraic x -> let
     x' = fromPWAlgebraic x
