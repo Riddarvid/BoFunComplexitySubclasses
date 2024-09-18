@@ -23,7 +23,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Report/Things to put in the paper.md",
+                "file": "Admin/Svar från senaste mötet.md",
                 "mode": "source",
                 "source": false
               }
@@ -42,7 +42,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -108,7 +108,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Report/Things to put in the paper.md",
+                "file": "Admin/TODO för veckan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -125,7 +125,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Report/Things to put in the paper.md",
+                "file": "Admin/TODO för veckan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +148,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Report/Things to put in the paper.md"
+                "file": "Admin/TODO för veckan.md"
               }
             }
           }
@@ -169,26 +169,26 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "3b9be7b7c2c9dd35",
+  "active": "2ab3e76148d1f1fb",
   "lastOpenFiles": [
-    "Report",
     "Admin/Svar från senaste mötet.md",
+    "Admin/TODO för veckan.md",
+    "Admin/Frågor till nästa möte.md",
+    "Admin/TODO generell.md",
+    "Report/Things to put in the paper.md",
+    "Report",
     "Other",
     "Other/Förklaring av arbetet.md",
     "Readme.md",
-    "Admin/TODO generell.md",
     "Exploration of classes",
     "Algebraic numbers",
-    "Admin/TODO för veckan.md",
     "TODO Arvid.md",
     "Admin",
-    "Admin/Frågor till nästa möte.md",
     "Images/Pasted image 20240905093302.png",
     "Images/Pasted image 20240906154104.png",
     "Images",
     "Algebraic numbers/Algebraiska tal.md",
     "Exploration of classes/Analysis of classes.md",
-    "Report/Things to put in the paper.md",
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Exploration of classes/Observation about PPs.md",
     "Other/List of Known Bugs.md",
