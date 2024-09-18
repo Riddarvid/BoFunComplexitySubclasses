@@ -1,5 +1,7 @@
 {-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveFunctor  #-}
+{-# LANGUAGE DeriveGeneric  #-}
 module Poly.PolynomialExtra where
 
 import           Control.Arrow      (second, (***), (>>>))
@@ -16,6 +18,8 @@ import           DSLsofMath.Algebra (AddGroup (negate), Additive (..),
 import           DSLsofMath.PSDS    (Poly (..), comP, gcdP, normalPoly, scaleL,
                                      scaleP, xP, yun)
 
+import           Control.DeepSeq    (NFData)
+import           GHC.Generics       (Generic)
 import           Utils              (Group (..), boolToMaybe, fromJustMonoid)
 
 
@@ -123,7 +127,7 @@ squarefreeRoot' basepoint = descartesUnitInterval' basepoint >>> fromJust >>> od
 data AffinePoly a = AffinePoly
   a  -- scale factor
   a  -- offset
-  deriving (Eq, Ord, Show, Read, Functor)
+  deriving (Eq, Ord, Show, Read, Functor, Generic, NFData)
 
 affinePoly :: AffinePoly a -> Poly a
 affinePoly (AffinePoly scale offset) = P [offset, scale]

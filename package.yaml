@@ -33,6 +33,7 @@ dependencies:
   - loop >= 0.3.0
   - deepseq >= 1.4.8.0
   - QuickCheck >= 2.14.3
+  - criterion >= 1.6.1.0
 
 ghc-options:
   - -Wall

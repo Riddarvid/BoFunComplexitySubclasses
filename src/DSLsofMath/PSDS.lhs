@@ -4,6 +4,8 @@
 -- {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module DSLsofMath.PSDS where
 import Prelude (Int, Double,
                 Show, String, 
@@ -21,6 +23,8 @@ import DSLsofMath.Algebra (Additive((+),zero), AddGroup(negate), (-),
                            Transcendental(pi,sin,cos,exp),
                            ifThenElse)
 import Debug.Trace (traceShow)
+import Control.DeepSeq (NFData)
+import GHC.Generics (Generic)
 \end{code}
 
 Chapter 6. Taylor and Maclaurin series
@@ -34,6 +38,7 @@ Yet another type for representing functions.
 2a. Types + eval
 \begin{code}
 newtype Poly a = P {unP :: [a]}
+  deriving (Generic, NFData)
 
 instance Show a => Show (Poly a) where show = showP
 

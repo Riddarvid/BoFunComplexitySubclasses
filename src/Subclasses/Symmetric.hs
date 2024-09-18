@@ -1,7 +1,7 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-module Subclasses.Symmetric (main) where
+module Subclasses.Symmetric (main, symmMaj) where
 
 import           Algorithm.GenAlgPW    (computeMin)
 import           BoFun                 (BoFun (..))
@@ -19,7 +19,9 @@ instance BoFun Symmetric () where
     | all not xs = Just False
     | otherwise = Nothing
   variables :: Symmetric -> [()]
-  variables (Symmetric xs) = replicate (length xs - 1) ()
+  variables (Symmetric xs)
+    | length xs <= 1 = []
+    | otherwise = [()]
   setBit :: ((), Bool) -> Symmetric -> Symmetric
   setBit (_, v) (Symmetric xs)
     | v = Symmetric $ tail xs
@@ -28,6 +30,12 @@ instance BoFun Symmetric () where
 $(deriveMemoizable ''Symmetric)
 
 -- Examples
+
+-- Only defined for positive, odd values of n.
+symmMaj :: Int -> Symmetric
+symmMaj n = mkSymmetric n (>= threshold)
+  where
+    threshold = (n `div` 2) + 1
 
 -- eval must be defined for [0 .. nBits]
 mkSymmetric :: Int -> (Int -> Bool) -> Symmetric

@@ -1,5 +1,7 @@
 {-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
+{-# LANGUAGE DeriveAnyClass         #-}
 {-# LANGUAGE DeriveFunctor          #-}
+{-# LANGUAGE DeriveGeneric          #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE InstanceSigs           #-}
@@ -22,6 +24,8 @@ import           DSLsofMath.Algebra
 import           DSLsofMath.PSDS      (Poly (unP), comP, degree, evalP)
 
 import           Algorithm.Algor      (DecTree)
+import           Control.DeepSeq      (NFData)
+import           GHC.Generics         (Generic)
 import           Poly.PolynomialExtra
 import           Utils
 
@@ -33,7 +37,7 @@ import           Utils
 data ZoomData a = ZoomData {
   zoomLevel      :: Int,               -- ^ TODO: decide if we want that here
   zoomAffinePoly :: AffinePoly a  -- ^ affine transformation
-} deriving (Eq, Ord, Show, Read, Functor)
+} deriving (Eq, Ord, Show, Read, Functor, Generic, NFData)
 
 instance (Ring a) => Semigroup (ZoomData a) where
   ZoomData l0 a0 <> ZoomData l1 a1 = ZoomData (l0 + l1) (a0 <> a1)
@@ -82,7 +86,7 @@ data Zoomed a x = Zoomed
   { original :: x           -- ^ the data at original scale
   , zoomData :: ZoomData a  -- ^ the zoom
   , zoomed   :: x             -- ^ the zoomed data
-  } deriving (Show, Read)
+  } deriving (Show, Read, Generic, NFData)
 
 instance Functor (Zoomed a) where
   fmap f (Zoomed original z zoomed) = Zoomed (f original) z (f zoomed)
@@ -215,7 +219,7 @@ data PiecewisePoly a =
     PWPoly (ZoomedPoly a)
   | PWIntersect (Intersect a)
   | PWBisect (Square (PiecewisePoly a))
-  deriving (Show)
+  deriving (Show, Generic, NFData)
 
 instance Functor PiecewisePoly where fmap = fmapPW
 

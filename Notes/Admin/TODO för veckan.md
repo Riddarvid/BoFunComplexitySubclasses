@@ -6,3 +6,4 @@
 - Analysera threshold/iterated threshold och uppdatera tabellen
 	- Använd Patriks FEAT-bibliotek för detta
 - Undersök klassen <= k ettor
+- Iterated symmetric?

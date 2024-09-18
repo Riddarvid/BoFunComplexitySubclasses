@@ -42,7 +42,10 @@ library
       Poly.PolyInstances
       Poly.PolynomialExtra
       Poly.Utils
+      Subclasses.Comparisons
       Subclasses.Even
+      Subclasses.GeneralBDD
+      Subclasses.IdConst
       Subclasses.Monotone
       Subclasses.One
       Subclasses.Symmetric
@@ -60,6 +63,7 @@ library
       QuickCheck >=2.14.3
     , base >=4.13 && <4.19
     , containers >=0.6.7
+    , criterion >=1.6.1.0
     , decision-diagrams >=0.2.0.0
     , deepseq >=1.4.8.0
     , dsp >=0.2.5.2
@@ -86,6 +90,7 @@ executable exploring-level-p-exe
       QuickCheck >=2.14.3
     , base >=4.13 && <4.19
     , containers >=0.6.7
+    , criterion >=1.6.1.0
     , decision-diagrams >=0.2.0.0
     , deepseq >=1.4.8.0
     , dsp >=0.2.5.2
@@ -114,6 +119,7 @@ test-suite exploring-level-p-test
       QuickCheck >=2.14.3
     , base >=4.13 && <4.19
     , containers >=0.6.7
+    , criterion >=1.6.1.0
     , decision-diagrams >=0.2.0.0
     , deepseq >=1.4.8.0
     , dsp >=0.2.5.2

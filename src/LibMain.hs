@@ -1,17 +1,31 @@
+{-# LANGUAGE FlexibleContexts #-}
 module LibMain (main, waysToChooseSubFunctions) where
-import           Algebraic          (Algebraic (Algebraic), toAlgebraic)
-import           Algorithm.GenAlg   (genAllBoths)
-import           Data.Ratio         ((%))
-import           DSLsofMath.Algebra (AddGroup, Additive ((+)), MulGroup, (*))
-import           DSLsofMath.PSDS    (Poly (P))
-import           Filters            (degreePred, maximaPred)
-import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils         (countMaxima, minDegree)
-import           Prelude            hiding ((*), (+))
+import           Algebraic                (Algebraic (Algebraic))
+import           Algorithm.GenAlg         (genAllBoths)
+import           BDD                      (BDDFun)
+import           Data.DecisionDiagram.BDD (AscOrder)
+import           Data.Ratio               ((%))
+import           DSLsofMath.Algebra       (AddGroup, Additive ((+)), MulGroup,
+                                           (*))
+import           DSLsofMath.PSDS          (Poly (P))
+import           Filters                  (degreePred, maximaPred)
+import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly)
+import           Poly.Utils               (minDegree)
+import           Prelude                  hiding ((*), (+))
+import           Subclasses.Comparisons   (benchBoFun, complexityBench)
+import           Subclasses.GeneralBDD    (majBDD)
+import           Subclasses.IdConst       ()
+import           Subclasses.Symmetric     (symmMaj)
+import           Threshold                (ThresholdFun, thresholdFunReplicate,
+                                           thresholdMaj)
 
 main :: IO ()
-main = print test --mapM_ (print . (\(BothPW pw _) -> countMaxima pw)) (genAllBoths 3 :: [BothPW Rational])
-  -- print $ countMaxima $ (\(BothPW pw _) -> pw) ((genAllBoths 4 :: [BothPW Rational]) !! 6)
+main = benchBoFun "maj9"
+  [
+    complexityBench "symmetric maj9" (symmMaj 9),
+    complexityBench "threshold maj9" (thresholdFunReplicate (thresholdMaj 9) Nothing :: ThresholdFun (Maybe Bool)),
+    complexityBench "generic maj9" (majBDD 9 :: BDDFun AscOrder)
+  ]
 
 findSimplest :: (AddGroup a, MulGroup a, Real a, Show a) => [BothPW a]
 findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
