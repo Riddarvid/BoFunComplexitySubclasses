@@ -4,7 +4,10 @@
 module Algebraic (
   Algebraic(Algebraic),
   fromPWAlgebraic,
-  toAlgebraic
+  toAlgebraic,
+  toCharacteristicPoly,
+  testMtoPoly,
+  MyMatrix(MyMatrix)
 ) where
 import           Control.Monad             (replicateM)
 import           Data.Foldable             (find)
@@ -17,7 +20,7 @@ import           DSLsofMath.Algebra        (AddGroup (..), Additive (..),
                                             product, sum, (-), (^+))
 import           DSLsofMath.PSDS           (Poly (P), evalP, normalPoly,
                                             toMonic, xP, yun)
-import           MatrixBridge              (Matrix (nrows), elementwise,
+import           MatrixBridge              (Matrix (ncols, nrows), elementwise,
                                             flatten, fromLists, identity,
                                             toLists)
 import           Poly.PolyCmp              (numRootsInclusive)
@@ -192,7 +195,12 @@ instance (Show a) => Show (MyMatrix a) where
 myUDet :: (MulGroup a, AddGroup a, Eq a, Show a) => MyMatrix a -> a
 myUDet m = case myUDecomp m of
   Nothing        -> zero
-  Just (u, f, s) -> (s * myDiagProd u) / f
+  Just (u, f, s) -> divideList (s * myDiagProd u) f
+
+divideList :: MulGroup a => a -> [(a, Int)] -> a
+divideList n []            = n
+divideList n ((_, 0) : fs) = divideList n fs
+divideList n ((f, p) : fs) = divideList (n / f) ((f, p - 1) : fs)
 
 myDiagProd :: Multiplicative a => MyMatrix a -> a
 myDiagProd (MyMatrix rows) = go 0
@@ -203,21 +211,21 @@ myDiagProd (MyMatrix rows) = go 0
       | otherwise = (rows !! i !! i) * go (i + 1)
 
 
-myUDecomp :: (Multiplicative a, AddGroup a, Eq a, Show a) => MyMatrix a -> Maybe (MyMatrix a, a, a)
-myUDecomp m@(MyMatrix rows) = myUDecomp' m 0 (length rows) one one
+myUDecomp :: (Multiplicative a, AddGroup a, Eq a, Show a) => MyMatrix a -> Maybe (MyMatrix a, [(a, Int)], a)
+myUDecomp m@(MyMatrix rows) = myUDecomp' m 0 (length rows) [] one
 
 -- TODO add comments describing the steps
 -- as well as the purpose of moving multiplications to a separate variable
-myUDecomp' :: (AddGroup a, Eq a, Multiplicative a, Show a) => MyMatrix a -> Int -> Int -> a -> a -> Maybe (MyMatrix a, a, a)
+myUDecomp' :: (AddGroup a, Eq a, Multiplicative a, Show a) => MyMatrix a -> Int -> Int -> [(a, Int)] -> a -> Maybe (MyMatrix a, [(a, Int)], a)
 myUDecomp' u@(MyMatrix rows) i ncols f s
-  | traceShow (i, ncols, f) False = undefined
+  | traceShow (i, ncols) False = undefined
   | i >= ncols = Just (u, f, s)
   | otherwise = do
       pivotIndex <- fmap fst $ find (\(_, row) -> row !! i /= zero) $ drop i $ zip [0 ..] rows
       let s' = if pivotIndex == i then s else negate s
       let u'@(MyMatrix rows') = swapRows u i pivotIndex
       let pivotElement = (rows' !! i) !! i -- Could be done in an earlier step
-      let f' = f * (pivotElement ^+ (ncols - i - 1)) -- This step seems to be what's slowing down the entire computation. It involves raising polynomials to potentially very large powers.
+      let f' = (pivotElement, ncols - i - 1) : f -- This step seems to be what's slowing down the entire computation. It involves raising polynomials to potentially very large powers.
       let u'' = eliminiateSubRows u' i pivotElement
       myUDecomp' u'' (i + 1) ncols f' s'
 
@@ -379,3 +387,11 @@ negateProp a = a - a === zero
 
 assocProp :: Algebraic -> Algebraic -> Algebraic -> Property
 assocProp a b c = a + (b + c) === (a + b) + c
+
+testMtoPoly :: (Eq a, Show a, AddGroup a, Multiplicative a) => Matrix a -> Maybe (MyMatrix (Poly a), [(Poly a, Int)], Poly a)
+testMtoPoly m = myUDecomp $ MyMatrix $ toLists mSubLambdaI
+  where
+    n = nrows m
+    m' = fmap (\c -> P [c]) m
+    lambdaI = scaleMatrix (identity n) xP
+    mSubLambdaI = m' ^-^ lambdaI

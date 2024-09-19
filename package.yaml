@@ -34,6 +34,7 @@ dependencies:
   - deepseq >= 1.4.8.0
   - QuickCheck >= 2.14.3
   - criterion >= 1.6.1.0
+  - testing-feat >= 1.1.1.1
 
 ghc-options:
   - -Wall

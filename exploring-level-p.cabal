@@ -74,6 +74,7 @@ library
     , mtl >=2.2
     , multiset >=0.3.4.3
     , primitive >=0.8.0.0
+    , testing-feat >=1.1.1.1
     , vector >=0.13.1.0
   default-language: Haskell2010
 
@@ -102,6 +103,7 @@ executable exploring-level-p-exe
     , mtl >=2.2
     , multiset >=0.3.4.3
     , primitive >=0.8.0.0
+    , testing-feat >=1.1.1.1
     , vector >=0.13.1.0
   default-language: Haskell2010
 
@@ -131,5 +133,6 @@ test-suite exploring-level-p-test
     , mtl >=2.2
     , multiset >=0.3.4.3
     , primitive >=0.8.0.0
+    , testing-feat >=1.1.1.1
     , vector >=0.13.1.0
   default-language: Haskell2010

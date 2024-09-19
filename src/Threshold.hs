@@ -19,10 +19,11 @@ import           Prelude               hiding (negate, sum, (+), (-))
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
 import           BoFun                 (BoFun (..))
+import           Debug.Trace           (traceShow)
+import           Test.Feat             (deriveEnumerable)
 import           Utils                 (Square, boolToInt, chooseMany,
                                         duplicate, lookupBool, naturals,
                                         squareToList, tabulateBool)
-
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
