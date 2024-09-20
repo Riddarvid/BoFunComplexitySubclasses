@@ -5,6 +5,8 @@ module PrettyPrinting (
   desmosShowPW,
   desmosShowP
 ) where
+-- Contains functions for showing polynomials in a way that can be easily copied into
+-- the graphical calculator desmos.
 
 import           Data.Ratio         (denominator, numerator)
 import           DSLsofMath.Algebra (Additive ((+)), ifThenElse, negate)
@@ -44,14 +46,14 @@ desmosShowL' d (c : cs)
       d'
         | d == 0 = ""
         | d == 1 = "x"
-        | otherwise = "x^" ++ Prelude.show d
+        | otherwise = "x^" ++ show d
 
-desmosShowRational :: Int -> Prelude.Rational -> String
+desmosShowRational :: Int -> Rational -> String
 desmosShowRational d n = term
   where
   n' = if n < 0 then (-n) else n
   a = numerator n'
   b = denominator n'
   term
-    | b == 1 = if a == 1 && d /= 0 then "" else Prelude.show a
-    | otherwise = Prelude.show a ++ "/" ++ Prelude.show b
+    | b == 1 = if a == 1 && d /= 0 then "" else show a
+    | otherwise = show a ++ "/" ++ show b
