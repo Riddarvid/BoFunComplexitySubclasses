@@ -24,6 +24,7 @@ instance Ring a => Algor (Poly a) where
 
 resPoly :: Ring a => Bool -> a
 resPoly _b = zero
+
 pickPoly :: Ring a => i -> Poly a -> Poly a -> Poly a
 pickPoly _i = pickPoly'
 

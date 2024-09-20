@@ -1,40 +1,25 @@
 module Poly.Utils (
   findDegreeBothPW,
   findDegreePW,
-  findDegreePoly,
   countPieces,
   minDegree,
-  dropZeroes,
   numRootsInInterval,
   removeDoubleRoots
 ) where
 import           Data.Either        (isLeft)
 import           DSLsofMath.Algebra (AddGroup, Additive (zero), MulGroup,
                                      product, (-))
-import           DSLsofMath.PSDS    (Poly (P), evalP, yun)
+import           DSLsofMath.PSDS    (Poly (P), degree, evalP, yun)
 import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly, Separation,
                                      linearizePW)
 import           Poly.PolyCmp       (numRoots)
 import           Prelude            hiding (product, (+), (-))
 
--- Degree finding
-
 findDegreeBothPW :: (Eq a, AddGroup a, MulGroup a) => BothPW a -> Int
 findDegreeBothPW (BothPW pw _) = findDegreePW pw
 
 findDegreePW :: (Eq a, AddGroup a, MulGroup a) => PiecewisePoly a -> Int
-findDegreePW pw = maximum $ map findDegreePoly $ extractPolys $ linearizePW pw
-
-findDegreePoly :: (Eq a, Additive a) => Poly a -> Int
-findDegreePoly (P xs) = length $ dropZeroes xs
-
-dropZeroes :: (Eq a, Additive a) => [a] -> [a]
-dropZeroes [] = []
-dropZeroes (n : ns)
-  | n == zero = case dropZeroes ns of
-    []  -> []
-    ns' -> n : ns'
-  | otherwise = n : dropZeroes ns
+findDegreePW pw = maximum $ map degree $ extractPolys $ linearizePW pw
 
 extractPolys :: [Either (Poly a) (Separation b)] -> [Poly a]
 extractPolys []               = []
@@ -43,8 +28,6 @@ extractPolys (_ : xs)         = extractPolys xs
 
 minDegree :: (Eq a, AddGroup a, MulGroup a) => [PiecewisePoly a] -> Int
 minDegree xs = minimum $ map findDegreePW xs
-
--- Piece counting
 
 -- Counts the number of pieces of a piecewise polynomial.
 -- linearizePW results in a list of either pieces or separations,
@@ -55,9 +38,10 @@ countPieces pw = length $ filter isLeft $ linearizePW pw
 -- Transforms the polynomial p(x) into p((x - a) / diff) in order to be able
 -- to use numRoots.
 -- Inclusive.
+-- TODO use functions from PSDS.
 numRootsInInterval :: ( AddGroup a, MulGroup a, Ord a, Show a) => Poly a -> (a, a) -> Int
 numRootsInInterval p (low, high)
-  -- If the interval is a single point, then we can't scale it up to the range [0,1].
+  -- If the interval is a single point, then we can't scale it up to the range (0,1).
   -- Instead, we simply check the value of the polynomial in that point, and if
   -- the result is zero, then by definition it has a root there, otherwise it has no roots.
   -- | traceShow p'' False = undefined
