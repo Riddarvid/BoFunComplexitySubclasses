@@ -1,4 +1,14 @@
 
+- Vad vi har gjort:
+	- Fixat countMaxima så att den använder den nya metoden
+	- Skrivit quickcheck, generella metoder
+	- Benchmarking
+	- Flame graphs för optimering
+	- Ny mer uttrycksfull version av symmetric, snabbare för maj9 än threshold-versionen.
+	- Städat
 - github-licens
 - borde vi lägga till flera authors på våra commits?
-- Hur borde vi använda feat? Vi försökte köra deriveEnumerable på ThresholdFun, men då behövde MultiSet i sin tur vara enumerable.
+- Antal threshold functions
+	- Gå igenom vårt försök
+	- Hur borde vi använda feat? Vi försökte köra deriveEnumerable på ThresholdFun, men då behövde MultiSet i sin tur vara enumerable.
+- Hur går vi vidare?
