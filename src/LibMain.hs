@@ -5,18 +5,22 @@ module LibMain (
   main,
   waysToChooseSubFunctions
 ) where
-import           Algorithm.GenAlg   (genAllBoths)
-import qualified Data.Set           as Set
-import           DSLsofMath.Algebra (AddGroup, MulGroup, (*))
-import           Filters            (degreePred, maximaPred)
-import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils         (minDegree)
-import           Prelude            hiding ((*), (+))
-import           PrettyPrinting     (desmosShowPW)
-import           Subclasses.Id      ()
+import           Algorithm.GenAlg       (genAllBoths)
+import qualified Data.Set               as Set
+import           DSLsofMath.Algebra     (AddGroup, MulGroup, (*))
+import           Filters                (degreePred, maximaPred)
+import           Poly.PiecewisePoly     (BothPW (BothPW), PiecewisePoly)
+import           Poly.Utils             (minDegree)
+import           Prelude                hiding ((*), (+))
+import           PrettyPrinting         (desmosShowPW)
+import           Subclasses.Comparisons (mainBench)
+import           Subclasses.Id          ()
 
 main :: IO ()
-main = do
+main = mainBench
+
+main2 :: IO ()
+main2 = do
   let with2 = filter (maximaPred (>= 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
   let unique = Set.toList $ Set.fromList with2
   mapM_ (putStrLn . desmosShowPW) unique

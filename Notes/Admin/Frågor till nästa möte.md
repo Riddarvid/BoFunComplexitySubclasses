@@ -5,6 +5,7 @@
 	- Benchmarking
 	- Flame graphs för optimering
 	- Ny mer uttrycksfull version av symmetric, snabbare för maj9 än threshold-versionen.
+		- Osäkra på varför den är snabbare
 	- Städat
 - github-licens
 - borde vi lägga till flera authors på våra commits?
