@@ -3,9 +3,9 @@
 + I will assume it is enough to know the sign (-1, 0, or 1) of the
   answer (inspired by the evaluation of derivatives at the
   intersections between polynomial pieces.)
-** Step 0: If a is rational m/n, it is immediate: just evaluate q on m/n.
+#### Step 0: If a is rational m/n, it is immediate: just evaluate q on m/n.
 + The rest talks about when a is not rational.
-** Step 1:
+#### Step 1:
 + let I = [l,h) be an interval such that p has exactly one root in I.
 + this root is a (but we don't have any explicit expression for it)
 + thus we know
@@ -15,7 +15,7 @@
 + (We can also choose to have (eval p l) < 0 and (eval p h) > 0, otherwise just switch sign on p.)
 + and also
   numRoots p I == 1
-** Step 2: Is q a == 0?
+#### Step 2: Is q a == 0?
 + Background: If q a == 0 then (x-a) is a common factor is both p and
   q, and thus also a common factor in gcd p q.
 + Compute
