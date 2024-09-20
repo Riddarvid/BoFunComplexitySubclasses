@@ -6,6 +6,7 @@ module LibMain (
   waysToChooseSubFunctions
 ) where
 import           Algorithm.GenAlg   (genAllBoths)
+import qualified Data.Set           as Set
 import           DSLsofMath.Algebra (AddGroup, MulGroup, (*))
 import           Filters            (degreePred, maximaPred)
 import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly)
@@ -14,11 +15,12 @@ import           Prelude            hiding ((*), (+))
 import           PrettyPrinting     (desmosShowPW)
 import           Subclasses.Id      ()
 
--- TODO lägg in i ett set för att få unika
 main :: IO ()
 main = do
   let with2 = filter (maximaPred (>= 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
-  mapM_ (putStrLn . desmosShowPW) with2
+  let unique = Set.toList $ Set.fromList with2
+  mapM_ (putStrLn . desmosShowPW) unique
+  print $ length unique
 
 findSimplest :: (AddGroup a, MulGroup a, Real a, Show a) => [BothPW a]
 findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima

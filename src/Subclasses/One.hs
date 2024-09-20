@@ -36,4 +36,4 @@ instance BoFun One Int where
       deleteAt n (x : xs) = x : deleteAt (n - 1) xs
   setBit _ OFalse = OFalse
 
--- TODO mkOne
+-- TODO-NEW mkOne

@@ -72,6 +72,43 @@ piecewise polynomial in [0, 1]:
 + piece [2,4,-4,1]
 + separated by 1 % 1
 
+From these, we get 8 distinct complexities:
+
+p(x) = 3 + x^3
+q(x) = 4 -3x + 2x^2 + x^3
+r(x) = 4 -2x + 2x^2 -x^3
+
+p(x) = 2 + 3x -2x^2 + x^3
+q(x) = 4 -5x + 6x^2 -x^3
+r(x) = 4 -4x + 6x^2 -3x^3
+
+p(x) = 3 + x^3
+q(x) = 4 -5x + 6x^2 -x^3
+r(x) = 4 -4x + 3x^2 + x^3
+s(x) = 4 -3x + 3x^2 -x^3
+
+p(x) = 3 + x
+q(x) = 4 -4x + 6x^2 -2x^3
+r(x) = 4 -2x + 2x^3
+s(x) = 4 -x
+
+p(x) = 3 + x -3x^2 + 3x^3
+q(x) = 4 -4x + 3x^2 + x^3
+r(x) = 4 -2x + x^2 -x^3
+
+p(x) = 3 + x -3x^2 + 3x^3
+q(x) = 4 -4x + 3x^2 + x^3
+r(x) = 4 -3x + 3x^2 -x^3
+
+p(x) = 3 + x -x^2 + x^3
+q(x) = 4 -4x + 5x^2 -x^3
+r(x) = 4 -3x + 3x^2 -x^3
+
+p(x) = 3 + 2x -2x^2 + x^3
+q(x) = 4 -3x + 4x^2 -x^3
+r(x) = 4 -2x + x^2 + x^3
+s(x) = 4 -x + x^2 -x^3
+
 A problem that we've realized is that the roots separating the functions may not be rational. Therefore, we must convert to working with reals instead.
 
 We have now done more rigorous searching of the 4-bit PPs with 2 maxima. We have arrived at the conclusion that all of these contain at least one piece which is of at least degree 3. We did this by computing the complexities of all 4-bit functions, filtering out those with 2 maxima, counting the degrees of the PPs, finding the minimum, and then filtering on that.

@@ -52,7 +52,7 @@ genRootPoly = do
 
 -------------------------- Conversions to/from algebraic -------------------------
 
--- TODO dubbelkolla om exclusive/inclusive är korrekt
+-- TODO-NEW dubbelkolla om exclusive/inclusive är korrekt
 fromPWAlgebraic :: (Real a) => (Poly a, (a, a)) -> Algebraic
 fromPWAlgebraic (p, (low, high)) = Algebraic (fmap toRational p) (toRational low, toRational high)
 
@@ -68,8 +68,8 @@ toAlgebraic x = Algebraic (P [negate x', one]) (x' - one, x' + one)
 
 -- Shrinks the interval by dividing it into two pieces and checking which
 -- piece has a root.
--- TODO kolla på inclusive/exclusive
--- TODO quickCheck
+-- TODO-NEW kolla på inclusive/exclusive
+-- TODO-NEW quickCheck
 shrinkIntervalStep :: Algebraic -> Algebraic
 shrinkIntervalStep (Algebraic p (low, high))
   | nRoots > 1 || nRoots < 0 = error "Interval has too many roots"

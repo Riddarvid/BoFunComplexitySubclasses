@@ -53,7 +53,7 @@ thresholdNumInputs :: Threshold -> Int
 thresholdNumInputs (Threshold (nt, nf)) = nt + nf - 1
 
 -- A constant threshold (fixed result).
--- TODO: Figure out how we want to handle this bugfix.
+-- TODO-NEW: Figure out how we want to handle this bugfix.
 -- fixed by changing == to /=
 -- we also had to change to thresholdConst (not val) in the definition of setBit.
 thresholdConst :: Bool -> Threshold

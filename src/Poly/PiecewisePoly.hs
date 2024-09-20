@@ -82,11 +82,12 @@ instance (Ring a) => Zoomable a (Poly a) where
 
 
 -- | The graph of the counit map of free Zoom algebra adjunction.
+-- Dummy Eq and Ord instances added to be able to use Data.Set.
 data Zoomed a x = Zoomed
   { original :: x           -- ^ the data at original scale
   , zoomData :: ZoomData a  -- ^ the zoom
   , zoomed   :: x             -- ^ the zoomed data
-  } deriving (Show, Read, Generic, NFData)
+  } deriving (Eq, Ord, Show, Read, Generic, NFData)
 
 instance Functor (Zoomed a) where
   fmap f (Zoomed original z zoomed) = Zoomed (f original) z (f zoomed)
@@ -219,7 +220,7 @@ data PiecewisePoly a =
     PWPoly (ZoomedPoly a)
   | PWIntersect (Intersect a)
   | PWBisect (Square (PiecewisePoly a))
-  deriving (Show, Generic, NFData)
+  deriving (Eq, Ord, Show, Generic, NFData)
 
 instance Functor PiecewisePoly where fmap = fmapPW
 
