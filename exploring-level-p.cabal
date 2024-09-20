@@ -43,6 +43,7 @@ library
       Poly.PolyInstances
       Poly.PolynomialExtra
       Poly.Utils
+      PrettyPrinting
       Subclasses.Comparisons
       Subclasses.Even
       Subclasses.GeneralBDD

@@ -1,7 +1,6 @@
 \begin{code}
 {-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE TypeSynonymInstances #-}
--- {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
@@ -443,43 +442,4 @@ yunGo bi ci di  | degree bi <= 0 = []
        ci1 = di / ai
        di1 = ci1 - derP bi1
   in ai : yunGo bi1 ci1 di1
-\end{code}
-
-\begin{code}
-desmosShowP :: String -> Poly Prelude.Rational -> String
-desmosShowP name (P coeffs) = desmosShowL name coeffs
-
-desmosShowL :: String -> [Prelude.Rational] -> String
-desmosShowL name cs = case desmosShowL' 0 cs of
-  "" -> name ++ "(x) = 0"
-  s  -> name ++ "(x) = " ++ s
-
-desmosShowL' :: Int -> [Prelude.Rational] -> String
-desmosShowL' _ [] = ""
-desmosShowL' d (c : cs)
-  | c == zero = desmosShowL' (d + 1) cs
-  | otherwise = case desmosShowL' (d + 1) cs of
-    []   -> sign ++ term
-    rest -> sign ++ term ++ " " ++ rest
-    where
-      term = desmosShowRational d c ++ d'
-      sign
-        | c < 0 = "-"
-        | d == 0 = ""
-        | otherwise = "+ "
-      d'
-        | d == 0 = ""
-        | d == 1 = "x"
-        | otherwise = "x^" ++ Prelude.show d
-
-desmosShowRational :: Int -> Prelude.Rational -> String
-desmosShowRational d n = term
-  where
-  n' = if n < 0 then (-n) else n
-  a = numerator n'
-  b = denominator n'
-  term
-    | b == 1 = if a == 1 && d /= 0 then "" else Prelude.show a
-    | otherwise = Prelude.show a ++ "/" ++ Prelude.show b
-  sign = if n < 0 then "-" else "+ "
 \end{code}

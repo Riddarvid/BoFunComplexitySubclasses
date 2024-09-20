@@ -1,7 +1,8 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use guards" #-}
-{-# LANGUAGE DeriveGeneric #-}
+-- Below is code taken from the matrix package.
+-- changed so that it uses DSLA instead of Num. Used by Archived.Algebraic.
 
+module Archived.MatrixBridge () where
+{-
 module Archived.MatrixBridge (
     -- * Matrix type
     Matrix , prettyMatrix
@@ -1411,3 +1412,4 @@ aAbs n
 
 vProduct :: (Vector v a, Multiplicative a) => v a -> a
 vProduct = Bundle.foldl' (A.*) A.one . stream
+-}

@@ -69,6 +69,8 @@ numRootsInInterval p (low, high)
     p'' = evalP p' (P [low, diff])
 
 -- TODO QuickCheck
+-- Creates a polynomial with only single roots. The new polynomial has roots in exactly the points
+-- where the input polynomial has roots. No other guarantees are given for the new polynomial.
 removeDoubleRoots :: (Eq a, MulGroup a, AddGroup a) => Poly a -> Poly a
 removeDoubleRoots p = product polys
   where

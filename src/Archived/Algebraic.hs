@@ -1,5 +1,13 @@
-{-# LANGUAGE InstanceSigs #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+-- This module contains experimental code for writing instances of
+-- Additive and Multiplicative for algebraic numbers.
+-- The methodology used is based on
+-- https://math.stackexchange.com/questions/2911256/a-way-to-represent-algebraic-numbers-in-a-computer
+-- Right now the implementation quickly becomes incredibly slow. Specifically, the function
+-- myUDecomp. As a result, we have decided to explore other solutions instead.
+
+module Archived.Algebraic () where
+
+{-
 module Archived.Algebraic (
   sumOfRationalsProp,
   sum2Prop,
@@ -9,7 +17,8 @@ module Archived.Algebraic (
   negateProp,
   assocProp
 ) where
-import           Algebraic             (Algebraic (Algebraic), shrinkInterval)
+import           Algebraic             (Algebraic (Algebraic),
+                                        shrinkIntervalStep)
 import           Archived.MatrixBridge (Matrix (nrows), elementwise, flatten,
                                         fromLists, identity, toLists)
 import           Data.Foldable         (find)
@@ -101,7 +110,7 @@ addAlgebraic a@(Algebraic pa _) b@(Algebraic pb _)
     aPlusB' = removeDoubleRoots aPlusB
     intAB = intervalAdd a b aPlusB'
 
-rootPad :: (Eq a, Additive a, Show a) => Poly a -> Poly a -> (Poly a, Poly a)
+rootPad :: (Eq a, Additive a) => Poly a -> Poly a -> (Poly a, Poly a)
 rootPad pa pb = {-traceShow (pa, pb) $ traceShowId $-} case compare lenA lenB of
   EQ -> (pa', pb')
   LT -> (P (replicate (lenB - lenA) zero ++ coeffsA), pb')
@@ -241,7 +250,7 @@ intervalMul' a@(Algebraic _ intA) b@(Algebraic _ intB) pab =
   case numRootsInInterval pab intAB of
     0 -> error "Should have at least one root"
     1 -> intAB
-    _ -> intervalMul' (shrinkInterval a) (shrinkInterval b) pab
+    _ -> intervalMul' (shrinkIntervalStep a) (shrinkIntervalStep b) pab
   where
     intAB = boundInt intA intB
 
@@ -252,7 +261,7 @@ intervalAdd a@(Algebraic _ (lowA, highA)) b@(Algebraic _ (lowB, highB)) pab
   case numRootsInInterval pab intAPlusB of
     0 -> error "Should have at least one root"
     1 -> intAPlusB
-    _ -> intervalAdd (shrinkInterval a) (shrinkInterval b) pab
+    _ -> intervalAdd (shrinkIntervalStep a) (shrinkIntervalStep b) pab
   where
     intAPlusB = (lowA + lowB, highA + highB)
 
@@ -297,3 +306,4 @@ negateProp a = a - a === zero
 
 assocProp :: Algebraic -> Algebraic -> Algebraic -> Property
 assocProp a b c = a + (b + c) === (a + b) + c
+-}

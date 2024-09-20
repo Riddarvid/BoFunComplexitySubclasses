@@ -1,14 +1,19 @@
 {-# LANGUAGE FlexibleContexts #-}
-module LibMain (main, waysToChooseSubFunctions) where
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-type-defaults #-}
+module LibMain (
+  main,
+  waysToChooseSubFunctions
+) where
 import           Algorithm.GenAlg         (genAllBoths)
 import           BDD                      (BDDFun)
 import           Data.DecisionDiagram.BDD (AscOrder)
 import           DSLsofMath.Algebra       (AddGroup, MulGroup, (*))
 import           Filters                  (degreePred, maximaPred)
-import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly,
-                                           desmosShowPW)
+import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly)
 import           Poly.Utils               (minDegree)
 import           Prelude                  hiding ((*), (+))
+import           PrettyPrinting           (desmosShowPW)
 import           Subclasses.Comparisons   (benchBoFun, complexityBench)
 import           Subclasses.GeneralBDD    (majBDD)
 import           Subclasses.IdConst       ()
@@ -41,16 +46,8 @@ findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
 toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
 
+-- We want to use this to count the number of threshold functions
 waysToChooseSubFunctions :: Integer -> Integer
 waysToChooseSubFunctions 0 = 0
 waysToChooseSubFunctions 1 = 4
 waysToChooseSubFunctions n = sum $ map (\i -> 2^(2^i) * waysToChooseSubFunctions (n - i)) [1 .. n]
-{-}
-test :: Bool
-test = a + b == b + a
-  where
-    -- a represents the number 1
-    a = Algebraic (P [(-1) % 1,0 % 1,1 % 1]) ((-91) % 1,4 % 5)
-    -- b represents the number -sqrt(8)
-    b = Algebraic (P [0 % 1,(-1) % 1,1 % 1]) (1 % 10,91 % 1)
--}
