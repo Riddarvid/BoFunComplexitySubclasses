@@ -1,51 +1,21 @@
 module Poly.Utils (
-  countMaxima,
   findDegreeBothPW,
   findDegreePW,
   findDegreePoly,
   countPieces,
   minDegree,
-  dropZeroes
+  dropZeroes,
+  numRootsInInterval,
+  removeDoubleRoots
 ) where
-import           Algebraic          (Sign (Neg, Pos), fromPWAlgebraic, signAt,
-                                     toAlgebraic)
 import           Data.Either        (isLeft)
-import           Debug.Trace        (trace, traceShow, traceShowId)
 import           DSLsofMath.Algebra (AddGroup, Additive (zero), MulGroup,
-                                     Multiplicative)
-import           DSLsofMath.PSDS    (Poly (P), derP, evalP)
+                                     product, (-))
+import           DSLsofMath.PSDS    (Poly (P), evalP, yun)
 import           Poly.PiecewisePoly (BothPW (BothPW), PiecewisePoly, Separation,
-                                     linearizePW, showPWAny)
-import qualified Poly.PiecewisePoly as PW
-
-countMaxima :: (Real a, AddGroup a, MulGroup a, Show a) => PiecewisePoly a -> Int
-countMaxima pw = countMaxima' $ linearizePW (fmap realToFrac pw :: PiecewisePoly Double)
-
-countMaxima' :: (RealFloat a, AddGroup a, Multiplicative a, Show a) => [Either (Poly a) (Separation a)] -> Int
-countMaxima' (Right _ : xs) = countMaxima' xs
-countMaxima' (Left p1 : Right s : Left p2 : xs)
-  | hasMaximum p1 p2 s = 1 + rest
-  | otherwise = rest
-  where
-    rest = countMaxima' (Left p2 : xs)
-countMaxima' _ = 0
-
--- TODO maybe better naming of variables?
--- The problem right now is finding the correct root.
--- Another problem is that the root should be a real number but currently
--- we're casting it to a rational number, which of course changes the value.
--- Really, we should make the function work with real numbers instead.
-hasMaximum :: (Real a, AddGroup a, Multiplicative a, Show a) => Poly a -> Poly a -> Separation a -> Bool
-hasMaximum p1 p2 s = {-trace ("Examining:\n" ++ show p1 ++ "\nand\n" ++ show p2 ++ "\nseparated by\n" ++ show s)-} case s of
-  PW.Dyadic x    -> evalP p1' x > zero && evalP p2' x < zero
-  PW.Algebraic x -> let
-    x' = fromPWAlgebraic x
-    s1 = signAt x' (fmap toRational p1')
-    s2 = signAt x' (fmap toRational p2')
-    in s1 == Pos && s2 == Neg
-  where
-    p1' = derP p1
-    p2' = derP p2
+                                     linearizePW)
+import           Poly.PolyCmp       (numRoots)
+import           Prelude            hiding (product, (+), (-))
 
 -- Degree finding
 
@@ -82,4 +52,24 @@ minDegree xs = minimum $ map findDegreePW xs
 countPieces :: (AddGroup a, MulGroup a, Eq a) => PiecewisePoly a -> Int
 countPieces pw = length $ filter isLeft $ linearizePW pw
 
+-- Transforms the polynomial p(x) into p((x - a) / diff) in order to be able
+-- to use numRoots.
+-- Inclusive.
+numRootsInInterval :: ( AddGroup a, MulGroup a, Ord a, Show a) => Poly a -> (a, a) -> Int
+numRootsInInterval p (low, high)
+  -- If the interval is a single point, then we can't scale it up to the range [0,1].
+  -- Instead, we simply check the value of the polynomial in that point, and if
+  -- the result is zero, then by definition it has a root there, otherwise it has no roots.
+  -- | traceShow p'' False = undefined
+  | diff == zero = if evalP p low == zero then 1 else 0
+  | otherwise = numRoots p''
+  where
+    diff = high - low
+    p' = fmap (\c -> P [c]) p
+    p'' = evalP p' (P [low, diff])
 
+-- TODO QuickCheck
+removeDoubleRoots :: (Eq a, MulGroup a, AddGroup a) => Poly a -> Poly a
+removeDoubleRoots p = product polys
+  where
+    polys = yun p

@@ -28,6 +28,8 @@ library
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
+      Archived.Algebraic
+      Archived.MatrixBridge
       BDD
       BDD.BDDInstances
       BoFun
@@ -36,7 +38,6 @@ library
       DSLsofMath.PSDS
       Filters
       LibMain
-      MatrixBridge
       Poly.PiecewisePoly
       Poly.PolyCmp
       Poly.PolyInstances

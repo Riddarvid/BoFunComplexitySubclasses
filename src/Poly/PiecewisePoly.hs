@@ -644,8 +644,8 @@ instance (AddGroup a, MulGroup a, Eq a, Show a) => Show (BothPW a) where
   show (BothPW pw lookupPolys) = showPWAny pw ++ "\n" ++ unlines
     (map (\(poly, al) -> show poly ++ ":\t\t" ++ show al) lookupPolys)
 
-desmosShowPW :: (AddGroup a, MulGroup a, Eq a, Show a) => PiecewisePoly a -> String
-desmosShowPW pw = unlines $ map desmosShowP $ filterPolys $ linearizePW pw
+desmosShowPW :: PiecewisePoly Rational -> String
+desmosShowPW pw = unlines $ zipWith desmosShowP (map (:[]) ['p' ..]) (filterPolys $ linearizePW pw)
   where
     filterPolys []             = []
     filterPolys (Right _ : xs) = filterPolys xs

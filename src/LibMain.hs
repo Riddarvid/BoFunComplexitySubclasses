@@ -1,18 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 module LibMain (main, waysToChooseSubFunctions) where
-import           Algebraic                (Algebraic (Algebraic),
-                                           MyMatrix (MyMatrix), testMtoPoly,
-                                           toCharacteristicPoly)
 import           Algorithm.GenAlg         (genAllBoths)
 import           BDD                      (BDDFun)
 import           Data.DecisionDiagram.BDD (AscOrder)
-import           Data.Maybe               (fromJust)
-import           Data.Ratio               ((%))
-import           DSLsofMath.Algebra       (AddGroup, Additive ((+)), MulGroup,
-                                           (*))
-import           DSLsofMath.PSDS          (Poly (P), divModP)
+import           DSLsofMath.Algebra       (AddGroup, MulGroup, (*))
 import           Filters                  (degreePred, maximaPred)
-import           MatrixBridge             (Matrix, fromLists, getDiag)
 import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly,
                                            desmosShowPW)
 import           Poly.Utils               (minDegree)
@@ -24,13 +16,11 @@ import           Subclasses.Symmetric     (symmMaj, symmMajBasic)
 import           Threshold                (ThresholdFun, thresholdFunReplicate,
                                            thresholdMaj)
 
+-- TODO lägg in i ett set för att få unika
 main :: IO ()
 main = do
   let with2 = filter (maximaPred (>= 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
   mapM_ (putStrLn . desmosShowPW) with2
-
-genMatrix :: Int -> Matrix Int
-genMatrix n = fromLists $ map (\n' -> [n' .. n + n' - 1]) [1 .. n]
 
 mainBench :: IO ()
 mainBench = benchBoFun "maj9"

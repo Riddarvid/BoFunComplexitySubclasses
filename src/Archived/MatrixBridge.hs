@@ -2,7 +2,7 @@
 {-# HLINT ignore "Use guards" #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module MatrixBridge (
+module Archived.MatrixBridge (
     -- * Matrix type
     Matrix , prettyMatrix
   , nrows , ncols

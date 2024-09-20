@@ -10,7 +10,7 @@ module DSLsofMath.PSDS where
 import Prelude (Int, Double,
                 Show, String, 
                 Ord, Ordering, (<), (<=), (>=), compare,
-                Eq, Bool, (==), (&&), otherwise, snd,
+                Eq, Bool, (==), (/=), (&&), otherwise, snd,
                 error, (.),
                 (++), zipWith, map, null, head, tail, init, last, take, reverse, length, replicate)
 import qualified Prelude
@@ -25,6 +25,7 @@ import DSLsofMath.Algebra (Additive((+),zero), AddGroup(negate), (-),
 import Debug.Trace (traceShow)
 import Control.DeepSeq (NFData)
 import GHC.Generics (Generic)
+import Data.Ratio (numerator, denominator)
 \end{code}
 
 Chapter 6. Taylor and Maclaurin series
@@ -445,21 +446,40 @@ yunGo bi ci di  | degree bi <= 0 = []
 \end{code}
 
 \begin{code}
-desmosShowP :: (Eq a, Additive a, Show a) => Poly a -> String
-desmosShowP (P coeffs) = desmosShowL coeffs
+desmosShowP :: String -> Poly Prelude.Rational -> String
+desmosShowP name (P coeffs) = desmosShowL name coeffs
 
-desmosShowL :: (Eq a, Additive a, Show a) => [a] -> String
-desmosShowL cs = case desmosShowL' 0 cs of
-  "" -> "p(x) = 0"
-  s  -> "p(x) = " ++ s
+desmosShowL :: String -> [Prelude.Rational] -> String
+desmosShowL name cs = case desmosShowL' 0 cs of
+  "" -> name ++ "(x) = 0"
+  s  -> name ++ "(x) = " ++ s
 
-desmosShowL' :: (Eq a, Additive a, Show a) => Int -> [a] -> String
+desmosShowL' :: Int -> [Prelude.Rational] -> String
 desmosShowL' _ [] = ""
 desmosShowL' d (c : cs)
   | c == zero = desmosShowL' (d + 1) cs
   | otherwise = case desmosShowL' (d + 1) cs of
-    []   -> term
-    rest -> term ++ " + " ++ rest
+    []   -> sign ++ term
+    rest -> sign ++ term ++ " " ++ rest
     where
-      term = Prelude.show c ++ "x^" ++ Prelude.show d
+      term = desmosShowRational d c ++ d'
+      sign
+        | c < 0 = "-"
+        | d == 0 = ""
+        | otherwise = "+ "
+      d'
+        | d == 0 = ""
+        | d == 1 = "x"
+        | otherwise = "x^" ++ Prelude.show d
+
+desmosShowRational :: Int -> Prelude.Rational -> String
+desmosShowRational d n = term
+  where
+  n' = if n < 0 then (-n) else n
+  a = numerator n'
+  b = denominator n'
+  term
+    | b == 1 = if a == 1 && d /= 0 then "" else Prelude.show a
+    | otherwise = Prelude.show a ++ "/" ++ Prelude.show b
+  sign = if n < 0 then "-" else "+ "
 \end{code}
