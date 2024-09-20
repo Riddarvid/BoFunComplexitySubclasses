@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Other/Cleanup.md",
+                "file": "Admin/TODO generell.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Other/Cleanup.md",
+                "file": "Admin/TODO generell.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Other/Cleanup.md",
+                "file": "Admin/TODO generell.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Other/Cleanup.md"
+                "file": "Admin/TODO generell.md"
               }
             }
           }
@@ -148,8 +148,8 @@
   },
   "active": "2ab3e76148d1f1fb",
   "lastOpenFiles": [
-    "Algebraic numbers/evalpoly.md",
     "Other/Cleanup.md",
+    "Algebraic numbers/evalpoly.md",
     "Algebraic numbers/Algoritm för att avgöra tecken för polynom av algebraiskt tal.md",
     "Algebraic numbers/Algebraiska tal.md",
     "Exploration of classes/Observation about PPs.md",

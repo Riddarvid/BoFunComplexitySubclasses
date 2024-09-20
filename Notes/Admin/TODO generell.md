@@ -5,8 +5,18 @@
 	- Alternativt funktioner som kan byggas av ett begränsat set av gates.
 - Se om man kan dra paralleller till entropi (Shannon) eller Huffman coding
 - Fråga Patrik om vilken licens vi borde lägga repot under
+- Implementera Arbitrary-instanser för de olika klasserna.
 
 ## TODO Arvid:
 
 - Kolla upp mer noga varför BDDs blir ineffektiva. Jämför BDDs för två funktioner som egentligen ligger i samma ekvivalensklass med avseende på någon subklass av funktioner.
 - Läs på om entropi (Shannon) och Huffman coding
+
+
+(3, 3) -> 5 bit
+
+False
+
+(3, 2) -> 4 bit
+
+False 

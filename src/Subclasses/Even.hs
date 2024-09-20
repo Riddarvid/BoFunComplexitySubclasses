@@ -3,7 +3,11 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 module Subclasses.Even () where
+
+-- Work in progress
+
 import           BoFun (BoFun (..))
 
 data Even f = Even f Bool

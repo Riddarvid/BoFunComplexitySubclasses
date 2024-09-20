@@ -3,19 +3,25 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
-module Subclasses.Symmetric (main, maj5, symmMaj, symmMajBasic) where
+module Subclasses.Symmetric (
+  BasicSymmetric,
+  mkBasicSymmetric,
+  Symmetric,
+  symmResultvector,
+  symmSubFuns,
+  majSymm,
+  majSymmBasic
+) where
 
-import           Algorithm.GenAlgPW    (computeMin)
 import           BoFun                 (BoFun (..))
 import           Control.Arrow         ((>>>))
 import           Data.Function         ((&))
-import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable,
-                                        deriveMemoize)
+import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
 import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
-import           Poly.PiecewisePoly    (showPW)
 import           Utils                 (naturals)
 
+--------- BasicSymmetric -----------------------------
 
 newtype BasicSymmetric = BasicSymmetric [Bool]
   deriving Show
@@ -37,24 +43,17 @@ instance BoFun BasicSymmetric () where
 
 $(deriveMemoizable ''BasicSymmetric)
 
--- Examples
+-- eval must be defined for [0 .. nBits]
+mkBasicSymmetric :: Int -> (Int -> Bool) -> BasicSymmetric
+mkBasicSymmetric nBits eval = BasicSymmetric $ map eval [0 .. nBits]
 
 -- Only defined for positive, odd values of n.
-symmMajBasic :: Int -> BasicSymmetric
-symmMajBasic n = mkSymmetric n (>= threshold)
+majSymmBasic :: Int -> BasicSymmetric
+majSymmBasic n = mkBasicSymmetric n (>= threshold)
   where
     threshold = (n `div` 2) + 1
 
--- eval must be defined for [0 .. nBits]
-mkSymmetric :: Int -> (Int -> Bool) -> BasicSymmetric
-mkSymmetric nBits eval = BasicSymmetric $ map eval [0 .. nBits]
-
-sumMod :: BasicSymmetric
-sumMod = mkSymmetric 70 (\n -> n `mod` 2 == 1)
-
-main :: IO ()
-main = do
-  putStrLn $ "sumMod2, 1 bit: " ++ showPW (computeMin sumMod)
+---------------- Symmetric -----------------------------------------
 
 data Symmetric f = Symmetric {
   symmResultvector :: [Bool],
@@ -89,13 +88,7 @@ instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
     subFuns' = subFuns & MultiSet.delete subFun
     subFun' = setBit (v, val) subFun
 
--- TODO: Idé: skriv kod för att generera godtycklig sanningstabell för en
--- symmetrisk funktion.
-
-maj5 :: Symmetric (Maybe Bool)
-maj5 = symmMaj 5
-
-symmMaj :: Int -> Symmetric (Maybe Bool)
-symmMaj n = Symmetric (replicate n' False ++ replicate n' True) $ MultiSet.fromOccurList [(Nothing, n)]
+majSymm :: Int -> Symmetric (Maybe Bool)
+majSymm n = Symmetric (replicate n' False ++ replicate n' True) $ MultiSet.fromOccurList [(Nothing, n)]
   where
     n' = (n `div` 2) + 1

@@ -1,21 +1,37 @@
-{-# LANGUAGE InstanceSigs  #-}
-{-# LANGUAGE TupleSections #-}
-module Subclasses.Comparisons (benchBoFun, complexityBench) where
-import           Algorithm.GenAlgPW       (computeMin)
-import           BDD                      (BDDFun)
-import           BDD.BDDInstances         ()
-import           BoFun                    (BoFun, eval)
-import           Criterion                (Benchmark, bench, bgroup, nf)
-import           Criterion.Main           (defaultMain)
-import           Data.DecisionDiagram.BDD (AscOrder)
-import           Data.Function.Memoize    (Memoizable)
-import           Subclasses.GeneralBDD    (majBDD)
-import           Subclasses.IdConst       ()
-import           Subclasses.Symmetric     (maj5, symmMajBasic)
-import           Test.QuickCheck          (Arbitrary (arbitrary, shrink), Gen,
-                                           Property, conjoin, vector, (===))
-import           Threshold                (ThresholdFun, thresholdFunReplicate,
-                                           thresholdMaj)
+{-# LANGUAGE InstanceSigs #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use tuple-section" #-}
+{-# HLINT ignore "Use list comprehension" #-}
+module Subclasses.Comparisons (
+  mainBench,
+  benchBoFun,
+  complexityBench,
+  majEqualProp
+) where
+import           Algorithm.GenAlgPW    (computeMin)
+import           BDD                   (bddAsc)
+import           BDD.BDDInstances      ()
+import           BoFun                 (BoFun, eval)
+import           Criterion             (Benchmark, bench, bgroup, nf)
+import           Criterion.Main        (defaultMain)
+import           Data.Function.Memoize (Memoizable)
+import           Subclasses.General    (majGeneral)
+import           Subclasses.Id         ()
+import           Subclasses.Symmetric  (majSymm, majSymmBasic)
+import           Subclasses.Threshold  (ThresholdFun, majThreshold,
+                                        thresholdFunReplicate, thresholdMaj)
+import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
+                                        Property, chooseInt, conjoin, vector,
+                                        (===))
+
+mainBench :: IO ()
+mainBench = benchBoFun "maj9"
+  [
+    complexityBench "symmetric basic maj9" (majSymmBasic 9),
+    complexityBench "symmetric maj9" (majSymm 9),
+    complexityBench "threshold maj9" (thresholdFunReplicate (thresholdMaj 9) Nothing :: ThresholdFun (Maybe Bool)),
+    complexityBench "generic maj9" (bddAsc $ majGeneral 9)
+  ]
 
 benchBoFun :: String -> [Benchmark] -> IO ()
 benchBoFun name benchmarks = defaultMain [bgroup name benchmarks]
@@ -23,34 +39,39 @@ benchBoFun name benchmarks = defaultMain [bgroup name benchmarks]
 complexityBench :: (BoFun f i, Memoizable f) => String -> f -> Benchmark
 complexityBench name f = bench name $ nf computeMin f
 
-newtype Input = Input [Bool]
+-- Should always have odd length
+newtype MajInput = Input [Bool]
   deriving (Show)
 
-instance Arbitrary Input where
-  arbitrary :: Gen Input
-  arbitrary = Input <$> vector 9
-  shrink :: Input -> [Input]
-  shrink (Input vals) = map Input $ oneToZero vals
+instance Arbitrary MajInput where
+  arbitrary :: Gen MajInput
+  arbitrary = do
+    n <- chooseInt (1, 9)
+    let n' = if even n then n + 1 else n
+    Input <$> vector n'
+  shrink :: MajInput -> [MajInput]
+  shrink (Input vals) = shorter ++ map Input (changeOneToFalse vals)
     where
-      oneToZero []           = []
-      oneToZero (True : xs)  = (False : xs) : map (True :) (oneToZero xs)
-      oneToZero (False : xs) = map (False :) (oneToZero xs)
+      changeOneToFalse []           = []
+      changeOneToFalse (True : xs)  = (False : xs) : map (True :) (changeOneToFalse xs)
+      changeOneToFalse (False : xs) = map (False :) (changeOneToFalse xs)
 
-propSymmsEqual :: Input -> Property
-propSymmsEqual (Input vals) = conjoin
+      shorter = if length vals > 1 then [Input (drop 2 vals)] else []
+
+majEqualProp :: MajInput -> Property
+majEqualProp (Input vals) = conjoin
   [
-    --resSymm === resGen
+    resSymm === resGen,
     resThresh === resGen
   ]
   where
-    resSymm = eval (symmMajBasic 9) (map ((), ) vals)
-    resGen = eval (majBDD 9 :: BDDFun AscOrder) (zip [1 :: Int ..] vals)
-    resThresh = eval (thresholdFunReplicate (thresholdMaj 5) Nothing :: ThresholdFun (Maybe Bool))
+    n = length vals
+    majSymm' = majSymm n
+    majGeneral' = majGeneral n
+    majThreshold' = majThreshold n
+    resSymm = eval majSymm'
       (map (\v -> ((0, ()), v)) vals)
-
-propMaj5Equal :: Input -> Property
-propMaj5Equal (Input vals) =
-  eval maj5 (map (\v -> ((0, ()), v)) vals) ===
-  eval maj5Gen (zip [1 :: Int ..] vals)
-  where
-    maj5Gen = majBDD 5 :: BDDFun AscOrder
+    resGen = eval (bddAsc majGeneral')
+      (zip [1 :: Int ..] vals)
+    resThresh = eval majThreshold'
+      (map (\v -> ((0, ()), v)) vals)

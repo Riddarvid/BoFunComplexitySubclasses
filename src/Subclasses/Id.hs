@@ -2,7 +2,7 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Subclasses.IdConst () where
+module Subclasses.Id () where
 import           BoFun (BoFun (..))
 
 {-

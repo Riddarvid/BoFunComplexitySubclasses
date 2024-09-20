@@ -4,7 +4,8 @@
 {-# LANGUAGE MultiWayIf             #-}
 {-# LANGUAGE TemplateHaskell        #-}
 {-# LANGUAGE UndecidableInstances   #-}
-module Threshold where
+{-# HLINT ignore "Replace case with maybe" #-}
+module Subclasses.Threshold where
 
 import           Control.Arrow         ((>>>))
 import           Control.Monad.Free    (Free (..))
@@ -52,6 +53,9 @@ thresholdNumInputs :: Threshold -> Int
 thresholdNumInputs (Threshold (nt, nf)) = nt + nf - 1
 
 -- A constant threshold (fixed result).
+-- TODO: Figure out how we want to handle this bugfix.
+-- fixed by changing == to /=
+-- we also had to change to thresholdConst (not val) in the definition of setBit.
 thresholdConst :: Bool -> Threshold
 thresholdConst v = Threshold $ tabulateBool ((== v) >>> boolToInt)
 
@@ -161,7 +165,7 @@ instance (Ord f, BoFun f i) => BoFun (ThresholdFun f) (Int, i) where
     (u, _) = MultiSet.toAscOccurList us !! i
     us' = us & MultiSet.delete u
     u' = setBit (v, val) u
-    t' = t - thresholdConst val
+    t' = t - thresholdConst val--(not val)
 
 -- | A thresholding function with copies of a single subfunction.
 thresholdFunReplicate :: (Ord f) => Threshold -> f -> ThresholdFun f
@@ -212,7 +216,12 @@ instance BoFun IteratedThresholdFun' [Int] where
 
 -- | Majority on five bits
 maj5 :: ThresholdFun (Maybe Bool)
-maj5 = thresholdFunReplicate (thresholdMaj 3) Nothing
+maj5 = majThreshold 5
+
+majThreshold :: Int -> ThresholdFun (Maybe Bool)
+majThreshold n = thresholdFunReplicate (thresholdMaj n') Nothing
+  where
+    n' = (n `div` 2) + 1
 
 iteratedThresholdFun :: [Threshold] -> IteratedThresholdFun'
 iteratedThresholdFun [] = Pure ()
