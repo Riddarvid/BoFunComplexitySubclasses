@@ -13,7 +13,8 @@ import           DSLsofMath.Algebra       (AddGroup, Additive ((+)), MulGroup,
 import           DSLsofMath.PSDS          (Poly (P), divModP)
 import           Filters                  (degreePred, maximaPred)
 import           MatrixBridge             (Matrix, fromLists, getDiag)
-import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly)
+import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly,
+                                           desmosShowPW)
 import           Poly.Utils               (minDegree)
 import           Prelude                  hiding ((*), (+))
 import           Subclasses.Comparisons   (benchBoFun, complexityBench)
@@ -23,14 +24,16 @@ import           Subclasses.Symmetric     (symmMaj, symmMajBasic)
 import           Threshold                (ThresholdFun, thresholdFunReplicate,
                                            thresholdMaj)
 
---main :: IO ()
---main = print $ divModP (P [-1 :: Rational, 4, 1]) (P [-2, 0, 1])
+main :: IO ()
+main = do
+  let with2 = filter (maximaPred (>= 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
+  mapM_ (putStrLn . desmosShowPW) with2
 
 genMatrix :: Int -> Matrix Int
 genMatrix n = fromLists $ map (\n' -> [n' .. n + n' - 1]) [1 .. n]
 
-main :: IO ()
-main = benchBoFun "maj9"
+mainBench :: IO ()
+mainBench = benchBoFun "maj9"
   [
     complexityBench "symmetric basic maj9" (symmMajBasic 9),
     complexityBench "symmetric maj9" (symmMaj 9),

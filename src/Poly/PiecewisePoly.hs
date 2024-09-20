@@ -21,7 +21,8 @@ import           Prelude              hiding (Fractional (..), Num (..),
 import qualified Prelude
 
 import           DSLsofMath.Algebra
-import           DSLsofMath.PSDS      (Poly (unP), comP, degree, evalP)
+import           DSLsofMath.PSDS      (Poly (unP), comP, degree, desmosShowP,
+                                       evalP)
 
 import           Algorithm.Algor      (DecTree)
 import           Control.DeepSeq      (NFData)
@@ -642,3 +643,10 @@ instance (AddGroup a, MulGroup a, Eq a, Show a) => Show (BothPW a) where
   show :: BothPW a -> String
   show (BothPW pw lookupPolys) = showPWAny pw ++ "\n" ++ unlines
     (map (\(poly, al) -> show poly ++ ":\t\t" ++ show al) lookupPolys)
+
+desmosShowPW :: (AddGroup a, MulGroup a, Eq a, Show a) => PiecewisePoly a -> String
+desmosShowPW pw = unlines $ map desmosShowP $ filterPolys $ linearizePW pw
+  where
+    filterPolys []             = []
+    filterPolys (Right _ : xs) = filterPolys xs
+    filterPolys (Left p : xs)  = p : filterPolys xs

@@ -443,3 +443,23 @@ yunGo bi ci di  | degree bi <= 0 = []
        di1 = ci1 - derP bi1
   in ai : yunGo bi1 ci1 di1
 \end{code}
+
+\begin{code}
+desmosShowP :: (Eq a, Additive a, Show a) => Poly a -> String
+desmosShowP (P coeffs) = desmosShowL coeffs
+
+desmosShowL :: (Eq a, Additive a, Show a) => [a] -> String
+desmosShowL cs = case desmosShowL' 0 cs of
+  "" -> "p(x) = 0"
+  s  -> "p(x) = " ++ s
+
+desmosShowL' :: (Eq a, Additive a, Show a) => Int -> [a] -> String
+desmosShowL' _ [] = ""
+desmosShowL' d (c : cs)
+  | c == zero = desmosShowL' (d + 1) cs
+  | otherwise = case desmosShowL' (d + 1) cs of
+    []   -> term
+    rest -> term ++ " + " ++ rest
+    where
+      term = Prelude.show c ++ "x^" ++ Prelude.show d
+\end{code}

@@ -7,7 +7,9 @@ module Algebraic (
   toAlgebraic,
   toCharacteristicPoly,
   testMtoPoly,
-  MyMatrix(MyMatrix)
+  MyMatrix(MyMatrix),
+  Sign(..),
+  signAt
 ) where
 import           Control.Monad             (replicateM)
 import           Data.Foldable             (find)
@@ -18,12 +20,12 @@ import           Debug.Trace               (trace, traceShow, traceShowId)
 import           DSLsofMath.Algebra        (AddGroup (..), Additive (..),
                                             MulGroup ((/)), Multiplicative (..),
                                             product, sum, (-), (^+))
-import           DSLsofMath.PSDS           (Poly (P), evalP, normalPoly,
+import           DSLsofMath.PSDS           (Poly (P), evalP, gcdP, normalPoly,
                                             toMonic, xP, yun)
 import           MatrixBridge              (Matrix (ncols, nrows), elementwise,
                                             flatten, fromLists, identity,
                                             toLists)
-import           Poly.PolyCmp              (numRootsInclusive)
+import           Poly.PolyCmp              (numRoots, numRootsInclusive)
 import           Prelude                   hiding (negate, product, sum, (*),
                                             (+), (-), (/))
 import           Test.QuickCheck           (Arbitrary (arbitrary), Gen,
@@ -65,9 +67,9 @@ fromPWAlgebraic (p, (low, high)) = Algebraic (fmap toRational p) (toRational low
 
 -- Converts a rational number to an algebraic number
 -- Simply uses the polynomial p(x) = x - x'
--- and the interval (-x, x) which is guaranteed to contain x'
+-- and the interval (x' - 1, x' + 1) which is guaranteed to contain x'
 toAlgebraic :: (Real a) => a -> Algebraic
-toAlgebraic x = Algebraic (P [negate x', one]) (x', x')
+toAlgebraic x = Algebraic (P [negate x', one]) (x' - one, x' + one)
   where
     x' = toRational x
 
@@ -323,27 +325,28 @@ intervalAdd a@(Algebraic _ (lowA, highA)) b@(Algebraic _ (lowB, highB)) pab
 
 boundInt :: (Multiplicative a, Additive a, Ord a) => (a, a) -> (a, a) -> (a, a)
 boundInt intA@(lowA, highA) intB@(lowB, highB) = case sa of
-  Neg -> case sb of
-    Neg -> (highA * highB, lowA * lowB)
-    Pos -> (lowA * highB, lowB * highA)
-  Pos -> case sb of
-    Neg -> boundInt intB intA
-    Pos -> (lowA * lowB, highA * highB)
+  LEQ -> case sb of
+    LEQ -> (highA * highB, lowA * lowB)
+    GEQ -> (lowA * highB, lowB * highA)
+  GEQ -> case sb of
+    LEQ -> boundInt intB intA
+    GEQ -> (lowA * lowB, highA * highB)
   where
     sa = fromJust $ intSign intA
     sb = fromJust $ intSign intB
 
-data Sign = Neg | Pos
+data IntSign = LEQ | GEQ
   deriving (Eq)
 
-intSign :: (Additive a, Ord a) => (a, a) -> Maybe Sign
+intSign :: (Additive a, Ord a) => (a, a) -> Maybe IntSign
 intSign (low, high)
-  | low >= zero = Just Pos
-  | high <= zero = Just Neg
+  | low >= zero = Just GEQ
+  | high <= zero = Just LEQ
   | otherwise = Nothing
 
 -- Transforms the polynomial p(x) into p((x - a) / diff) in order to be able
 -- to use numRoots.
+-- Inclusive.
 numRootsInInterval :: ( AddGroup a, MulGroup a, Ord a, Show a) => Poly a -> (a, a) -> Int
 numRootsInInterval p (low, high)
   -- If the interval is a single point, then we can't scale it up to the range [0,1].
@@ -351,7 +354,7 @@ numRootsInInterval p (low, high)
   -- the result is zero, then by definition it has a root there, otherwise it has no roots.
   -- | traceShow p'' False = undefined
   | diff == zero = if evalP p low == zero then 1 else 0
-  | otherwise = numRootsInclusive p''
+  | otherwise = numRoots p''
   where
     diff = high - low
     p' = fmap (\c -> P [c]) p
@@ -395,3 +398,42 @@ testMtoPoly m = myUDecomp $ MyMatrix $ toLists mSubLambdaI
     m' = fmap (\c -> P [c]) m
     lambdaI = scaleMatrix (identity n) xP
     mSubLambdaI = m' ^-^ lambdaI
+
+data Sign = Neg | Zero | Pos
+  deriving (Eq)
+
+signAt :: Algebraic -> Poly Rational -> Sign
+signAt n q
+  | shareRoot n q = Zero
+  | otherwise = signAt' (normalizeLimits n) q
+
+-- Assumes that p and q do not share a root in the interval and that p(l) < 0 and p(h) > 0
+signAt' :: Algebraic -> Poly Rational -> Sign
+signAt' n@(Algebraic _ int@(l, _)) q
+  | numRootsInInterval q int == 0 = signAtDyadic l q
+  | otherwise = signAt' (shrinkIntervalPoly n) q
+
+shrinkIntervalPoly :: Algebraic -> Algebraic
+shrinkIntervalPoly (Algebraic p (l, h)) = case signAtDyadic mid p of
+  Neg -> Algebraic p (mid, h)
+  _   -> Algebraic p (l, mid)
+  where
+    mid = (l + h) / 2
+
+signAtDyadic :: (Ord a, AddGroup a, Multiplicative a) => a -> Poly a -> Sign
+signAtDyadic x p = case compare res zero of
+  LT -> Neg
+  EQ -> Zero
+  GT -> Pos
+  where
+    res = evalP p x
+
+normalizeLimits :: Algebraic -> Algebraic
+normalizeLimits n@(Algebraic p (l, h))
+  | evalP p l < 0 = n
+  | otherwise = Algebraic (negate p) (l, h)
+
+shareRoot :: Algebraic -> Poly Rational -> Bool
+shareRoot (Algebraic p int) q = numRootsInInterval r int > 0
+  where
+    r = gcdP p q

@@ -7,7 +7,8 @@ module Poly.Utils (
   minDegree,
   dropZeroes
 ) where
-import           Algebraic          (fromPWAlgebraic, toAlgebraic)
+import           Algebraic          (Sign (Neg, Pos), fromPWAlgebraic, signAt,
+                                     toAlgebraic)
 import           Data.Either        (isLeft)
 import           Debug.Trace        (trace, traceShow, traceShowId)
 import           DSLsofMath.Algebra (AddGroup, Additive (zero), MulGroup,
@@ -39,9 +40,9 @@ hasMaximum p1 p2 s = {-trace ("Examining:\n" ++ show p1 ++ "\nand\n" ++ show p2 
   PW.Dyadic x    -> evalP p1' x > zero && evalP p2' x < zero
   PW.Algebraic x -> let
     x' = fromPWAlgebraic x
-    p1'' = evalP (fmap toAlgebraic p1') x'
-    p2'' = evalP (fmap toAlgebraic p2') x'
-    in p1'' > zero && p2'' < zero
+    s1 = signAt x' (fmap toRational p1')
+    s2 = signAt x' (fmap toRational p2')
+    in s1 == Pos && s2 == Neg
   where
     p1' = derP p1
     p2' = derP p2
@@ -80,3 +81,5 @@ minDegree xs = minimum $ map findDegreePW xs
 -- thus we can count the number of pieces by filtering on isLeft.
 countPieces :: (AddGroup a, MulGroup a, Eq a) => PiecewisePoly a -> Int
 countPieces pw = length $ filter isLeft $ linearizePW pw
+
+
