@@ -200,6 +200,7 @@ instance (Ord f, BoFun f i) => BoFun (IteratedThresholdFun f) ([Int], i) where
 -}
 
 type IteratedThresholdFun' = IteratedThresholdFun ()
+-- Pure () represents the id function.
 
 instance BoFun IteratedThresholdFun' [Int] where
   isConst (Pure ()) = Nothing
@@ -250,10 +251,12 @@ iteratedMajFun = map thresholdMaj >>> iteratedThresholdFun
 
 -- Argument are votes needed at each stage and number of stages.
 iteratedMajFun' :: Int -> Int -> IteratedThresholdFun'
-iteratedMajFun' threshold numStages = replicate numStages threshold & iteratedMajFun
+iteratedMajFun' nBits numStages = replicate numStages threshold & iteratedMajFun
+  where
+    threshold = (nBits + 1) `div` 2
 
 iteratedMaj3 :: Int -> IteratedThresholdFun'
-iteratedMaj3 = iteratedMajFun' 2
+iteratedMaj3 = iteratedMajFun' 3
 {-
 The number of Boolean functions reachable from iteratedMaj3 is 2 plus s_n where
 * s_0 = 1,
@@ -267,7 +270,7 @@ For example:
 -}
 
 iteratedMaj5 :: Int -> IteratedThresholdFun'
-iteratedMaj5 = iteratedMajFun' 3
+iteratedMaj5 = iteratedMajFun' 5
 {-
 The number of Boolean functions reachable from iteratedMaj5 is 2 plus t_n where
 * t_0 = 1,

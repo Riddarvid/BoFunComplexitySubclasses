@@ -5,25 +5,27 @@ module LibMain (
   main,
   waysToChooseSubFunctions
 ) where
-import           Algorithm.GenAlg       (genAllBoths)
-import           Algorithm.GenAlgPW     (computeMin)
-import           Control.DeepSeq        (force)
-import           Control.Exception      (evaluate)
-import qualified Data.Set               as Set
-import           Data.Time.Clock        (diffUTCTime, getCurrentTime)
-import           DSLsofMath.Algebra     (AddGroup, MulGroup, (*))
-import           Filters                (degreePred, maximaPred)
-import           Poly.PiecewisePoly     (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils             (minDegree)
-import           Prelude                hiding ((*), (+))
-import           PrettyPrinting         (desmosShowPW)
-import           Subclasses.Comparisons (mainBench)
-import           Subclasses.Id          ()
-import           Subclasses.Symmetric   (majSymm)
-import           Subclasses.Threshold   (majThreshold)
+import           Algorithm.GenAlg     (genAllBoths)
+import           Algorithm.GenAlgPW   (computeMin)
+import           Control.DeepSeq      (force)
+import           Control.Exception    (evaluate)
+import qualified Data.Set             as Set
+import           Data.Time.Clock      (diffUTCTime, getCurrentTime)
+import           DSLsofMath.Algebra   (AddGroup, MulGroup, (*))
+import           Filters              (degreePred, maximaPred)
+import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly)
+import           Poly.Utils           (minDegree)
+import           Prelude              hiding ((*), (+))
+import           PrettyPrinting       (desmosShowPW)
+import           Subclasses.Id        ()
+import           Subclasses.Symmetric (majSymm)
+import           Subclasses.Threshold (majThreshold)
 
 main :: IO ()
-main = do
+main = putStrLn "Hello"
+
+main3 :: IO ()
+main3 = do
   --print $ computeMin $ majThreshold 301
   --print $ computeMin $ majSymm 301
   -- mainBench 51

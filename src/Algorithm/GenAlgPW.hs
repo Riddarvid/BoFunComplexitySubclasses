@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 module Algorithm.GenAlgPW (
-  computeMin
+  computeMin,
+  computeMinStep
 ) where
 import           BoFun                 (BoFun (..))
 import           Control.Arrow         ((>>>))

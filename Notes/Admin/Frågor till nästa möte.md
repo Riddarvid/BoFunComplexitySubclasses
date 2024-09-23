@@ -6,6 +6,7 @@
 	- Flame graphs för optimering
 	- Ny mer uttrycksfull version av symmetric, nästan lika snabb som threshold.
 	- Städat
+	- Iterated symmetric functions
 - Hur testar vi hastigheten? Memoization gör att benchmarks blir ganska värdelösa.
 	- Om vi hade explicit memoization i state-monaden hade vi kunnat purgea statet mellan executions.
 	- Annars får vi bara köra funktionerna en åt gången med tillräckligt högt antal bitar för att kunna jämföra.
@@ -14,5 +15,6 @@
 - borde vi lägga till flera authors på våra commits?
 - Antal threshold functions
 	- Gå igenom vårt försök
+	- Har vi tolkat det rätt: Varje partition har som index storleken av elementen i partitionen. Storleken av ett element är lika med antalet konstruktorer som använts för att bygga elementet.
 	- Hur borde vi använda feat? Vi försökte köra deriveEnumerable på ThresholdFun, men då behövde MultiSet i sin tur vara enumerable.
 - Hur går vi vidare?

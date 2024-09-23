@@ -48,6 +48,7 @@ library
       Subclasses.Even
       Subclasses.General
       Subclasses.Id
+      Subclasses.Iterated
       Subclasses.Monotone
       Subclasses.One
       Subclasses.Symmetric

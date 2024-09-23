@@ -50,6 +50,7 @@ Specifically, iff a function gives the same output for 001, 010, 100 and the sam
 
 Generalizing to n bits, we can see that the maximum number of ones will always be n, and the minimum will be 0, resulting in 2^(n + 1) possible symmetric functions with n bits.
 
+Threshold functions are a subset of symmetric functions. This means that we can express more functions with Symmetric.
 ## Monotonic functions
 
 For 2 bits we find that the number of boolean functions is 6, simply by starting with a Hasse diagram where all nodes have truth value 0 and then exploring which nodes can change truth value and still be monotonic.
