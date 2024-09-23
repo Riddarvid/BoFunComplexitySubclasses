@@ -24,14 +24,16 @@ import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
                                         Property, chooseInt, conjoin, vector,
                                         (===))
 
-mainBench :: IO ()
-mainBench = benchBoFun "maj9"
+mainBench :: Int -> IO ()
+mainBench n = benchBoFun name
   [
-    complexityBench "symmetric basic maj9" (majSymmBasic 9),
-    complexityBench "symmetric maj9" (majSymm 9),
-    complexityBench "threshold maj9" (thresholdFunReplicate (thresholdMaj 9) Nothing :: ThresholdFun (Maybe Bool)),
-    complexityBench "generic maj9" (bddAsc $ majGeneral 9)
+    --complexityBench ("symmetric basic" ++ name) (majSymmBasic n),
+    --complexityBench ("symmetric " ++ name) (majSymm n)
+    complexityBench ("threshold " ++ name) (thresholdFunReplicate (thresholdMaj n) Nothing :: ThresholdFun (Maybe Bool))
+    --complexityBench ("generic " ++ name) (bddAsc $ majGeneral n)
   ]
+  where
+    name = "maj" ++ show n
 
 benchBoFun :: String -> [Benchmark] -> IO ()
 benchBoFun name benchmarks = defaultMain [bgroup name benchmarks]

@@ -165,7 +165,7 @@ instance (Ord f, BoFun f i) => BoFun (ThresholdFun f) (Int, i) where
     (u, _) = MultiSet.toAscOccurList us !! i
     us' = us & MultiSet.delete u
     u' = setBit (v, val) u
-    t' = t - thresholdConst val--(not val)
+    t' = t - thresholdConst (not val)
 
 -- | A thresholding function with copies of a single subfunction.
 thresholdFunReplicate :: (Ord f) => Threshold -> f -> ThresholdFun f

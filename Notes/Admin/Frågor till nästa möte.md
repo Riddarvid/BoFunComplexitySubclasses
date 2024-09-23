@@ -4,9 +4,12 @@
 	- Skrivit quickcheck, generella metoder
 	- Benchmarking
 	- Flame graphs för optimering
-	- Ny mer uttrycksfull version av symmetric, snabbare för maj9 än threshold-versionen.
-		- Osäkra på varför den är snabbare
+	- Ny mer uttrycksfull version av symmetric, nästan lika snabb som threshold.
 	- Städat
+- Hur testar vi hastigheten? Memoization gör att benchmarks blir ganska värdelösa.
+	- Om vi hade explicit memoization i state-monaden hade vi kunnat purgea statet mellan executions.
+	- Annars får vi bara köra funktionerna en åt gången med tillräckligt högt antal bitar för att kunna jämföra.
+- I vår rapport, hur mycket borde vi skriva om previous work?
 - github-licens
 - borde vi lägga till flera authors på våra commits?
 - Antal threshold functions

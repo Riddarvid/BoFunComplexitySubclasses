@@ -6,7 +6,11 @@ module LibMain (
   waysToChooseSubFunctions
 ) where
 import           Algorithm.GenAlg       (genAllBoths)
+import           Algorithm.GenAlgPW     (computeMin)
+import           Control.DeepSeq        (force)
+import           Control.Exception      (evaluate)
 import qualified Data.Set               as Set
+import           Data.Time.Clock        (diffUTCTime, getCurrentTime)
 import           DSLsofMath.Algebra     (AddGroup, MulGroup, (*))
 import           Filters                (degreePred, maximaPred)
 import           Poly.PiecewisePoly     (BothPW (BothPW), PiecewisePoly)
@@ -15,9 +19,20 @@ import           Prelude                hiding ((*), (+))
 import           PrettyPrinting         (desmosShowPW)
 import           Subclasses.Comparisons (mainBench)
 import           Subclasses.Id          ()
+import           Subclasses.Symmetric   (majSymm)
+import           Subclasses.Threshold   (majThreshold)
 
 main :: IO ()
-main = mainBench
+main = do
+  --print $ computeMin $ majThreshold 301
+  --print $ computeMin $ majSymm 301
+  -- mainBench 51
+  s1 <- getCurrentTime
+  _ <- evaluate $ force $ computeMin $ majThreshold 9
+  s2 <- getCurrentTime
+  _ <- evaluate $ force $ computeMin $ majSymm 9
+  s3 <- getCurrentTime
+  print (diffUTCTime s2 s1, diffUTCTime s3 s2)
 
 main2 :: IO ()
 main2 = do
