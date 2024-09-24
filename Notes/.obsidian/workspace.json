@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md"
+                "file": "Admin/TODO för veckan.md"
               }
             }
           }
@@ -148,10 +148,11 @@
   },
   "active": "2ab3e76148d1f1fb",
   "lastOpenFiles": [
+    "Admin/Frågor till nästa möte.md",
+    "Admin/Svar från senaste mötet.md",
     "Admin/TODO för veckan.md",
     "Other/Random observations.md",
     "Exploration of classes/ThresholdFuns.md",
-    "Admin/Frågor till nästa möte.md",
     "Exploration of classes/Analysis of classes.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj?.md",
     "Exploration of classes/Observation about PPs.md",
@@ -163,7 +164,6 @@
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Algebraic numbers/evalpoly.org",
     "Exploration of classes/Benchmark comparisons.md",
-    "Admin/Svar från senaste mötet.md",
     "Report/Things to put in the paper.md",
     "Report",
     "Other",

@@ -69,9 +69,6 @@ thresholdIsConst (Threshold (nt, nf)) = if
 thresholdMaj :: Int -> Threshold
 thresholdMaj = duplicate >>> Threshold
 
-
--- QUESTION: How does this represent a threshold function? Is the threshold tuple the number of 0/1s?
-
 -- | A threshold-type Boolean function.
 data ThresholdFun f = ThresholdFun {
   threshold          :: Threshold,
@@ -82,6 +79,8 @@ data ThresholdFun f = ThresholdFun {
   -- Arvid's comment: Right now, all the elements of thresholdFunctions must have the same
   -- type, i.e. Symmetric or ThresholdFun etc. Doesn't this limit what we can express?
 } deriving (Show)
+
+
 
 -- Necessitated by misdesign of Haskell typeclasses.
 instance Eq1 ThresholdFun where

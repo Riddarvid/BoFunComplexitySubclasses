@@ -21,18 +21,18 @@ import           Subclasses.Id        ()
 import           Subclasses.Symmetric (majSymm)
 import           Subclasses.Threshold (majThreshold)
 
-main :: IO ()
-main = putStrLn "Hello"
-
 main3 :: IO ()
-main3 = do
+main3 = putStrLn "Hello"
+
+main :: IO ()
+main = do
   --print $ computeMin $ majThreshold 301
   --print $ computeMin $ majSymm 301
   -- mainBench 51
   s1 <- getCurrentTime
-  _ <- evaluate $ force $ computeMin $ majThreshold 9
+  _ <- evaluate $ force $ computeMin $ majThreshold 101
   s2 <- getCurrentTime
-  _ <- evaluate $ force $ computeMin $ majSymm 9
+  _ <- evaluate $ force $ computeMin $ majSymm 101
   s3 <- getCurrentTime
   print (diffUTCTime s2 s1, diffUTCTime s3 s2)
 

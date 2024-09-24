@@ -26,6 +26,7 @@ import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Show1 (liftShowsPrec), showsBinaryWith)
 import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
+import           Subclasses.Iterated   (Iterated)
 import           Utils                 (naturals)
 
 --------- BasicSymmetric -----------------------------
@@ -162,3 +163,6 @@ majRes nBits = replicate votes False ++ replicate votes True
 
 maj33 :: IteratedSymmetricFun
 maj33 = iteratedMajFun 3 2
+
+type IteratedSymmetricFun2 = Iterated Symmetric
+
