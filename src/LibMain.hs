@@ -13,7 +13,7 @@ import qualified Data.Set             as Set
 import           Data.Time.Clock      (diffUTCTime, getCurrentTime)
 import           DSLsofMath.Algebra   (AddGroup, MulGroup, (*))
 import           Filters              (degreePred, maximaPred)
-import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly, showPW)
+import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly)
 import           Poly.Utils           (minDegree)
 import           Prelude              hiding ((*), (+))
 import           PrettyPrinting       (desmosShowPW)

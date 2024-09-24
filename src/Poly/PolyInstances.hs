@@ -3,13 +3,17 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE InstanceSigs          #-}
 module Poly.PolyInstances () where
-import           Algorithm.Algor    (Algor (..))
-import           DSLsofMath.Algebra (Additive (zero, (+)),
-                                     Multiplicative (one, (*)), Ring, (-))
-import           DSLsofMath.PSDS    (Poly, xP)
-import           Poly.PolyCmp       (OrdField, cmpPoly)
-import           Prelude            hiding ((*), (+), (-))
-import           Thin               (Thin (cmp))
+import           Algorithm.Algor           (Algor (..))
+import           DSLsofMath.Algebra        (Additive (zero, (+)),
+                                            Multiplicative (one, (*)), Ring,
+                                            (-))
+import           DSLsofMath.PSDS           (Poly (P), xP)
+import           Poly.PolyCmp              (OrdField, cmpPoly)
+import           Prelude                   hiding ((*), (+), (-))
+import           Test.QuickCheck           (Arbitrary (arbitrary), resize)
+import           Test.QuickCheck.Arbitrary (Arbitrary (shrink))
+import           Test.QuickCheck.Gen       (Gen)
+import           Thin                      (Thin (cmp))
 
 
 instance OrdField a => Thin (Poly a) where
@@ -30,3 +34,9 @@ pickPoly _i = pickPoly'
 
 pickPoly' :: Ring a => Poly a -> Poly a -> Poly a
 pickPoly' p0 p1 = one + (one - xP)*p0 + xP*p1
+
+instance Arbitrary a => Arbitrary (Poly a) where
+  arbitrary :: Gen (Poly a)
+  arbitrary = P <$> resize 10 arbitrary
+  shrink :: Poly a -> [Poly a]
+  shrink (P xs) = map P $ shrink xs

@@ -52,7 +52,6 @@ genRootPoly = do
 
 -------------------------- Conversions to/from algebraic -------------------------
 
--- TODO-NEW dubbelkolla om exclusive/inclusive är korrekt
 fromPWAlgebraic :: (Real a) => (Poly a, (a, a)) -> Algebraic
 fromPWAlgebraic (p, (low, high)) = Algebraic (fmap toRational p) (toRational low, toRational high)
 
@@ -66,14 +65,17 @@ toAlgebraic x = Algebraic (P [negate x', one]) (x' - one, x' + one)
 
 ------------ Interval shrinking --------------------------------------------------
 
+-- Is not used anywhere right now but useful for approximating an algebraic number
+-- with arbitrary precision.
+-- An alternative could be using the code from Filter, in the function
+-- shrinkIntervalPoly, which works on the assumption that low <= 0, high >= 0.
 -- Shrinks the interval by dividing it into two pieces and checking which
--- piece has a root.
--- TODO-NEW kolla på inclusive/exclusive
+-- piece contains the root.
 -- TODO-NEW quickCheck
 shrinkIntervalStep :: Algebraic -> Algebraic
 shrinkIntervalStep (Algebraic p (low, high))
   | nRoots > 1 || nRoots < 0 = error "Interval has too many roots"
-  |otherwise = case numRootsInInterval p (low, mid) of
+  |otherwise = case rootsLeft of
   0 -> Algebraic p (mid, high)
   1 -> Algebraic p (low, mid)
   _ -> error "Original interval should contain exactly one root"
