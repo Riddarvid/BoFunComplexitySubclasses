@@ -13,19 +13,19 @@ import qualified Data.Set             as Set
 import           Data.Time.Clock      (diffUTCTime, getCurrentTime)
 import           DSLsofMath.Algebra   (AddGroup, MulGroup, (*))
 import           Filters              (degreePred, maximaPred)
-import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly)
+import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly, showPW)
 import           Poly.Utils           (minDegree)
 import           Prelude              hiding ((*), (+))
 import           PrettyPrinting       (desmosShowPW)
 import           Subclasses.Id        ()
-import           Subclasses.Symmetric (majSymm)
+import           Subclasses.Symmetric (maj33, majSymm)
 import           Subclasses.Threshold (majThreshold)
 
-main3 :: IO ()
-main3 = putStrLn "Hello"
-
 main :: IO ()
-main = do
+main = putStrLn $ desmosShowPW $ computeMin maj33
+
+main3 :: IO ()
+main3 = do
   --print $ computeMin $ majThreshold 301
   --print $ computeMin $ majSymm 301
   -- mainBench 51

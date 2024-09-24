@@ -15,12 +15,11 @@ module Subclasses.Symmetric (
   iteratedMajFun
 ) where
 
-import           BoFun                 (BoFun (..))
+import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
 import           Control.Monad.Free    (Free (Free, Pure))
 import           Data.Function         ((&))
-import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable,
-                                        deriveMemoize)
+import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Ord1 (liftCompare), Ord2 (liftCompare2),
                                         Show1 (liftShowsPrec), showsBinaryWith)
@@ -111,49 +110,30 @@ instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
     subFuns' = subFuns & MultiSet.delete subFun
     subFun' = setBit (v, val) subFun
 
+instance Constable Symmetric where
+  mkConst :: Bool -> Symmetric f
+  mkConst val = Symmetric [val] MultiSet.empty
+
+-- Examples:
+
 majSymm :: Int -> Symmetric (Maybe Bool)
 majSymm n = Symmetric (replicate n' False ++ replicate n' True) $ MultiSet.fromOccurList [(Nothing, n)]
   where
     n' = (n `div` 2) + 1
 
-constSymm :: Bool -> Symmetric a
-constSymm val = Symmetric [val] MultiSet.empty
-
 ----------- Iterated Symmetric -------------------------
 
--- Implemented very similarly to IteratedThresholdFun.
-type IteratedSymmetricFun' f = Free Symmetric f
-type IteratedSymmetricFun = IteratedSymmetricFun' ()
-
-instance (Ord f, Memoizable f) => Memoizable (IteratedSymmetricFun' f) where
-  memoize :: (IteratedSymmetricFun' f -> v) -> IteratedSymmetricFun' f -> v
-  memoize = $(deriveMemoize ''Free)
-
-instance BoFun IteratedSymmetricFun [Int] where
-  isConst :: IteratedSymmetricFun -> Maybe Bool
-  isConst (Pure ()) = Nothing
-  isConst (Free u)  = isConst u
-
-  variables :: IteratedSymmetricFun -> [[Int]]
-  variables (Pure ()) = [[]]
-  variables (Free f)  = variables f & map (uncurry (:))
-
-  setBit :: ([Int], Bool) -> IteratedSymmetricFun -> IteratedSymmetricFun
-  setBit ([], val) (Pure _)     = Free $ constSymm val
-  setBit (i : is, val) (Free f) = Free $ setBit ((i, is), val) f
-  setBit _ _                    = error "Should not happen"
-
-iteratedSymmFun :: [(Int, [Bool])] -> IteratedSymmetricFun
+iteratedSymmFun :: [(Int, [Bool])] -> Iterated Symmetric
 iteratedSymmFun [] = Pure ()
 iteratedSymmFun ((nBits, res) : ress) = Free $
   Symmetric res $ MultiSet.fromOccurList [(subFun, nBits)]
   where
     subFun = iteratedSymmFun ress
 
-iteratedMajFun :: Int -> Int -> IteratedSymmetricFun
+iteratedMajFun :: Int -> Int -> Iterated Symmetric
 iteratedMajFun nBits numStages = replicate numStages nBits & iteratedMajFun'
 
-iteratedMajFun' :: [Int] -> IteratedSymmetricFun
+iteratedMajFun' :: [Int] -> Iterated Symmetric
 iteratedMajFun' = iteratedSymmFun . map (\nBits -> (nBits, majRes nBits))
 
 majRes :: Int -> [Bool]
@@ -161,8 +141,9 @@ majRes nBits = replicate votes False ++ replicate votes True
   where
     votes = (nBits + 1) `div` 2
 
-maj33 :: IteratedSymmetricFun
+maj33 :: Iterated Symmetric
 maj33 = iteratedMajFun 3 2
 
-type IteratedSymmetricFun2 = Iterated Symmetric
+
+
 

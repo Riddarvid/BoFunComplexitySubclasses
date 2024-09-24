@@ -6,7 +6,8 @@ module BoFun (
   viewConst,
   outgoing,
   reachable,
-  eval
+  eval,
+  Constable(mkConst)
 ) where
 
 import qualified Data.Set as Set
@@ -38,3 +39,6 @@ eval f vals = case isConst f of
   Nothing -> case vals of
     []       -> Nothing
     (x : xs) -> eval (setBit x f) xs
+
+class Constable f where
+  mkConst :: Bool -> f g

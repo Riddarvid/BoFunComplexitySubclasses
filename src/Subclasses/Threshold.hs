@@ -5,6 +5,7 @@
 {-# LANGUAGE TemplateHaskell        #-}
 {-# LANGUAGE UndecidableInstances   #-}
 {-# HLINT ignore "Replace case with maybe" #-}
+{-# LANGUAGE InstanceSigs           #-}
 module Subclasses.Threshold where
 
 import           Control.Arrow         ((>>>))
@@ -19,8 +20,9 @@ import           Prelude               hiding (negate, sum, (+), (-))
 
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
-import           BoFun                 (BoFun (..))
+import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Debug.Trace           (traceShow)
+import           Subclasses.Iterated   (Iterated, Iterated')
 import           Test.Feat             (deriveEnumerable)
 import           Utils                 (Square, boolToInt, chooseMany,
                                         duplicate, lookupBool, naturals,
@@ -166,22 +168,19 @@ instance (Ord f, BoFun f i) => BoFun (ThresholdFun f) (Int, i) where
     u' = setBit (v, val) u
     t' = t - thresholdConst (not val)
 
+instance Constable ThresholdFun where
+  mkConst :: Bool -> ThresholdFun f
+  mkConst = thresholdFunConst
+
 -- | A thresholding function with copies of a single subfunction.
 thresholdFunReplicate :: (Ord f) => Threshold -> f -> ThresholdFun f
 thresholdFunReplicate t u = ThresholdFun t $ MultiSet.fromOccurList [(u, thresholdNumInputs t)]
 
 
 -- | Boolean functions built from iterated thresholding.
-type IteratedThresholdFun f = Free ThresholdFun f
+type IteratedThresholdFun = Iterated ThresholdFun
 
--- Could special case the above type to avoid pulling in the Kmettiverse.
--- data IteratedThresholdFun f = Pure f | Free (IteratedThresholdFun (IteratedThresholdFun f))
---   deriving (Show, Eq, Ord)
-
-instance (Ord f, Memoizable f) => Memoizable (IteratedThresholdFun f) where
-  memoize = $(deriveMemoize ''Free)
-
-iteratedThresholdFunConst :: Bool -> IteratedThresholdFun f
+iteratedThresholdFunConst :: Bool -> Iterated' ThresholdFun f
 iteratedThresholdFunConst = thresholdFunConst >>> Free
 
 {-
@@ -197,20 +196,7 @@ instance (Ord f, BoFun f i) => BoFun (IteratedThresholdFun f) ([Int], i) where
   setBit (([], j), val) (Pure u) = Pure $ setBit (j, val) u
   setBit ((i : is, j), val) (Free v) = Free $ setBit ((i, (is, j)), val) v
 -}
-
-type IteratedThresholdFun' = IteratedThresholdFun ()
 -- Pure () represents the id function.
-
-instance BoFun IteratedThresholdFun' [Int] where
-  isConst (Pure ()) = Nothing
-  isConst (Free u)  = isConst u
-
-  variables (Pure ()) = [[]]
-  variables (Free v)  = variables v & map (uncurry (:))
-
-  setBit ([], val) (Pure u)     = iteratedThresholdFunConst val
-  setBit (i : is, val) (Free v) = Free $ setBit ((i, is), val) v
-
 
 -- Example Boolean functions.
 
@@ -223,7 +209,7 @@ majThreshold n = thresholdFunReplicate (thresholdMaj n') Nothing
   where
     n' = (n `div` 2) + 1
 
-iteratedThresholdFun :: [Threshold] -> IteratedThresholdFun'
+iteratedThresholdFun :: [Threshold] -> IteratedThresholdFun
 iteratedThresholdFun [] = Pure ()
 iteratedThresholdFun (t : ts) = Free $ thresholdFunReplicate t $ iteratedThresholdFun ts
 
@@ -245,16 +231,16 @@ That is:
 numReachable :: [Threshold] -> Integer
 numReachable = numReachable' >>> (+ 2)
 
-iteratedMajFun :: [Int] -> IteratedThresholdFun'
+iteratedMajFun :: [Int] -> IteratedThresholdFun
 iteratedMajFun = map thresholdMaj >>> iteratedThresholdFun
 
 -- Argument are votes needed at each stage and number of stages.
-iteratedMajFun' :: Int -> Int -> IteratedThresholdFun'
+iteratedMajFun' :: Int -> Int -> IteratedThresholdFun
 iteratedMajFun' nBits numStages = replicate numStages threshold & iteratedMajFun
   where
     threshold = (nBits + 1) `div` 2
 
-iteratedMaj3 :: Int -> IteratedThresholdFun'
+iteratedMaj3 :: Int -> IteratedThresholdFun
 iteratedMaj3 = iteratedMajFun' 3
 {-
 The number of Boolean functions reachable from iteratedMaj3 is 2 plus s_n where
@@ -268,7 +254,7 @@ For example:
 * s_4 = 849110490844,
 -}
 
-iteratedMaj5 :: Int -> IteratedThresholdFun'
+iteratedMaj5 :: Int -> IteratedThresholdFun
 iteratedMaj5 = iteratedMajFun' 5
 {-
 The number of Boolean functions reachable from iteratedMaj5 is 2 plus t_n where
