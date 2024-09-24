@@ -1,5 +1,3 @@
-
-- licens BSD 3
 - Analysera threshold/iterated threshold och uppdatera tabellen
 	- Antal thresholdfunctions:
 		- Givet n, hitta alla partitioner (listor av tal >= 1 som summeras till n) av n. Ta bort dubletter.

@@ -2,8 +2,7 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-type-defaults #-}
 module LibMain (
-  main,
-  waysToChooseSubFunctions
+  main
 ) where
 import           Algorithm.GenAlg     (genAllBoths)
 import           Algorithm.GenAlgPW   (computeMin)
@@ -52,8 +51,41 @@ findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
 toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
 
--- We want to use this to count the number of threshold functions
-waysToChooseSubFunctions :: Integer -> Integer
-waysToChooseSubFunctions 0 = 0
-waysToChooseSubFunctions 1 = 4
-waysToChooseSubFunctions n = sum $ map (\i -> 2^(2^i) * waysToChooseSubFunctions (n - i)) [1 .. n]
+test :: Integer -> (Integer, Integer)
+test n = (numberOfFunctions n, numberOfIteratedThresholdFuns n)
+
+numberOfIteratedThresholdFuns :: Integer -> Integer
+-- 2 constant values exist
+numberOfIteratedThresholdFuns 0 = 2
+-- The logic for n == 1 is that we cannot express the function "not" as an iterated threshold fun.
+-- Therefore, we can only choose the id function. We can only choose a single threshold
+-- as well, resulting in 1 * 1 = 1 iterated threshold functions with 1 bit.
+numberOfIteratedThresholdFuns 1 = 1
+numberOfIteratedThresholdFuns n = waysToChooseThresholdFun n
+
+type Partition = [Integer]
+
+waysToChooseThresholdFun :: Integer -> Integer
+waysToChooseThresholdFun n = sum $ map (\partition -> toInteger (length partition) * waysToChooseSubFunctions partition) $ partitions n
+
+waysToChooseSubFunctions :: Partition -> Integer
+waysToChooseSubFunctions = product . map numberOfIteratedThresholdFuns
+
+numberOfFunctions :: Integer -> Integer
+numberOfFunctions n = 2^(2^n)
+
+-- The reason that we're dropping the last one is that
+-- f == ThresholdFun (1,1) [f]. We are not creating a new function by simply wrapping it
+-- in a ThresholdFun.
+partitions :: Integer -> [Partition]
+partitions n = case partitions' 1 n of
+  [] -> []
+  xs -> init xs
+
+-- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
+-- The first element in the partition must be >= highest.
+partitions' :: Integer -> Integer -> [Partition]
+partitions' highest n
+  | n == 0 = [[]]
+  | highest > n = []
+  | otherwise = concatMap (\m -> map (m :) $ partitions' m (n - m)) [highest .. n]

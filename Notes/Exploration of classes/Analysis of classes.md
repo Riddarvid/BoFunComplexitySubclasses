@@ -133,6 +133,11 @@ $$f(n) = \Sum_{i=1}^{n} 2^{2^i} \cdot f(n-i)$$
 
 Något är fel, vi får för höga tal.
 
+Frågor:
+
+- Den implementerade klassen kan trivialt representera alla boolska funktioner genom f -> Threshold (1,1) \[f]. Detta innebär att antalet threshold functions är lika med antalet funktioner.
+- Vad exakt är en iterated function? Är det när vi tar samma funktion och upprepar eller behöver det bara vara en threshold function över andra threshold functions t.ex?
+
 ## Gates
 
 With a basis consisting only of AND, you can only build n-bit AND-gates. (You can also ignore some bits of the input but this is not a very interesting case.)
