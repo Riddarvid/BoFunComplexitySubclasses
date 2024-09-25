@@ -18,7 +18,7 @@ import           Criterion.Main        (defaultMain)
 import           Data.Function.Memoize (Memoizable)
 import           Subclasses.General    (majGeneral)
 import           Subclasses.Id         ()
-import           Subclasses.Symmetric  (iteratedMajFun, majSymm)
+import           Subclasses.Symmetric  (iteratedMajFun, majSymm, majSymmBasic)
 import           Subclasses.Threshold  (ThresholdFun, iteratedMajFun',
                                         majThreshold, thresholdFunReplicate,
                                         thresholdMaj)
@@ -29,10 +29,10 @@ import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
 mainBench :: Int -> IO ()
 mainBench n = benchBoFun name
   [
-    --complexityBench ("symmetric basic" ++ name) (majSymmBasic n),
-    --complexityBench ("symmetric " ++ name) (majSymm n)
-    complexityBench ("threshold " ++ name) (thresholdFunReplicate (thresholdMaj n) Nothing :: ThresholdFun (Maybe Bool))
-    --complexityBench ("generic " ++ name) (bddAsc $ majGeneral n)
+    complexityBench ("symmetric basic" ++ name) (majSymmBasic n),
+    complexityBench ("symmetric " ++ name) (majSymm n),
+    complexityBench ("threshold " ++ name) (majThreshold n),
+    complexityBench ("generic " ++ name) (majGeneral n)
   ]
   where
     name = "maj" ++ show n

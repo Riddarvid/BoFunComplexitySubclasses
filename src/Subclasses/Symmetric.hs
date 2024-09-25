@@ -3,6 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Subclasses.Symmetric (
   BasicSymmetric,
   mkBasicSymmetric,
@@ -18,6 +19,7 @@ module Subclasses.Symmetric (
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
 import           Control.Monad.Free    (Free (Free, Pure))
+import           Data.Foldable         (Foldable (toList))
 import           Data.Function         ((&))
 import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
@@ -25,6 +27,8 @@ import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Show1 (liftShowsPrec), showsBinaryWith)
 import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
+import           Data.Sequence         (Seq (Empty, (:<|), (:|>)))
+import qualified Data.Sequence         as Seq
 import           Subclasses.Iterated   (Iterated)
 import           Utils                 (naturals)
 
@@ -62,10 +66,17 @@ majSymmBasic n = mkBasicSymmetric n (>= threshold)
 
 ---------------- Symmetric -----------------------------------------
 
+type Range = (Int, Int)
+
+-- Invariant: the ranges are always sorted
 data Symmetric f = Symmetric {
-  symmResultvector :: [Bool],
+  symmResultvector :: Seq (Range, Bool),
   symmSubFuns      :: MultiSet f
 }
+
+instance Memoizable a => Memoizable (Seq a) where
+  memoize :: (Seq a -> v) -> Seq a -> v
+  memoize f = toList >>> memoize (Seq.fromList >>> f)
 
 instance Eq1 Symmetric where
   liftEq :: (a -> b -> Bool) -> Symmetric a -> Symmetric b -> Bool
@@ -91,10 +102,9 @@ instance (Ord f, Memoizable f) => Memoizable (Symmetric f) where
 
 instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
   isConst :: Symmetric f -> Maybe Bool
-  isConst f
-    | and $ symmResultvector f = Just True
-    | all not $ symmResultvector f = Just False
-    | otherwise = Nothing
+  isConst (Symmetric ranges _) = case ranges of
+    (_, val) :<| Empty -> Just val
+    _                  -> Nothing
   variables :: Symmetric f -> [(Int, i)]
   variables (Symmetric _ subFuns) = do
     (i, (u, _)) <- subFuns & MultiSet.toAscOccurList & zip naturals
@@ -103,27 +113,43 @@ instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
   setBit :: ((Int, i), Bool) -> Symmetric f -> Symmetric f
   setBit ((i, v), val) (Symmetric rv subFuns) = case isConst subFun' of
     Just res  -> Symmetric rv' subFuns'
-      where rv' = if res then tail rv else init rv
+      where rv' = if res then removeLowest rv else removeHighest rv
     Nothing -> Symmetric rv $ MultiSet.insert subFun' subFuns'
     where
     (subFun, _) = MultiSet.toAscOccurList subFuns !! i
     subFuns' = subFuns & MultiSet.delete subFun
     subFun' = setBit (v, val) subFun
 
+removeLowest :: Seq (Range, Bool) -> Seq (Range, Bool)
+removeLowest (((low, high), val) :<| xs)
+  | low' == high = xs
+  | otherwise = ((low', high), val) :<| xs
+  where
+    low' = low + 1
+removeLowest Empty = undefined
+
+removeHighest :: Seq (Range, Bool) -> Seq (Range, Bool)
+removeHighest (xs :|> ((low, high), val))
+  | low == high' = xs
+  | otherwise = xs :|> ((low, high'), val)
+  where
+    high' = high - 1
+removeHighest Empty = undefined
+
 instance Constable Symmetric where
   mkConst :: Bool -> Symmetric f
-  mkConst val = Symmetric [val] MultiSet.empty
+  mkConst val = Symmetric (Seq.singleton ((0, 1), val)) MultiSet.empty
 
 -- Examples:
 
 majSymm :: Int -> Symmetric (Maybe Bool)
-majSymm n = Symmetric (replicate n' False ++ replicate n' True) $ MultiSet.fromOccurList [(Nothing, n)]
+majSymm n = Symmetric (Seq.fromList [((0, n'), False), ((n', n' + n'), True)]) $ MultiSet.fromOccurList [(Nothing, n)]
   where
     n' = (n `div` 2) + 1
 
 ----------- Iterated Symmetric -------------------------
 
-iteratedSymmFun :: [(Int, [Bool])] -> Iterated Symmetric
+iteratedSymmFun :: [(Int, Seq (Range, Bool))] -> Iterated Symmetric
 iteratedSymmFun [] = Pure ()
 iteratedSymmFun ((nBits, res) : ress) = Free $
   Symmetric res $ MultiSet.fromOccurList [(subFun, nBits)]
@@ -136,8 +162,8 @@ iteratedMajFun nBits numStages = replicate numStages nBits & iteratedMajFun'
 iteratedMajFun' :: [Int] -> Iterated Symmetric
 iteratedMajFun' = iteratedSymmFun . map (\nBits -> (nBits, majRes nBits))
 
-majRes :: Int -> [Bool]
-majRes nBits = replicate votes False ++ replicate votes True
+majRes :: Int -> Seq (Range, Bool)
+majRes nBits = Seq.fromList [((0, votes), False), ((votes, votes + votes), True)]
   where
     votes = (nBits + 1) `div` 2
 

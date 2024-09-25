@@ -4,34 +4,38 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg     (genAllBoths)
-import           Algorithm.GenAlgPW   (computeMin)
-import           Control.DeepSeq      (force)
-import           Control.Exception    (evaluate)
-import qualified Data.Set             as Set
-import           Data.Time.Clock      (diffUTCTime, getCurrentTime)
-import           DSLsofMath.Algebra   (AddGroup, MulGroup)
-import           Filters              (degreePred, maximaPred)
-import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils           (minDegree)
-import           Prelude              hiding ((*), (+))
-import           PrettyPrinting       (desmosShowPW)
-import           Subclasses.Id        ()
-import           Subclasses.Symmetric (maj33, majSymm)
-import           Subclasses.Threshold (majThreshold)
+import           Algorithm.GenAlg       (genAllBoths)
+import           Algorithm.GenAlgPW     (computeMin)
+import           Control.DeepSeq        (force)
+import           Control.Exception      (evaluate)
+import qualified Data.Set               as Set
+import           Data.Time.Clock        (diffUTCTime, getCurrentTime)
+import           DSLsofMath.Algebra     (AddGroup, MulGroup)
+import           Filters                (degreePred, maximaPred)
+import           Poly.PiecewisePoly     (BothPW (BothPW), PiecewisePoly)
+import           Poly.Utils             (minDegree)
+import           Prelude                hiding ((*), (+))
+import           PrettyPrinting         (desmosShowPW)
+import           Subclasses.Comparisons (mainBench)
+import           Subclasses.Id          ()
+import           Subclasses.Symmetric   (maj33, majSymm)
+import           Subclasses.Threshold   (majThreshold)
 
 main :: IO ()
-main = putStrLn $ desmosShowPW $ computeMin maj33
+main = mainBench 101
 
 main3 :: IO ()
-main3 = do
+main3 = putStrLn $ desmosShowPW $ computeMin maj33
+
+main4 :: IO ()
+main4 = do
   --print $ computeMin $ majThreshold 301
   --print $ computeMin $ majSymm 301
   -- mainBench 51
   s1 <- getCurrentTime
   _ <- evaluate $ force $ computeMin $ majThreshold 101
   s2 <- getCurrentTime
-  _ <- evaluate $ force $ computeMin $ majSymm 101
+  _ <- evaluate $ force $ computeMin $ majThreshold 101
   s3 <- getCurrentTime
   print (diffUTCTime s2 s1, diffUTCTime s3 s2)
 
