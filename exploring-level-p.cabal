@@ -47,6 +47,7 @@ library
       Subclasses.Comparisons
       Subclasses.Counting
       Subclasses.Even
+      Subclasses.Gates
       Subclasses.General
       Subclasses.Id
       Subclasses.Iterated

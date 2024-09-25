@@ -4,10 +4,8 @@
 - Analysera gate-funktioner, t.ex. iterated AND.
 	- Alternativt funktioner som kan byggas av ett begränsat set av gates.
 - Se om man kan dra paralleller till entropi (Shannon) eller Huffman coding
-- Fråga Patrik om vilken licens vi borde lägga repot under
 -  Om vi vill ägna oss åt att hitta fler funktionsklasser kan vi experimentera med att fundera på hur det hade sett ut om vi hade booleans med tre värden.
 	- Hur kan vi ändra t.ex. threshold, iterated threshold.
-- Iterated Gate
 
 ## TODO Arvid:
 

@@ -1,3 +1,1 @@
-- Undersök klassen <= k ettor
-- Undersök memoization + benchmarks
-- Gör Symmetric mer effektiv genom att antingen använda Sequence eller att arbeta med ranges.
+- Iterated Gate
