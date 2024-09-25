@@ -8,25 +8,29 @@
 {-# LANGUAGE InstanceSigs           #-}
 module Subclasses.Threshold where
 
-import           Control.Arrow         ((>>>))
-import           Control.Monad.Free    (Free (..))
-import           Data.Function         ((&))
-import           Data.Function.Memoize (Memoizable (..), deriveMemoizable,
-                                        deriveMemoize)
-import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
-                                        Ord2 (..), Show1 (..), showsBinaryWith)
-import qualified Data.MultiSet         as MultiSet
-import           Prelude               hiding (negate, sum, (+), (-))
+import           Control.Arrow            ((>>>))
+import           Control.Monad.Free       (Free (..))
+import           Data.Function            ((&))
+import           Data.Function.Memoize    (Memoizable (..), deriveMemoizable,
+                                           deriveMemoize)
+import           Data.Functor.Classes     (Eq1 (..), Eq2 (..), Ord1 (..),
+                                           Ord2 (..), Show1 (..),
+                                           showsBinaryWith)
+import qualified Data.MultiSet            as MultiSet
+import           Prelude                  hiding (negate, sum, (+), (-))
 
-import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
+import           DSLsofMath.Algebra       (AddGroup (..), Additive (..), sum,
+                                           (-))
 
-import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Debug.Trace           (traceShow)
-import           Subclasses.Iterated   (Iterated, Iterated')
-import           Test.Feat             (deriveEnumerable)
-import           Utils                 (Square, boolToInt, chooseMany,
-                                        duplicate, lookupBool, naturals,
-                                        squareToList, tabulateBool)
+import           BDD                      (BDDFun, pick)
+import           BoFun                    (BoFun (..), Constable (mkConst))
+import           Data.DecisionDiagram.BDD (ItemOrder, false, true, var)
+import           Debug.Trace              (traceShow)
+import           Subclasses.Iterated      (Iterated, Iterated')
+import           Test.Feat                (deriveEnumerable)
+import           Utils                    (Square, boolToInt, chooseMany,
+                                           duplicate, lookupBool, naturals,
+                                           squareToList, tabulateBool)
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
@@ -267,3 +271,14 @@ For example:
 * t_3 = 1636845671105073,
 * t_4 = 97916848002123806402045274379974531999764335775612939415896877758995991565.
 -}
+
+toBDD :: Iterated ThresholdFun -> BDDFun
+toBDD = toBDD' 1
+
+toBDD' :: Int -> Iterated ThresholdFun -> BDDFun
+toBDD' n (Pure ()) = var n
+toBDD' n f@(Free g) = case isConst f of
+  Just False -> false
+  Just True  -> true
+  Nothing    -> let i = head (variables f) in
+    pick n (toBDD' (n + 1) (setBit (i, False) f)) (toBDD' (n + 1) (setBit (i, True) f))

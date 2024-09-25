@@ -31,6 +31,7 @@ dependencies:
   - criterion >= 1.6.1.0
   - testing-feat >= 1.1.1.1
   - time >= 1.2.12
+  - unordered-containers >= 0.2.19.1
 
 ghc-options:
   - -Wall

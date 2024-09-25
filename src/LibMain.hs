@@ -10,7 +10,7 @@ import           Control.DeepSeq      (force)
 import           Control.Exception    (evaluate)
 import qualified Data.Set             as Set
 import           Data.Time.Clock      (diffUTCTime, getCurrentTime)
-import           DSLsofMath.Algebra   (AddGroup, MulGroup, (*))
+import           DSLsofMath.Algebra   (AddGroup, MulGroup)
 import           Filters              (degreePred, maximaPred)
 import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly)
 import           Poly.Utils           (minDegree)
@@ -50,42 +50,3 @@ findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
 
 toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
-
-test :: Integer -> (Integer, Integer)
-test n = (numberOfFunctions n, numberOfIteratedThresholdFuns n)
-
-numberOfIteratedThresholdFuns :: Integer -> Integer
--- 2 constant values exist
-numberOfIteratedThresholdFuns 0 = 2
--- The logic for n == 1 is that we cannot express the function "not" as an iterated threshold fun.
--- Therefore, we can only choose the id function. We can only choose a single threshold
--- as well, resulting in 1 * 1 = 1 iterated threshold functions with 1 bit.
-numberOfIteratedThresholdFuns 1 = 1
-numberOfIteratedThresholdFuns n = waysToChooseThresholdFun n
-
-type Partition = [Integer]
-
-waysToChooseThresholdFun :: Integer -> Integer
-waysToChooseThresholdFun n = sum $ map (\partition -> toInteger (length partition) * waysToChooseSubFunctions partition) $ partitions n
-
-waysToChooseSubFunctions :: Partition -> Integer
-waysToChooseSubFunctions = product . map numberOfIteratedThresholdFuns
-
-numberOfFunctions :: Integer -> Integer
-numberOfFunctions n = 2^(2^n)
-
--- The reason that we're dropping the last one is that
--- f == ThresholdFun (1,1) [f]. We are not creating a new function by simply wrapping it
--- in a ThresholdFun.
-partitions :: Integer -> [Partition]
-partitions n = case partitions' 1 n of
-  [] -> []
-  xs -> init xs
-
--- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
--- The first element in the partition must be >= highest.
-partitions' :: Integer -> Integer -> [Partition]
-partitions' highest n
-  | n == 0 = [[]]
-  | highest > n = []
-  | otherwise = concatMap (\m -> map (m :) $ partitions' m (n - m)) [highest .. n]

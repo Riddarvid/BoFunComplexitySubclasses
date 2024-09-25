@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Exploration of classes/Analysis of classes.md",
+                "file": "Exploration of classes/ThresholdFuns.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Exploration of classes/Analysis of classes.md",
+                "file": "Exploration of classes/ThresholdFuns.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Exploration of classes/Analysis of classes.md",
+                "file": "Exploration of classes/ThresholdFuns.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Exploration of classes/Analysis of classes.md"
+                "file": "Exploration of classes/ThresholdFuns.md"
               }
             }
           }
@@ -148,8 +148,8 @@
   },
   "active": "2ab3e76148d1f1fb",
   "lastOpenFiles": [
-    "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
     "Exploration of classes/Analysis of classes.md",
+    "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj?.md",
     "Admin/TODO för veckan.md",
     "Admin/Frågor till nästa möte.md",

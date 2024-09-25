@@ -2,14 +2,14 @@ module Subclasses.General (
   majGeneral
 ) where
 import           BDD                      (BDDFun, pick)
-import           Data.DecisionDiagram.BDD (ItemOrder, false, true)
+import           Data.DecisionDiagram.BDD (false, true)
 
-majGeneral :: ItemOrder a => Int -> BDDFun a
+majGeneral :: Int -> BDDFun
 majGeneral n = thresholdBDD threshold 1 n
   where
     threshold = (n `div` 2) + 1
 
-thresholdBDD :: ItemOrder a => Int -> Int -> Int -> BDDFun a
+thresholdBDD :: Int -> Int -> Int -> BDDFun
 thresholdBDD 0 _ _ = true
 thresholdBDD threshold i n
   | i > n = false

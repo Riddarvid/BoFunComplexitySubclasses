@@ -37,7 +37,7 @@ genAlgThinMemoPoly :: (Memoizable fun, BoFun fun Int) => fun -> S.Set (Poly Rati
 genAlgThinMemoPoly = genAlgThinMemo
 
 -- Same as above but type specified to (Poly Rational, DecTree)
---genAlgThinMemoPolyAndTree :: BDDFun a -> S.Set (Poly Rational, DecTree)
+--genAlgThinMemoPolyAndTree :: BDDFun -> S.Set (Poly Rational, DecTree)
 --genAlgThinMemoPolyAndTree = genAlgThinMemo
 
 -- Alg steps

@@ -8,30 +8,30 @@ module BDD (
 import           Data.DecisionDiagram.BDD (AscOrder, BDD, DescOrder, ItemOrder,
                                            false, ite, true, var)
 
-type BDDFun o = BDD o
+type BDDFun = BDD AscOrder
 
-pick :: ItemOrder o => Int -> BDDFun o -> BDDFun o -> BDDFun o
+pick :: ItemOrder o => Int -> BDD o -> BDD o -> BDD o
 pick i a0 a1 = ite (var i) a1 a0
 
-bddAsc :: BDDFun AscOrder -> BDDFun AscOrder
+bddAsc :: BDD AscOrder -> BDD AscOrder
 bddAsc = id
 
-bddDesc :: BDDFun DescOrder -> BDDFun DescOrder
+bddDesc :: BDD DescOrder -> BDD DescOrder
 bddDesc = id
 
 -- Generating all BDDFuns
 
-allBDDFuns :: ItemOrder o => Int -> [BDDFun o]
+allBDDFuns :: Int -> [BDDFun]
 allBDDFuns n = map (bddFromOutput n) $ outputPermutations n
 
-boolToBDD :: Bool -> BDDFun o
+boolToBDD :: Bool -> BDD o
 boolToBDD True  = true
 boolToBDD False = false
 
-bddFromOutput :: ItemOrder o => Int -> [Bool] -> BDDFun o
+bddFromOutput :: ItemOrder o => Int -> [Bool] -> BDD o
 bddFromOutput bits = bddFromOutput' bits 0
 
-bddFromOutput' :: ItemOrder o => Int -> Int -> [Bool] -> BDDFun o
+bddFromOutput' :: ItemOrder o => Int -> Int -> [Bool] -> BDD o
 bddFromOutput' 0 varN out = boolToBDD (out !! varN)
 bddFromOutput' bits varN out = pick bits
   (bddFromOutput' (bits - 1) (2 * varN + 1) out)
