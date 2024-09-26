@@ -8,6 +8,7 @@ import           Algorithm.GenAlg     (genAllBoths)
 import           Algorithm.GenAlgPW   (computeMin)
 import           Control.DeepSeq      (force)
 import           Control.Exception    (evaluate)
+import           Control.Monad        (void)
 import qualified Data.Set             as Set
 import           Data.Time.Clock      (diffUTCTime, getCurrentTime)
 import           DSLsofMath.Algebra   (AddGroup, MulGroup)
@@ -23,9 +24,7 @@ import           Subclasses.Symmetric (maj33, majSymm)
 import           Subclasses.Threshold (majThreshold)
 
 main :: IO ()
-main = do
-  _ <- evaluate $ force $ computeMin $ majSymm 301
-  return ()
+main = void $ evaluate $ force $ computeMin $ majGeneral 9
 
 main3 :: IO ()
 main3 = putStrLn $ desmosShowPW $ computeMin maj33

@@ -23,6 +23,18 @@ instance Memoizable (BDD o) where
 memoizeBF :: (BDD o -> a) -> (BDD o -> a)
 memoizeBF f = memoize (f . inSig) . outSig
 
+-- For some reason the following functions do not work.
+-- TODO-NEW: Figure out why
+{-
+memoizeBF'' :: (BDD o -> a) -> (BDD o -> a)
+memoizeBF'' f bdd = memoize (\sig -> f $ inSig sig) $ outSig bdd
+
+memoizeBF' :: (BDD o -> a) -> (BDD o -> a)
+memoizeBF' f = \bdd -> case bdd of
+  Leaf v             -> memoize (f . Leaf) v
+  Branch n bdd1 bdd2 -> memoize (\(n', bdd1', bdd2') -> f $ Branch n' bdd1' bdd2') (n, bdd1, bdd2)
+-}
+
 instance ItemOrder o => BoFun (BDD o) Int where
   isConst :: BDD o -> Maybe Bool
   isConst = isConstBDD

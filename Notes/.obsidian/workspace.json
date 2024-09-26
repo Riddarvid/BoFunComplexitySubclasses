@@ -4,32 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "21c1d2e65c73ad24",
+        "id": "47575e4993fd1ed8",
         "type": "tabs",
         "children": [
           {
-            "id": "2ab3e76148d1f1fb",
+            "id": "7068f64a26768379",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "Comparisons/gen-maj9/exploring-level-p-exe.svg"
-              }
-            }
-          }
-        ]
-      },
-      {
-        "id": "d6490590651a1131",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "a571df9f39eadce2",
-            "type": "leaf",
-            "state": {
-              "type": "image",
-              "state": {
-                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg"
+                "file": "Admin/TODO för veckan.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -99,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
+                "file": "Admin/TODO för veckan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
+                "file": "Admin/TODO för veckan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -139,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg"
+                "file": "Admin/TODO för veckan.md"
               }
             }
           }
@@ -160,25 +146,30 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "a571df9f39eadce2",
+  "active": "7068f64a26768379",
   "lastOpenFiles": [
-    "Comparisons/symm-maj301/exploring-level-p-exe.svg",
-    "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
+    "Admin/TODO generell.md",
+    "Admin/TODO för veckan.md",
+    "Admin/Frågor till nästa möte.md",
+    "Comparisons/symm-maj301-old/Notes.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.svg",
-    "Comparisons/Notes.md",
+    "Comparisons/symm-maj301-old/exploring-level-p-exe.svg",
+    "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
+    "Comparisons/symm-maj301-old/exploring-level-p-exe.prof",
+    "Other/Observations and proofs.md",
+    "Other/BDD forest.md",
     "Comparisons/gen-maj9/Notes.md",
+    "Comparisons/Notes.md",
+    "Comparisons/symm-maj301-old",
+    "Other/Random observations.md",
+    "Comparisons/symm-maj301/exploring-level-p-exe.svg",
     "Comparisons/symm-maj301/exploring-level-p-exe.prof",
     "Comparisons/symm-maj301",
     "Comparisons/threshold-maj301/exploring-level-p-exe.prof",
     "Comparisons/threshold-maj301",
-    "Admin/TODO generell.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.prof",
     "Comparisons/gen-maj9",
     "Comparisons",
-    "Admin/TODO för veckan.md",
-    "Admin/Frågor till nästa möte.md",
-    "Other/BDD forest.md",
-    "Other/Observations and proofs.md",
     "Exploration of classes/ThresholdFuns.md",
     "Exploration of classes/Analysis of classes.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
@@ -193,14 +184,10 @@
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Algebraic numbers/evalpoly.org",
     "Exploration of classes/Benchmark comparisons.md",
-    "Report",
-    "Other",
     "Other/Förklaring av arbetet.md",
     "Readme.md",
     "TODO Arvid.md",
     "Images/Pasted image 20240905093302.png",
-    "Images/Pasted image 20240906154104.png",
-    "Other/List of Known Bugs.md",
-    "Exploration of classes/Egenskaper hos boolska funktioner.md"
+    "Images/Pasted image 20240906154104.png"
   ]
 }

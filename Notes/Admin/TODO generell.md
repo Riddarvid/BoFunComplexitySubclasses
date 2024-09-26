@@ -3,6 +3,7 @@
 - Se om man kan dra paralleller till entropi (Shannon) eller Huffman coding
 - Om vi vill ägna oss åt att hitta fler funktionsklasser kan vi experimentera med att fundera på hur det hade sett ut om vi hade booleans med tre värden.
 	- Hur kan vi ändra t.ex. threshold, iterated threshold.
+- Skriv funktion som tar en sanningstabell, avgör om den är threshold, symmetric etc. och sen väljer passande representation och beräknar komplexitet. 
 
 ## TODO Arvid:
 
