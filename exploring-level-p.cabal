@@ -44,6 +44,7 @@ library
       Poly.PolynomialExtra
       Poly.Utils
       PrettyPrinting
+      Properties
       Subclasses.Comparisons
       Subclasses.Counting
       Subclasses.Even

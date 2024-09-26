@@ -6,8 +6,8 @@ module Subclasses.Comparisons (
   mainBench,
   benchBoFun,
   complexityBench,
-  majEqualProp,
-  sameComplexityProp
+  propMajEqual,
+  propSameComplexity
 ) where
 import           Algorithm.GenAlgPW    (computeMin)
 import           BDD                   (bddAsc)
@@ -19,9 +19,7 @@ import           Data.Function.Memoize (Memoizable)
 import           Subclasses.General    (majGeneral)
 import           Subclasses.Id         ()
 import           Subclasses.Symmetric  (iteratedMajFun, majSymm, majSymmBasic)
-import           Subclasses.Threshold  (ThresholdFun, iteratedMajFun',
-                                        majThreshold, thresholdFunReplicate,
-                                        thresholdMaj)
+import           Subclasses.Threshold  (iteratedMajFun', majThreshold)
 import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
                                         Property, chooseInt, conjoin, vector,
                                         (===))
@@ -62,8 +60,8 @@ instance Arbitrary MajInput where
 
       shorter = if length vals > 1 then [Input (drop 2 vals)] else []
 
-majEqualProp :: MajInput -> Property
-majEqualProp (Input vals) = conjoin
+propMajEqual :: MajInput -> Property
+propMajEqual (Input vals) = conjoin
   [
     resSymm === resGen,
     resThresh === resGen
@@ -80,8 +78,8 @@ majEqualProp (Input vals) = conjoin
     resThresh = eval majThreshold'
       (map (\v -> ((0, ()), v)) vals)
 
-sameComplexityProp :: Property
-sameComplexityProp = computeMin f === computeMin g
+propSameComplexity :: Property
+propSameComplexity = computeMin f === computeMin g
   where
     f = iteratedMajFun 3 2
     g = iteratedMajFun' 3 2

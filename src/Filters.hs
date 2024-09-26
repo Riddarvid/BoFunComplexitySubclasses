@@ -4,7 +4,7 @@ module Filters (
   piecesPred,
   degreePred,
   maximaPred,
-  rationalSignProp
+  propRationalSign
 ) where
 import           Algebraic          (Algebraic (Algebraic), fromPWAlgebraic,
                                      toAlgebraic)
@@ -102,8 +102,8 @@ intMid (l, h) = (l + h) / two
 
 --------------------- QuickCheck -------------------------------------
 
-rationalSignProp :: Rational -> Poly Rational -> Property
-rationalSignProp r p = s1 === s2
+propRationalSign :: Rational -> Poly Rational -> Property
+propRationalSign r p = s1 === s2
   where
     x = toAlgebraic r
     s1 = signAtDyadic r p

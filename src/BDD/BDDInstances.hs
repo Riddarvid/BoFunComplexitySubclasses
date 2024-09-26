@@ -1,15 +1,18 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE TypeSynonymInstances  #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE FlexibleInstances     #-}
 module BDD.BDDInstances () where
+import           BDD                      (allBDDFuns)
 import           BoFun                    (BoFun (..))
 import           Data.DecisionDiagram.BDD (BDD (..), ItemOrder, Sig, inSig,
                                            outSig, restrict, support)
 import           Data.Function.Memoize    (Memoizable (memoize),
                                            deriveMemoizable)
 import qualified Data.IntSet              as IS
+import           Test.QuickCheck          (Arbitrary (arbitrary), Gen,
+                                           chooseInt, elements, resize, sized)
 
 $(deriveMemoizable ''Sig)
 
@@ -31,3 +34,12 @@ instance ItemOrder o => BoFun (BDD o) Int where
 isConstBDD :: BDD o -> Maybe Bool
 isConstBDD (Leaf b) = Just b
 isConstBDD _        = Nothing
+
+instance ItemOrder o => Arbitrary (BDD o) where
+  arbitrary :: Gen (BDD o)
+  arbitrary = resize 4 $ sized genFun
+
+genFun :: ItemOrder o => Int -> Gen (BDD o)
+genFun n' = do
+  n <- chooseInt (0, n')
+  elements $ allBDDFuns n

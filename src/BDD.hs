@@ -21,7 +21,7 @@ bddDesc = id
 
 -- Generating all BDDFuns
 
-allBDDFuns :: Int -> [BDDFun]
+allBDDFuns :: ItemOrder o => Int -> [BDD o]
 allBDDFuns n = map (bddFromOutput n) $ outputPermutations n
 
 boolToBDD :: Bool -> BDD o
