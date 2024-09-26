@@ -1,7 +1,7 @@
 
 - BDD forest for more sharing/reuse
 - Se om man kan dra paralleller till entropi (Shannon) eller Huffman coding
--  Om vi vill ägna oss åt att hitta fler funktionsklasser kan vi experimentera med att fundera på hur det hade sett ut om vi hade booleans med tre värden.
+- Om vi vill ägna oss åt att hitta fler funktionsklasser kan vi experimentera med att fundera på hur det hade sett ut om vi hade booleans med tre värden.
 	- Hur kan vi ändra t.ex. threshold, iterated threshold.
 
 ## TODO Arvid:

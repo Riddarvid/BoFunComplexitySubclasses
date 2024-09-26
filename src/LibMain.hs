@@ -17,12 +17,15 @@ import           Poly.Utils           (minDegree)
 import           Prelude              hiding ((*), (+))
 import           PrettyPrinting       (desmosPrintPW, desmosShowPW)
 import           Subclasses.Gates     (test)
+import           Subclasses.General   (majGeneral)
 import           Subclasses.Id        ()
-import           Subclasses.Symmetric (maj33)
+import           Subclasses.Symmetric (maj33, majSymm)
 import           Subclasses.Threshold (majThreshold)
 
 main :: IO ()
-main = desmosPrintPW $ computeMin test
+main = do
+  _ <- evaluate $ force $ computeMin $ majSymm 301
+  return ()
 
 main3 :: IO ()
 main3 = putStrLn $ desmosShowPW $ computeMin maj33

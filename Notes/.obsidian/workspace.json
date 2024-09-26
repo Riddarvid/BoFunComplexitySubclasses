@@ -11,11 +11,25 @@
             "id": "2ab3e76148d1f1fb",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "Admin/TODO generell.md",
-                "mode": "source",
-                "source": false
+                "file": "Comparisons/gen-maj9/exploring-level-p-exe.svg"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "d6490590651a1131",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a571df9f39eadce2",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg"
               }
             }
           }
@@ -85,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/TODO generell.md",
+                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +116,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/TODO generell.md",
+                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +139,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/TODO generell.md"
+                "file": "Comparisons/threshold-maj301/exploring-level-p-exe.svg"
               }
             }
           }
@@ -146,12 +160,25 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "2ab3e76148d1f1fb",
+  "active": "a571df9f39eadce2",
   "lastOpenFiles": [
-    "Admin/TODO för veckan.md",
-    "Other/Observations and proofs.md",
+    "Comparisons/symm-maj301/exploring-level-p-exe.svg",
+    "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
+    "Comparisons/gen-maj9/exploring-level-p-exe.svg",
+    "Comparisons/Notes.md",
+    "Comparisons/gen-maj9/Notes.md",
+    "Comparisons/symm-maj301/exploring-level-p-exe.prof",
+    "Comparisons/symm-maj301",
+    "Comparisons/threshold-maj301/exploring-level-p-exe.prof",
+    "Comparisons/threshold-maj301",
     "Admin/TODO generell.md",
+    "Comparisons/gen-maj9/exploring-level-p-exe.prof",
+    "Comparisons/gen-maj9",
+    "Comparisons",
+    "Admin/TODO för veckan.md",
     "Admin/Frågor till nästa möte.md",
+    "Other/BDD forest.md",
+    "Other/Observations and proofs.md",
     "Exploration of classes/ThresholdFuns.md",
     "Exploration of classes/Analysis of classes.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
@@ -170,15 +197,10 @@
     "Other",
     "Other/Förklaring av arbetet.md",
     "Readme.md",
-    "Exploration of classes",
-    "Algebraic numbers",
     "TODO Arvid.md",
-    "Admin",
     "Images/Pasted image 20240905093302.png",
     "Images/Pasted image 20240906154104.png",
-    "Images",
     "Other/List of Known Bugs.md",
-    "Exploration of classes/Egenskaper hos boolska funktioner.md",
-    "Welcome.md"
+    "Exploration of classes/Egenskaper hos boolska funktioner.md"
   ]
 }

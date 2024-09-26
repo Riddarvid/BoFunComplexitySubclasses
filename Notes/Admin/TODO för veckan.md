@@ -1,0 +1,3 @@
+- BDD forests - hur skulle de se ut?
+	- Målet är att öka sharing så att vi inte behöver göra om BDDs flera gånger.
+- 
