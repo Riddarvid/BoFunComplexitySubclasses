@@ -4,7 +4,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE FlexibleInstances     #-}
 module BDD.BDDInstances () where
-import           BDD                      (allBDDFuns)
+import           BDD                      (bddFromOutput)
 import           BoFun                    (BoFun (..))
 import           Data.DecisionDiagram.BDD (BDD (..), ItemOrder, Sig, inSig,
                                            outSig, restrict, support)
@@ -12,7 +12,7 @@ import           Data.Function.Memoize    (Memoizable (memoize),
                                            deriveMemoizable)
 import qualified Data.IntSet              as IS
 import           Test.QuickCheck          (Arbitrary (arbitrary), Gen,
-                                           chooseInt, elements, resize, sized)
+                                           chooseInt, resize, sized, vector)
 
 $(deriveMemoizable ''Sig)
 
@@ -37,9 +37,10 @@ isConstBDD _        = Nothing
 
 instance ItemOrder o => Arbitrary (BDD o) where
   arbitrary :: Gen (BDD o)
-  arbitrary = resize 4 $ sized genFun
+  arbitrary = resize 5 $ sized genFun
 
 genFun :: ItemOrder o => Int -> Gen (BDD o)
 genFun n' = do
   n <- chooseInt (0, n')
-  elements $ allBDDFuns n
+  output <- vector (2^n)
+  return $ bddFromOutput n output

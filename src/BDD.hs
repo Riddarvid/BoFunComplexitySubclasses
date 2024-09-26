@@ -3,7 +3,8 @@ module BDD (
   pick,
   bddAsc,
   bddDesc,
-  allBDDFuns
+  allBDDFuns,
+  bddFromOutput
 ) where
 import           Data.DecisionDiagram.BDD (AscOrder, BDD, DescOrder, ItemOrder,
                                            false, ite, true, var)
