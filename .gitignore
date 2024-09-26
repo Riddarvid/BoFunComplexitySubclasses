@@ -1,6 +1,5 @@
 .stack-work/
-*~
 .vscode/
-exploring-level-p-exe.prof
-exploring-level-p-exe.svg
+/exploring-level-p-exe.prof
+/exploring-level-p-exe.svg
 dist-newstyle

@@ -1,0 +1,698 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="1200" height="454" onload="init(evt)" viewBox="0 0 1200 454" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<!-- NOTES:  -->
+<defs >
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	.func_g:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	var details, searchbtn, matchedtxt, svg;
+	function init(evt) {
+		details = document.getElementById("details").firstChild;
+		searchbtn = document.getElementById("search");
+		matchedtxt = document.getElementById("matched");
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+	}
+
+	// mouse-over for info
+	function s(node) {		// show
+		info = g_to_text(node);
+		details.nodeValue = "Function: " + info;
+	}
+	function c() {			// clear
+		details.nodeValue = ' ';
+	}
+
+	// ctrl-F for search
+	window.addEventListener("keydown",function (e) {
+		if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+			e.preventDefault();
+			search_prompt();
+		}
+	})
+
+	// functions
+	function find_child(parent, name, attr) {
+		var children = parent.childNodes;
+		for (var i=0; i<children.length;i++) {
+			if (children[i].tagName == name)
+				return (attr != undefined) ? children[i].attributes[attr].value : children[i];
+		}
+		return;
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_"+attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_"+attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_"+attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function g_to_text(e) {
+		var text = find_child(e, "title").firstChild.nodeValue;
+		return (text)
+	}
+	function g_to_func(e) {
+		var func = g_to_text(e);
+		// if there's any manipulation we want to do to the function
+		// name before it's searched, do it here before returning.
+		return (func);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes["width"].value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+		t.attributes["x"].value = parseFloat(r.attributes["x"].value) +3;
+
+		// Smaller than this size won't fit anything
+		if (w < 2*12*0.59) {
+			t.textContent = "";
+			return;
+		}
+
+		t.textContent = txt;
+		// Fit in full text width
+		if (/^ *$/.test(txt) || t.getSubStringLength(0, txt.length) < w)
+			return;
+
+		for (var x=txt.length-2; x>0; x--) {
+			if (t.getSubStringLength(0, x+2) <= w) {
+				t.textContent = txt.substring(0,x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes["x"] != undefined) {
+				orig_save(e, "x");
+				e.attributes["x"].value = (parseFloat(e.attributes["x"].value) - x - 10) * ratio + 10;
+				if(e.tagName == "text") e.attributes["x"].value = find_child(e.parentNode, "rect", "x") + 3;
+			}
+			if (e.attributes["width"] != undefined) {
+				orig_save(e, "width");
+				e.attributes["width"].value = parseFloat(e.attributes["width"].value) * ratio;
+			}
+		}
+
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_child(c[i], x-10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes["x"] != undefined) {
+				orig_save(e, "x");
+				e.attributes["x"].value = 10;
+			}
+			if (e.attributes["width"] != undefined) {
+				orig_save(e, "width");
+				e.attributes["width"].value = parseInt(svg.width.baseVal.value) - (10*2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for(var i=0, c=e.childNodes; i<c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) {
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr["width"].value);
+		var xmin = parseFloat(attr["x"].value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr["y"].value);
+		var ratio = (svg.width.baseVal.value - 2*10) / width;
+
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+
+		var unzoombtn = document.getElementById("unzoom");
+		unzoombtn.style["opacity"] = "1.0";
+
+		var el = document.getElementsByTagName("g");
+		for(var i=0;i<el.length;i++){
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a["x"].value);
+			var ew = parseFloat(a["width"].value);
+			// Is it an ancestor
+			if (0 == 0) {
+				var upstack = parseFloat(a["y"].value) > ymin;
+			} else {
+				var upstack = parseFloat(a["y"].value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.style["opacity"] = "0.5";
+					zoom_parent(e);
+					e.onclick = function(e){unzoom(); zoom(this);};
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.style["display"] = "none";
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.style["display"] = "none";
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					e.onclick = function(e){zoom(this);};
+					update_text(e);
+				}
+			}
+		}
+	}
+	function unzoom() {
+		var unzoombtn = document.getElementById("unzoom");
+		unzoombtn.style["opacity"] = "0.0";
+
+		var el = document.getElementsByTagName("g");
+		for(i=0;i<el.length;i++) {
+			el[i].style["display"] = "block";
+			el[i].style["opacity"] = "1";
+			zoom_reset(el[i]);
+			update_text(el[i]);
+		}
+	}
+
+	// search
+	function reset_search() {
+		var el = document.getElementsByTagName("rect");
+		for (var i=0; i < el.length; i++) {
+			orig_load(el[i], "fill")
+		}
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)", "");
+			if (term != null) {
+				search(term)
+			}
+		} else {
+			reset_search();
+			searching = 0;
+			searchbtn.style["opacity"] = "0.1";
+			searchbtn.firstChild.nodeValue = "Search"
+			matchedtxt.style["opacity"] = "0.0";
+			matchedtxt.firstChild.nodeValue = ""
+		}
+	}
+	function search(term) {
+		var re = new RegExp(term);
+		var el = document.getElementsByTagName("g");
+		var matches = new Object();
+		var maxwidth = 0;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			if (e.attributes["class"].value != "func_g")
+				continue;
+			var func = g_to_func(e);
+			var rect = find_child(e, "rect");
+			if (rect == null) {
+				// the rect might be wrapped in an anchor
+				// if nameattr href is being used
+				if (rect = find_child(e, "a")) {
+				    rect = find_child(r, "rect");
+				}
+			}
+			if (func == null || rect == null)
+				continue;
+
+			// Save max width. Only works as we have a root frame
+			var w = parseFloat(rect.attributes["width"].value);
+			if (w > maxwidth)
+				maxwidth = w;
+
+			if (func.match(re)) {
+				// highlight
+				var x = parseFloat(rect.attributes["x"].value);
+				orig_save(rect, "fill");
+				rect.attributes["fill"].value =
+				    "rgb(230,0,230)";
+
+				// remember matches
+				if (matches[x] == undefined) {
+					matches[x] = w;
+				} else {
+					if (w > matches[x]) {
+						// overwrite with parent
+						matches[x] = w;
+					}
+				}
+				searching = 1;
+			}
+		}
+		if (!searching)
+			return;
+
+		searchbtn.style["opacity"] = "1.0";
+		searchbtn.firstChild.nodeValue = "Reset Search"
+
+		// calculate percent matched, excluding vertical overlap
+		var count = 0;
+		var lastx = -1;
+		var lastw = 0;
+		var keys = Array();
+		for (k in matches) {
+			if (matches.hasOwnProperty(k))
+				keys.push(k);
+		}
+		// sort the matched frames by their x location
+		// ascending, then width descending
+		keys.sort(function(a, b){
+			return a - b;
+		});
+		// Step through frames saving only the biggest bottom-up frames
+		// thanks to the sort order. This relies on the tree property
+		// where children are always smaller than their parents.
+		var fudge = 0.0001;	// JavaScript floating point
+		for (var k in keys) {
+			var x = parseFloat(keys[k]);
+			var w = matches[keys[k]];
+			if (x >= lastx + lastw - fudge) {
+				count += w;
+				lastx = x;
+				lastw = w;
+			}
+		}
+		// display matched percent
+		matchedtxt.style["opacity"] = "1.0";
+		pct = 100 * count / maxwidth;
+		if (pct == 100)
+			pct = "100"
+		else
+			pct = pct.toFixed(1)
+		matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+	}
+	function searchover(e) {
+		searchbtn.style["opacity"] = "1.0";
+	}
+	function searchout(e) {
+		if (searching) {
+			searchbtn.style["opacity"] = "1.0";
+		} else {
+			searchbtn.style["opacity"] = "0.1";
+		}
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="1200.0" height="454.0" fill="url(#background)"  />
+<text text-anchor="middle" x="600.00" y="24" font-size="17" font-family="Verdana" fill="rgb(0,0,0)"  >Flame Graph</text>
+<text text-anchor="" x="10.00" y="437" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="details" > </text>
+<text text-anchor="" x="10.00" y="24" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="unzoom" onclick="unzoom()" style="opacity:0.0;cursor:pointer" >Reset Zoom</text>
+<text text-anchor="" x="1090.00" y="24" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="search" onmouseover="searchover()" onmouseout="searchout()" onclick="search_prompt()" style="opacity:0.1;cursor:pointer" >Search</text>
+<text text-anchor="" x="1090.00" y="437" font-size="12" font-family="Verdana" fill="rgb(0,0,0)" id="matched" > </text>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.piecewiseBinOp (6 samples, 0.60%)</title><rect x="712.1" y="261" width="7.1" height="15.0" fill="rgb(234,55,28)" rx="2" ry="2" />
+<text text-anchor="" x="715.10" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.piecewiseBinOp.h (1 samples, 0.10%)</title><rect x="712.1" y="245" width="1.2" height="15.0" fill="rgb(229,130,44)" rx="2" ry="2" />
+<text text-anchor="" x="715.10" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.+ (76 samples, 7.60%)</title><rect x="1010.6" y="197" width="89.7" height="15.0" fill="rgb(222,37,12)" rx="2" ry="2" />
+<text text-anchor="" x="1013.64" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Algorithm.GenAlgPW.computeMinStep (958 samples, 95.80%)</title><rect x="10.0" y="325" width="1130.4" height="15.0" fill="rgb(209,228,17)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="335.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Algorithm.GenAlgPW.computeMinStep</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache (148 samples, 14.80%)</title><rect x="721.5" y="229" width="174.7" height="15.0" fill="rgb(238,72,54)" rx="2" ry="2" />
+<text text-anchor="" x="724.54" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.Function.Memoize...</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.* (597 samples, 59.70%)</title><rect x="14.7" y="277" width="704.5" height="15.0" fill="rgb(237,53,31)" rx="2" ry="2" />
+<text text-anchor="" x="17.72" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Poly.PiecewisePoly.*</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Subclasses.Symmetric.memoize (150 samples, 15.00%)</title><rect x="719.2" y="277" width="177.0" height="15.0" fill="rgb(236,190,19)" rx="2" ry="2" />
+<text text-anchor="" x="722.18" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Subclasses.Symmetric.me..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.scaleL (380 samples, 38.00%)</title><rect x="169.3" y="213" width="448.4" height="15.0" fill="rgb(250,183,50)" rx="2" ry="2" />
+<text text-anchor="" x="172.30" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.scaleL</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Subclasses.Symmetric.variables (1 samples, 0.10%)</title><rect x="1139.3" y="293" width="1.1" height="15.0" fill="rgb(254,28,32)" rx="2" ry="2" />
+<text text-anchor="" x="1142.26" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache (83 samples, 8.30%)</title><rect x="798.2" y="181" width="98.0" height="15.0" fill="rgb(238,187,42)" rx="2" ry="2" />
+<text text-anchor="" x="801.24" y="191.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.Functi..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Subclasses.Symmetric.setBit (10 samples, 1.00%)</title><rect x="896.2" y="277" width="11.8" height="15.0" fill="rgb(248,68,7)" rx="2" ry="2" />
+<text text-anchor="" x="899.18" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>UNKNOWN (14 samples, 1.40%)</title><rect x="1173.5" y="389" width="16.5" height="15.0" fill="rgb(207,88,54)" rx="2" ry="2" />
+<text text-anchor="" x="1176.48" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize (148 samples, 14.80%)</title><rect x="721.5" y="213" width="174.7" height="15.0" fill="rgb(207,218,28)" rx="2" ry="2" />
+<text text-anchor="" x="724.54" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.Function.Memoize...</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.mulL (1 samples, 0.10%)</title><rect x="710.9" y="213" width="1.2" height="15.0" fill="rgb(239,74,51)" rx="2" ry="2" />
+<text text-anchor="" x="713.92" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addP (158 samples, 15.80%)</title><rect x="913.9" y="261" width="186.4" height="15.0" fill="rgb(252,204,20)" rx="2" ry="2" />
+<text text-anchor="" x="916.88" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.addP</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.comL (4 samples, 0.40%)</title><rect x="713.3" y="181" width="4.7" height="15.0" fill="rgb(246,96,29)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="191.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache (1 samples, 0.10%)</title><rect x="838.4" y="165" width="1.1" height="15.0" fill="rgb(246,137,8)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="175.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.mulP (590 samples, 59.00%)</title><rect x="15.9" y="245" width="696.2" height="15.0" fill="rgb(216,94,39)" rx="2" ry="2" />
+<text text-anchor="" x="18.90" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.mulP</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.zoomedGenerate (4 samples, 0.40%)</title><rect x="713.3" y="229" width="4.7" height="15.0" fill="rgb(217,176,14)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Subclasses.Symmetric.isConst (33 samples, 3.30%)</title><rect x="1100.3" y="293" width="39.0" height="15.0" fill="rgb(206,42,39)" rx="2" ry="2" />
+<text text-anchor="" x="1103.32" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Sub..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache (1 samples, 0.10%)</title><rect x="838.4" y="117" width="1.1" height="15.0" fill="rgb(223,85,46)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="127.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\ (148 samples, 14.80%)</title><rect x="721.5" y="197" width="174.7" height="15.0" fill="rgb(235,89,40)" rx="2" ry="2" />
+<text text-anchor="" x="724.54" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.Function.Memoize...</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize (150 samples, 15.00%)</title><rect x="719.2" y="261" width="177.0" height="15.0" fill="rgb(246,200,47)" rx="2" ry="2" />
+<text text-anchor="" x="722.18" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.Function.Memoize.m..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.* (204 samples, 20.40%)</title><rect x="377.0" y="197" width="240.7" height="15.0" fill="rgb(246,219,28)" rx="2" ry="2" />
+<text text-anchor="" x="379.98" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.Algebra.*</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.finiteLookup.loop (33 samples, 3.30%)</title><rect x="799.4" y="101" width="39.0" height="15.0" fill="rgb(218,108,47)" rx="2" ry="2" />
+<text text-anchor="" x="802.42" y="111.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Dat..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addP (2 samples, 0.20%)</title><rect x="909.2" y="245" width="2.3" height="15.0" fill="rgb(218,108,36)" rx="2" ry="2" />
+<text text-anchor="" x="912.16" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.+ (3 samples, 0.30%)</title><rect x="908.0" y="277" width="3.5" height="15.0" fill="rgb(242,41,10)" rx="2" ry="2" />
+<text text-anchor="" x="910.98" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Utils.tabulateBool (1 samples, 0.10%)</title><rect x="718.0" y="213" width="1.2" height="15.0" fill="rgb(208,138,16)" rx="2" ry="2" />
+<text text-anchor="" x="721.00" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.zipWithLonger (158 samples, 15.80%)</title><rect x="913.9" y="229" width="186.4" height="15.0" fill="rgb(246,13,9)" rx="2" ry="2" />
+<text text-anchor="" x="916.88" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.zipWithL..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize (48 samples, 4.80%)</title><rect x="839.5" y="165" width="56.7" height="15.0" fill="rgb(226,88,49)" rx="2" ry="2" />
+<text text-anchor="" x="842.54" y="175.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data...</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.piecewiseBinOp.opRegen (5 samples, 0.50%)</title><rect x="713.3" y="245" width="5.9" height="15.0" fill="rgb(223,1,18)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.fmap (6 samples, 0.60%)</title><rect x="1141.6" y="165" width="7.1" height="15.0" fill="rgb(238,46,0)" rx="2" ry="2" />
+<text text-anchor="" x="1144.62" y="175.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Subclasses.Symmetric.setBit.rv' (8 samples, 0.80%)</title><rect x="897.4" y="261" width="9.4" height="15.0" fill="rgb(248,103,14)" rx="2" ry="2" />
+<text text-anchor="" x="900.36" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.+ (1 samples, 0.10%)</title><rect x="710.9" y="181" width="1.2" height="15.0" fill="rgb(254,101,34)" rx="2" ry="2" />
+<text text-anchor="" x="713.92" y="191.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\ (10 samples, 1.00%)</title><rect x="786.4" y="133" width="11.8" height="15.0" fill="rgb(237,121,8)" rx="2" ry="2" />
+<text text-anchor="" x="789.44" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.\ (2 samples, 0.20%)</title><rect x="719.2" y="229" width="2.3" height="15.0" fill="rgb(228,172,14)" rx="2" ry="2" />
+<text text-anchor="" x="722.18" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.finiteLookup.loop.mean (8 samples, 0.80%)</title><rect x="828.9" y="85" width="9.5" height="15.0" fill="rgb(232,175,49)" rx="2" ry="2" />
+<text text-anchor="" x="831.92" y="95.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.finiteLookup (34 samples, 3.40%)</title><rect x="798.2" y="117" width="40.2" height="15.0" fill="rgb(253,96,5)" rx="2" ry="2" />
+<text text-anchor="" x="801.24" y="127.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Dat..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.meanFinite (4 samples, 0.40%)</title><rect x="833.6" y="69" width="4.8" height="15.0" fill="rgb(222,9,9)" rx="2" ry="2" />
+<text text-anchor="" x="836.64" y="79.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.zoom (4 samples, 0.40%)</title><rect x="713.3" y="213" width="4.7" height="15.0" fill="rgb(244,22,12)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.+ (3 samples, 0.30%)</title><rect x="908.0" y="293" width="3.5" height="15.0" fill="rgb(223,37,54)" rx="2" ry="2" />
+<text text-anchor="" x="910.98" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.mulL (4 samples, 0.40%)</title><rect x="713.3" y="165" width="4.7" height="15.0" fill="rgb(236,136,11)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="175.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Algorithm.GenAlgPW.computeMinStep.\ (958 samples, 95.80%)</title><rect x="10.0" y="309" width="1130.4" height="15.0" fill="rgb(252,119,2)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Algorithm.GenAlgPW.computeMinStep.\</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.\ (53 samples, 5.30%)</title><rect x="735.7" y="181" width="62.5" height="15.0" fill="rgb(216,216,16)" rx="2" ry="2" />
+<text text-anchor="" x="738.70" y="191.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.F..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize (1 samples, 0.10%)</title><rect x="838.4" y="149" width="1.1" height="15.0" fill="rgb(208,167,41)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.\ (39 samples, 3.90%)</title><rect x="850.2" y="133" width="46.0" height="15.0" fill="rgb(250,125,30)" rx="2" ry="2" />
+<text text-anchor="" x="853.16" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.btLeft (13 samples, 1.30%)</title><rect x="813.6" y="85" width="15.3" height="15.0" fill="rgb(251,186,26)" rx="2" ry="2" />
+<text text-anchor="" x="816.58" y="95.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>LibMain.CAF:main_x1 (986 samples, 98.60%)</title><rect x="10.0" y="373" width="1163.5" height="15.0" fill="rgb(234,211,5)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >LibMain.CAF:main_x1</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Utils.mapPair (1 samples, 0.10%)</title><rect x="718.0" y="229" width="1.2" height="15.0" fill="rgb(224,28,40)" rx="2" ry="2" />
+<text text-anchor="" x="721.00" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoizeFinite (34 samples, 3.40%)</title><rect x="798.2" y="149" width="40.2" height="15.0" fill="rgb(239,82,14)" rx="2" ry="2" />
+<text text-anchor="" x="801.24" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Dat..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.zipWithLonger.zWL (1 samples, 0.10%)</title><rect x="617.7" y="213" width="1.2" height="15.0" fill="rgb(251,220,6)" rx="2" ry="2" />
+<text text-anchor="" x="620.70" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\ (150 samples, 15.00%)</title><rect x="719.2" y="245" width="177.0" height="15.0" fill="rgb(223,73,7)" rx="2" ry="2" />
+<text text-anchor="" x="722.18" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data.Function.Memoize.m..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache.\ (6 samples, 0.60%)</title><rect x="1141.6" y="213" width="7.1" height="15.0" fill="rgb(211,114,9)" rx="2" ry="2" />
+<text text-anchor="" x="1144.62" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.+ (158 samples, 15.80%)</title><rect x="913.9" y="277" width="186.4" height="15.0" fill="rgb(254,95,28)" rx="2" ry="2" />
+<text text-anchor="" x="916.88" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.+</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.scaleL (2 samples, 0.20%)</title><rect x="715.6" y="149" width="2.4" height="15.0" fill="rgb(252,183,35)" rx="2" ry="2" />
+<text text-anchor="" x="718.64" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache.\ (1 samples, 0.10%)</title><rect x="838.4" y="101" width="1.1" height="15.0" fill="rgb(248,152,44)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="111.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\ (48 samples, 4.80%)</title><rect x="839.5" y="149" width="56.7" height="15.0" fill="rgb(224,58,24)" rx="2" ry="2" />
+<text text-anchor="" x="842.54" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Data...</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.zipWithLonger.zWL (2 samples, 0.20%)</title><rect x="909.2" y="197" width="2.3" height="15.0" fill="rgb(205,26,54)" rx="2" ry="2" />
+<text text-anchor="" x="912.16" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addL (2 samples, 0.20%)</title><rect x="713.3" y="149" width="2.3" height="15.0" fill="rgb(215,73,5)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize (10 samples, 1.00%)</title><rect x="786.4" y="149" width="11.8" height="15.0" fill="rgb(240,57,50)" rx="2" ry="2" />
+<text text-anchor="" x="789.44" y="159.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.+ (122 samples, 12.20%)</title><rect x="25.3" y="197" width="144.0" height="15.0" fill="rgb(233,181,10)" rx="2" ry="2" />
+<text text-anchor="" x="28.34" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.Algebra.+</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.zipWithLonger.zWL (158 samples, 15.80%)</title><rect x="913.9" y="213" width="186.4" height="15.0" fill="rgb(248,75,41)" rx="2" ry="2" />
+<text text-anchor="" x="916.88" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.zipWithL..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addL (2 samples, 0.20%)</title><rect x="909.2" y="229" width="2.3" height="15.0" fill="rgb(249,37,0)" rx="2" ry="2" />
+<text text-anchor="" x="912.16" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Algorithm.GenAlgPW.computeMinStep.\.(...) (759 samples, 75.90%)</title><rect x="12.4" y="293" width="895.6" height="15.0" fill="rgb(222,108,49)" rx="2" ry="2" />
+<text text-anchor="" x="15.36" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Algorithm.GenAlgPW.computeMinStep.\.(...)</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.zipWithLonger.zWL (79 samples, 7.90%)</title><rect x="618.9" y="229" width="93.2" height="15.0" fill="rgb(236,97,24)" rx="2" ry="2" />
+<text text-anchor="" x="621.88" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath...</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache.\.\ (1 samples, 0.10%)</title><rect x="838.4" y="85" width="1.1" height="15.0" fill="rgb(237,76,35)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="95.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.* (1 samples, 0.10%)</title><rect x="716.8" y="133" width="1.2" height="15.0" fill="rgb(235,37,9)" rx="2" ry="2" />
+<text text-anchor="" x="719.82" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Subclasses.Symmetric.setBit.subFuns' (1 samples, 0.10%)</title><rect x="906.8" y="261" width="1.2" height="15.0" fill="rgb(233,37,35)" rx="2" ry="2" />
+<text text-anchor="" x="909.80" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.MultiSet.toAscOccurList (1 samples, 0.10%)</title><rect x="838.4" y="37" width="1.1" height="15.0" fill="rgb(221,74,51)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="47.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize (34 samples, 3.40%)</title><rect x="798.2" y="133" width="40.2" height="15.0" fill="rgb(231,47,8)" rx="2" ry="2" />
+<text text-anchor="" x="801.24" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Dat..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addL (158 samples, 15.80%)</title><rect x="913.9" y="245" width="186.4" height="15.0" fill="rgb(248,27,48)" rx="2" ry="2" />
+<text text-anchor="" x="916.88" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.addL</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.mulL (504 samples, 50.40%)</title><rect x="24.2" y="229" width="594.7" height="15.0" fill="rgb(246,168,23)" rx="2" ry="2" />
+<text text-anchor="" x="27.16" y="239.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.mulL</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.comP (4 samples, 0.40%)</title><rect x="713.3" y="197" width="4.7" height="15.0" fill="rgb(213,104,22)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.\ (10 samples, 1.00%)</title><rect x="786.4" y="117" width="11.8" height="15.0" fill="rgb(222,132,42)" rx="2" ry="2" />
+<text text-anchor="" x="789.44" y="127.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>all (1,000 samples, 100%)</title><rect x="10.0" y="405" width="1180.0" height="15.0" fill="rgb(251,202,9)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="415.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.MultiSet.delete (1 samples, 0.10%)</title><rect x="906.8" y="245" width="1.2" height="15.0" fill="rgb(220,113,22)" rx="2" ry="2" />
+<text text-anchor="" x="909.80" y="255.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.+ (1 samples, 0.10%)</title><rect x="910.3" y="181" width="1.2" height="15.0" fill="rgb(237,117,49)" rx="2" ry="2" />
+<text text-anchor="" x="913.34" y="191.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addL (1 samples, 0.10%)</title><rect x="710.9" y="197" width="1.2" height="15.0" fill="rgb(218,160,8)" rx="2" ry="2" />
+<text text-anchor="" x="713.92" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.Algebra.+ (2 samples, 0.20%)</title><rect x="713.3" y="133" width="2.3" height="15.0" fill="rgb(237,28,19)" rx="2" ry="2" />
+<text text-anchor="" x="716.28" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache.\ (34 samples, 3.40%)</title><rect x="798.2" y="165" width="40.2" height="15.0" fill="rgb(243,6,21)" rx="2" ry="2" />
+<text text-anchor="" x="801.24" y="175.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Dat..</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Utils.memoize (1 samples, 0.10%)</title><rect x="838.4" y="53" width="1.1" height="15.0" fill="rgb(239,56,25)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="63.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\ (1 samples, 0.10%)</title><rect x="838.4" y="133" width="1.1" height="15.0" fill="rgb(230,51,52)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="143.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.+ (2 samples, 0.20%)</title><rect x="909.2" y="261" width="2.3" height="15.0" fill="rgb(241,130,22)" rx="2" ry="2" />
+<text text-anchor="" x="912.16" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.* (590 samples, 59.00%)</title><rect x="15.9" y="261" width="696.2" height="15.0" fill="rgb(243,50,18)" rx="2" ry="2" />
+<text text-anchor="" x="18.90" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.*</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.zipWithLonger (2 samples, 0.20%)</title><rect x="909.2" y="213" width="2.3" height="15.0" fill="rgb(225,116,17)" rx="2" ry="2" />
+<text text-anchor="" x="912.16" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Poly.PiecewisePoly.+ (160 samples, 16.00%)</title><rect x="911.5" y="293" width="188.8" height="15.0" fill="rgb(243,174,53)" rx="2" ry="2" />
+<text text-anchor="" x="914.52" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >Poly.PiecewisePoly.+</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>DSLsofMath.PSDS.addL (122 samples, 12.20%)</title><rect x="25.3" y="213" width="144.0" height="15.0" fill="rgb(226,133,18)" rx="2" ry="2" />
+<text text-anchor="" x="28.34" y="223.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >DSLsofMath.PSDS.addL</text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoizeFinite (6 samples, 0.60%)</title><rect x="1141.6" y="197" width="7.1" height="15.0" fill="rgb(240,114,37)" rx="2" ry="2" />
+<text text-anchor="" x="1144.62" y="207.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>Data.Function.Memoize.memoize.\.cache.\ (1 samples, 0.10%)</title><rect x="838.4" y="69" width="1.1" height="15.0" fill="rgb(217,68,7)" rx="2" ry="2" />
+<text text-anchor="" x="841.36" y="79.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
+</g>
+<g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
+<title>MAIN.MAIN (986 samples, 98.60%)</title><rect x="10.0" y="389" width="1163.5" height="15.0" fill="rgb(243,148,19)" rx="2" ry="2" />
+<text text-anchor="" x="13.00" y="399.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >MAIN.MAIN</text>
+</g>
+</svg>

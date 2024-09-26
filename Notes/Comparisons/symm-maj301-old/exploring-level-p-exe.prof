@@ -1,0 +1,688 @@
+	Thu Sep 26 14:48 2024 Time and Allocation Profiling Report  (Final)
+
+	   exploring-level-p-exe +RTS -N -p -RTS
+
+	total time  =        1.69 secs   (6245 ticks @ 1000 us, 8 processors)
+	total alloc = 3,940,698,320 bytes  (excludes profiling overheads)
+
+COST CENTRE         MODULE                SRC                                            %time %alloc
+
+*                   DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:43-60             20.6    9.8
++                   DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60             20.1   13.1
+scaleL              DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:108:1-19                17.7   31.1
+zipWithLonger.zWL   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)         16.1   27.4
+memoize.\.\         Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23            4.9    0.0
+memoize.\.\         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21            4.3    0.0
+isConst             Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(94,3)-(97,25)       3.3    3.7
+memoize.\.cache.\.\ Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21            1.9    2.1
+memoize.\           Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21            1.3    0.2
+btLeft              Data.Function.Memoize src/Data/Function/Memoize.hs:155:5-10            1.3    0.0
+finiteLookup.loop   Data.Function.Memoize src/Data/Function/Memoize.hs:(187,5)-(192,52)    1.2    0.0
+setBit.rv'          Subclasses.Symmetric  src/Subclasses/Symmetric.hs:106:13-50            0.8    4.9
+fmap                Data.Function.Memoize src/Data/Function/Memoize.hs:157:13-19           0.6    4.7
+
+
+                                                                                                                                    individual      inherited
+COST CENTRE                                 MODULE                SRC                                           no.      entries  %time %alloc   %time %alloc
+
+MAIN                                        MAIN                  <built-in>                                    1543           0    0.0    0.0   100.0  100.0
+ CAF                                        GHC.Conc.Signal       <entire-module>                               1661           0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.Encoding       <entire-module>                               1644           0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.Encoding.Iconv <entire-module>                               1642           0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.Handle.FD      <entire-module>                               1632           0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.Event.Thread      <entire-module>                               1576           0    0.0    0.0     0.0    0.0
+ CAF:$dBoFun_rsDE                           LibMain               <no location info>                            3036           0    0.0    0.0     0.0    0.0
+ CAF:$dMemoizable1_rsDG                     LibMain               <no location info>                            3038           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3159           2    0.0    0.0     0.0    0.0
+   memoize.\                                Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3215           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3099           2    0.0    0.0     0.0    0.0
+  memoize                                   Utils                 src/Utils.hs:28:3-83                          3290           0    0.0    0.0     0.0    0.0
+   fromAscOccurList                         Data.MultiSet         Data/MultiSet.hs:627:1-47                     3291           1    0.0    0.0     0.0    0.0
+ CAF:$dMemoizable_rsDF                      LibMain               <no location info>                            3037           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3164           1    0.0    0.0     0.0    0.0
+ CAF:$dOrd_rsDD                             LibMain               <no location info>                            3035           0    0.0    0.0     0.0    0.0
+ CAF:$fAddGroupPiecewisePoly_$cfmap         Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:225:38-41           2843           0    0.0    0.0     0.0    0.0
+  fmap                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:225:38-50           3436           1    0.0    0.0     0.0    0.0
+ CAF:$fAddGroupRatio_$cnegate               DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:116:43-48           2980           0    0.0    0.0     0.0    0.0
+  negate                                    DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:116:43-65           3614           1    0.0    0.0     0.0    0.0
+ CAF:$fAdditivePiecewisePoly2               Poly.PiecewisePoly    <no location info>                            2870           0    0.0    0.0     0.0    0.0
+  zero                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:514:3-31            3553           0    0.0    0.0     0.0    0.0
+   zero                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:54-63              3554           1    0.0    0.0     0.0    0.0
+ CAF:$fAdditivePoly2                        DSLsofMath.PSDS       <no location info>                            2929           0    0.0    0.0     0.0    0.0
+  zeroP                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:76:20-34              3555           1    0.0    0.0     0.0    0.0
+ CAF:$fAdditiveRatio_$c+                    DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-45           2974           0    0.0    0.0     0.0    0.0
+  +                                         DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3596           1    0.0    0.0     0.0    0.0
+ CAF:$fAdditiveRatio_$czero                 DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:64-67           2975           0    0.0    0.0     0.0    0.0
+  zero                                      DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:64-72           3608           1    0.0    0.0     0.0    0.0
+ CAF:$fApplicativeZoomed_$cliftA2           Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:99:10-31            2802           0    0.0    0.0     0.0    0.0
+  liftA2                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:99:10-31            3473           1    0.0    0.0     0.0    0.0
+ CAF:$fBoFunMaybe()_$cisConst               Subclasses.Id         src/Subclasses/Id.hs:14:3-9                   2774           0    0.0    0.0     0.0    0.0
+  isConst                                   Subclasses.Id         src/Subclasses/Id.hs:14:3-14                  3332           1    0.0    0.0     0.0    0.0
+ CAF:$fBoFunMaybe()_$cvariables             Subclasses.Id         src/Subclasses/Id.hs:16:3-11                  2773           0    0.0    0.0     0.0    0.0
+  variables                                 Subclasses.Id         src/Subclasses/Id.hs:16:3-35                  3303           1    0.0    0.0     0.0    0.0
+ CAF:$fBoFunSymmetric(,)16                  Subclasses.Symmetric  <no location info>                            2760           0    0.0    0.0     0.0    0.0
+  variables                                 Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(99,3)-(102,17)   3286           0    0.0    0.0     0.0    0.0
+   naturals                                 Utils                 src/Utils.hs:52:1-26                          3287           1    0.0    0.0     0.0    0.0
+ CAF:$fFunctorPoly2                         DSLsofMath.PSDS       <no location info>                            2959           0    0.0    0.0     0.0    0.0
+  fmap                                      DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:289:35-45             3588           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableBool_$cmemoize             Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         2662           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3118           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableFinite1                    Data.Function.Memoize <no location info>                            2634           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3192           0    0.0    0.0     0.0    0.0
+   finiteLookup                             Data.Function.Memoize src/Data/Function/Memoize.hs:(182,1)-(192,52) 3193           0    0.0    0.0     0.0    0.0
+    finiteLookup.stop0                      Data.Function.Memoize src/Data/Function/Memoize.hs:185:5-46         3194           0    0.0    0.0     0.0    0.0
+     fromEnum                               Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3195           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableFinite2                    Data.Function.Memoize <no location info>                            2621           0    0.0    0.0     0.0    0.0
+  maxBound                                  Data.Function.Memoize src/Data/Function/Memoize.hs:164:17-23        3196           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableFinite3                    Data.Function.Memoize <no location info>                            2635           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3187           0    0.0    0.0     0.0    0.0
+   finiteLookup                             Data.Function.Memoize src/Data/Function/Memoize.hs:(182,1)-(192,52) 3188           0    0.0    0.0     0.0    0.0
+    finiteLookup.start0                     Data.Function.Memoize src/Data/Function/Memoize.hs:184:5-46         3189           0    0.0    0.0     0.0    0.0
+     fromEnum                               Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3190           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableFinite4                    Data.Function.Memoize <no location info>                            2620           0    0.0    0.0     0.0    0.0
+  minBound                                  Data.Function.Memoize src/Data/Function/Memoize.hs:164:17-23        3191           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableFinite5                    Data.Function.Memoize <no location info>                            2654           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3199           0    0.0    0.0     0.0    0.0
+   theFinites                               Data.Function.Memoize src/Data/Function/Memoize.hs:(172,1)-(179,38) 3200           0    0.0    0.0     0.0    0.0
+    theFinites.loop                         Data.Function.Memoize src/Data/Function/Memoize.hs:(173,3)-(179,38) 3201         359    0.0    0.0     0.0    0.0
+     theFinites.loop.mean                   Data.Function.Memoize src/Data/Function/Memoize.hs:179:11-38        3294         359    0.0    0.0     0.0    0.0
+      meanFinite                            Data.Function.Memoize src/Data/Function/Memoize.hs:(195,1)-(199,19) 3295         359    0.0    0.0     0.0    0.0
+       meanFinite.ia                        Data.Function.Memoize src/Data/Function/Memoize.hs:198:5-19         3297         359    0.0    0.0     0.0    0.0
+        fromEnum                            Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3298         359    0.0    0.0     0.0    0.0
+       meanFinite.ib                        Data.Function.Memoize src/Data/Function/Memoize.hs:199:5-19         3300         359    0.0    0.0     0.0    0.0
+        fromEnum                            Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3301         359    0.0    0.0     0.0    0.0
+       toEnum                               Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3296         359    0.0    0.0     0.0    0.0
+     pred                                   Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3302         207    0.0    0.0     0.0    0.0
+     succ                                   Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3299         151    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableInt_$cmemoize              Data.Function.Memoize src/Data/Function/Memoize.hs:216:31-37        2655           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:216:31-53        3172           1    0.0    0.0     0.0    0.0
+ CAF:$fMemoizableSymmetric1                 Subclasses.Symmetric  <no location info>                            2751           0    0.0    0.0     0.0    0.0
+  memoize                                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3109         303    0.0    0.0     0.0    0.0
+   memoize.\                                Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3127           0    0.0    0.0     0.0    0.0
+ CAF:$fMultiplicativeRatio_$c*              DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:43-45           2986           0    0.0    0.0     0.0    0.0
+  *                                         DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:43-60           3606           1    0.0    0.0     0.0    0.0
+ CAF:$fMultiplicativeRatio_$cone            DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:64-66           2987           0    0.0    0.0     0.0    0.0
+  one                                       DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:64-72           3599           1    0.0    0.0     0.0    0.0
+ CAF:computeMin10                           Algorithm.GenAlgPW    <no location info>                            3034           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3305           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3306           0    0.0    0.0     0.0    0.0
+    +                                       Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:515:3-50            3307           1    0.0    0.0     0.0    0.0
+     +                                      DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:66-73              3515           1    0.0    0.0     0.0    0.0
+     piecewiseBinOp                         Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3309           1    0.0    0.0     0.0    0.0
+      piecewiseBinOp.op'                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3483           1    0.0    0.0     0.0    0.0
+ CAF:computeMin11                           Algorithm.GenAlgPW    <no location info>                            3028           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3414           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3415           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3416           0    0.0    0.0     0.0    0.0
+     -                                      DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:38:1-31             3417           1    0.0    0.0     0.0    0.0
+     +                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:515:3-50            3422           0    0.0    0.0     0.0    0.0
+      fmap                                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3573           1    0.0    0.0     0.0    0.0
+      +                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:66-73              3575           0    0.0    0.0     0.0    0.0
+       addP                                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:83:1-35               3576           1    0.0    0.0     0.0    0.0
+        addL                                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3577           1    0.0    0.0     0.0    0.0
+         zipWithLonger                      DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(91,1)-(94,51)        3578           1    0.0    0.0     0.0    0.0
+          zipWithLonger.zWL                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3579           2    0.0    0.0     0.0    0.0
+           +                                DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3613           0    0.0    0.0     0.0    0.0
+      piecewiseBinOp                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3424           0    0.0    0.0     0.0    0.0
+       piecewiseBinOp.h                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(496,3)-(511,93)    3430           1    0.0    0.0     0.0    0.0
+        piecewiseBinOp.op'                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3560           0    0.0    0.0     0.0    0.0
+         piecewiseBinOp.opNotRegen          Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3561           0    0.0    0.0     0.0    0.0
+       piecewiseBinOp.op'                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3558           0    0.0    0.0     0.0    0.0
+        piecewiseBinOp.opNotRegen           Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3559           1    0.0    0.0     0.0    0.0
+         liftA2                             Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:99:10-31            3562           0    0.0    0.0     0.0    0.0
+          <*>                               Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:101:3-94            3563           1    0.0    0.0     0.0    0.0
+           fmap                             Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3580           0    0.0    0.0     0.0    0.0
+          fmap                              Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3564           1    0.0    0.0     0.0    0.0
+ CAF:computeMin12                           Algorithm.GenAlgPW    <no location info>                            3027           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3431           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3432           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3433           0    0.0    0.0     0.0    0.0
+     -                                      DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:38:1-31             3434           0    0.0    0.0     0.0    0.0
+      negate                                Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:518:3-22            3435           1    0.0    0.0     0.0    0.0
+       fmapPW                               Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(228,1)-(231,78)    3437           1    0.0    0.0     0.0    0.0
+        fmapPW.f'                           Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:228:18-38           3571           1    0.0    0.0     0.0    0.0
+         bimap                              Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:96:3-81             3572           1    0.0    0.0     0.0    0.0
+          fmapPS                            DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:293:1-32              3589           1    0.0    0.0     0.0    0.0
+           negate                           DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:116:43-65           3615           0    0.0    0.0     0.0    0.0
+ CAF:computeMin13                           Algorithm.GenAlgPW    <no location info>                            3018           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3533           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3534           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3535           0    0.0    0.0     0.0    0.0
+     mempty                                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:528:3-35            3536           0    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3537           0    0.0    0.0     0.0    0.0
+       zoomedTrivial                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:105:1-35            3538           1    0.0    0.0     0.0    0.0
+ CAF:computeMin17                           Algorithm.GenAlgPW    <no location info>                            3015           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3540           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3541           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3542           0    0.0    0.0     0.0    0.0
+     mempty                                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:528:3-35            3543           0    0.0    0.0     0.0    0.0
+      mempty                                Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:31:3-13           3544           1    0.0    0.0     0.0    0.0
+       xP                                   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:60:1-18               3545           1    0.0    0.0     0.0    0.0
+ CAF:computeMin18                           Algorithm.GenAlgPW    <no location info>                            3023           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3565           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3566           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3567           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3568           0    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3569           0    0.0    0.0     0.0    0.0
+       zoomedTrivial                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:105:1-35            3570           1    0.0    0.0     0.0    0.0
+ CAF:computeMin22                           Algorithm.GenAlgPW    <no location info>                            3019           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3320           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3321           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3322           0    0.0    0.0     0.0    0.0
+     mempty                                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:528:3-35            3323           1    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3324           1    0.0    0.0     0.0    0.0
+ CAF:computeMin24                           Algorithm.GenAlgPW    <no location info>                            3033           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3313           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3314           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3315           0    0.0    0.0     0.0    0.0
+     *                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:522:3-49            3316           1    0.0    0.0     0.0    0.0
+      *                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:74:66-73              3522           1    0.0    0.0     0.0    0.0
+       mulP                                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:97:1-35               3525           0    0.0    0.0     0.0    0.0
+        mulL                                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(100,1)-(102,53)      3602           0    0.0    0.0     0.0    0.0
+      piecewiseBinOp                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3318           1    0.0    0.0     0.0    0.0
+       mempty                               Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:46:3-45             3647           1    0.0    0.0     0.0    0.0
+        affineFromPoly                      Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:(136,1)-(137,31)  3658           1    0.0    0.0     0.0    0.0
+         affineFromPoly.(...)               Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:137:3-31          3677           1    0.0    0.0     0.0    0.0
+          viewLow                           Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:37:1-53           3678           1    0.0    0.0     0.0    0.0
+         affineFromPoly.offset              Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:137:3-31          3676           1    0.0    0.0     0.0    0.0
+         affineFromPoly.scale               Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:137:3-31          3690           1    0.0    0.0     0.0    0.0
+        mempty                              Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:31:3-13           3679           1    0.0    0.0     0.0    0.0
+         xP                                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:60:1-18               3680           1    0.0    0.0     0.0    0.0
+       piecewiseBinOp.op'                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3491           1    0.0    0.0     0.0    0.0
+       piecewiseBinOp.opRegen               Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:492:3-58            3649           0    0.0    0.0     0.0    0.0
+        zoomedGenerate                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:108:1-42            3650           0    0.0    0.0     0.0    0.0
+         zoom                               Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:81:3-45             3651           0    0.0    0.0     0.0    0.0
+          comP                              DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:335:1-35              3652           0    0.0    0.0     0.0    0.0
+           comL                             DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(338,1)-(340,51)      3659           0    0.0    0.0     0.0    0.0
+            mulL                            DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(100,1)-(102,53)      3671           0    0.0    0.0     0.0    0.0
+ CAF:computeMin25                           Algorithm.GenAlgPW    <no location info>                            3014           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3281           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3282           0    0.0    0.0     0.0    0.0
+    minPWs                                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:487:1-29            3283           1    0.0    0.0     0.0    0.0
+ CAF:computeMin26                           Algorithm.GenAlgPW    <no location info>                            3013           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3273           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3274           0    0.0    0.0     0.0    0.0
+    one                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3275           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3278           1    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3279           1    0.0    0.0     0.0    0.0
+ CAF:computeMin28                           Algorithm.GenAlgPW    <no location info>                            3012           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3477           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3478           0    0.0    0.0     0.0    0.0
+    one                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3479           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3480           0    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3481           0    0.0    0.0     0.0    0.0
+       zoomedTrivial                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:105:1-35            3482           1    0.0    0.0     0.0    0.0
+ CAF:computeMin29                           Algorithm.GenAlgPW    <no location info>                            3011           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3622           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3623           0    0.0    0.0     0.0    0.0
+    one                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3624           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3625           0    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3626           0    0.0    0.0     0.0    0.0
+       zoomedTrivial                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:105:1-35            3627           0    0.0    0.0     0.0    0.0
+        mempty                              Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:46:3-45             3628           1    0.0    0.0     0.0    0.0
+ CAF:computeMin3                            Algorithm.GenAlgPW    <no location info>                            3031           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3548           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3549           0    0.0    0.0     0.0    0.0
+    zero                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:514:3-31            3550           0    0.0    0.0     0.0    0.0
+     piecewiseFromPoly                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3551           0    0.0    0.0     0.0    0.0
+      zoomedTrivial                         Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:105:1-35            3552           1    0.0    0.0     0.0    0.0
+ CAF:computeMin31                           Algorithm.GenAlgPW    <no location info>                            3010           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3632           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3633           0    0.0    0.0     0.0    0.0
+    one                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3634           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3635           0    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3636           0    0.0    0.0     0.0    0.0
+       zoomedTrivial                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:105:1-35            3637           0    0.0    0.0     0.0    0.0
+        mempty                              Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:46:3-45             3638           0    0.0    0.0     0.0    0.0
+         affineFromPoly                     Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:(136,1)-(137,31)  3639           1    0.0    0.0     0.0    0.0
+          affineFromPoly.(...)              Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:137:3-31          3641           1    0.0    0.0     0.0    0.0
+           viewLow                          Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:37:1-53           3642           1    0.0    0.0     0.0    0.0
+          affineFromPoly.offset             Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:137:3-31          3645           1    0.0    0.0     0.0    0.0
+          affineFromPoly.scale              Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:137:3-31          3640           1    0.0    0.0     0.0    0.0
+         mempty                             Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:31:3-13           3643           1    0.0    0.0     0.0    0.0
+          xP                                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:60:1-18               3644           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_eta                         Algorithm.GenAlgPW    <no location info>                            3024           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3425           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3426           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3427           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3428           1    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3429           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_eta1                        Algorithm.GenAlgPW    <no location info>                            3025           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3438           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3439           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3440           0    0.0    0.0     0.0    0.0
+     mempty                                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:528:3-35            3441           1    0.0    0.0     0.0    0.0
+      piecewiseFromPoly                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3442           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_f                           Algorithm.GenAlgPW    <no location info>                            3032           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3270           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3271           0    0.0    0.0     0.0    0.0
+    one                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3272           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_op2                         Algorithm.GenAlgPW    <no location info>                            3008           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3263           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3264           0    0.0    0.0     0.0    0.0
+    +                                       DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:134:62-77           3265           0    0.0    0.0     0.0    0.0
+     +                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:515:3-50            3266           1    0.0    0.0     0.0    0.0
+      +                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:66-73              3501           1    0.0    0.0     0.0    0.0
+      piecewiseBinOp                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3268           1    0.0    0.0     0.0    0.0
+       piecewiseBinOp.op'                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3465           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_ww1                         Algorithm.GenAlgPW    <no location info>                            3026           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3418           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3419           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3420           0    0.0    0.0     0.0    0.0
+     +                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:515:3-50            3421           1    0.0    0.0     0.0    0.0
+      +                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:66-73              3574           1    0.0    0.0     0.0    0.0
+      piecewiseBinOp                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3423           1    0.0    0.0     0.0    0.0
+       piecewiseBinOp.op'                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3557           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_x                           Algorithm.GenAlgPW    <no location info>                            3020           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3581           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3582           0    0.0    0.0     0.0    0.0
+    computeMinStep.\.(...)                  Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3583           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3584           0    0.0    0.0     0.0    0.0
+      one                                   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:74:54-61              3585           1    0.0    0.0     0.0    0.0
+       oneP                                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:79:29-41              3586           1    0.0    0.0     0.0    0.0
+        oneL                                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:80:29-40              3587           1    0.0    0.0     0.0    0.0
+ CAF:computeMin_x1                          Algorithm.GenAlgPW    <no location info>                            3009           0    0.0    0.0     0.0    0.0
+  computeMinStep                            Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3508           0    0.0    0.0     0.0    0.0
+   computeMinStep.\                         Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3509           0    0.0    0.0     0.0    0.0
+    one                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3510           0    0.0    0.0     0.0    0.0
+     one                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:521:3-29            3511           0    0.0    0.0     0.0    0.0
+      one                                   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:74:54-61              3512           1    0.0    0.0     0.0    0.0
+       oneP                                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:79:29-41              3513           1    0.0    0.0     0.0    0.0
+        oneL                                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:80:29-40              3514           1    0.0    0.0     0.0    0.0
+ CAF:lift0                                  DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:130:1-5             3006           0    0.0    0.0     0.0    0.0
+  lift0                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:130:1-13            3276           1    0.0    0.0     0.0    0.0
+ CAF:lvl1_rsDI                              LibMain               <no location info>                            3041           0    0.0    0.0     0.0    0.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3250           0    0.0    0.0     0.0    0.0
+   computeMin                               Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:29:1-53             3251           0    0.0    0.0     0.0    0.0
+ CAF:lvl_rsDH                               LibMain               <no location info>                            3040           0    0.0    0.0     0.0    0.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3252           0    0.0    0.0     0.0    0.0
+   computeMin                               Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:29:1-53             3253           0    0.0    0.0     0.0    0.0
+    computeMinStep                          Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3254           1    0.0    0.0     0.0    0.0
+ CAF:main1                                  Main                  <no location info>                            3084           0    0.0    0.0     0.0    0.0
+  main                                      Main                  app/Main.hs:5:1-19                            3086           1    0.0    0.0     0.0    0.0
+ CAF:main1                                  LibMain               <no location info>                            3046           0    0.0    0.0     0.0    0.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3087           1    0.0    0.0     0.0    0.0
+ CAF:main2                                  LibMain               <no location info>                            3045           0    0.0    0.0     0.0    0.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3089           0    0.0    0.0     0.0    0.0
+   rnf                                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:223:37-42           3091           0    0.0    0.0     0.0    0.0
+    from                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:223:28-34           3092           1    0.0    0.0     0.0    0.0
+    rnf                                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:90:45-50            3463           0    0.0    0.0     0.0    0.0
+     from                                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:90:36-42            3464           1    0.0    0.0     0.0    0.0
+     rnf                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:40:52-57            3620           0    0.0    0.0     0.0    0.0
+      from                                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:40:43-49            3621           1    0.0    0.0     0.0    0.0
+      rnf                                   Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:130:52-57         3630           0    0.0    0.0     0.0    0.0
+       from                                 Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:130:43-49         3631           1    0.0    0.0     0.0    0.0
+ CAF:main3                                  LibMain               <no location info>                            3043           0    0.0    0.0     0.0    0.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3106           0    0.0    0.0     0.0    0.0
+   majSymm                                  Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(120,1)-(122,24)  3107           1    0.0    0.0     0.0    0.0
+    fromOccurList                           Data.MultiSet         Data/MultiSet.hs:621:1-41                     3163           1    0.0    0.0     0.0    0.0
+    majSymm.n'                              Subclasses.Symmetric  src/Subclasses/Symmetric.hs:122:5-24          3116           1    0.0    0.0     0.0    0.0
+ CAF:main5                                  LibMain               <no location info>                            3039           0    0.0    0.0     0.0    0.0
+  rnf                                       Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:130:52-57         3629           1    0.0    0.0     0.0    0.0
+  rnf                                       Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:40:52-57            3619           1    0.0    0.0     0.0    0.0
+  rnf                                       DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:41:22-27              3499           1    0.0    0.0     0.0    0.0
+  rnf                                       Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:90:45-50            3462           1    0.0    0.0     0.0    0.0
+  rnf                                       Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:223:37-42           3090           1    0.0    0.0     0.0    0.0
+ CAF:main_x                                 LibMain               <no location info>                            3044           0    0.0    0.0     0.0    0.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3093           0    0.0    0.0     0.0    0.0
+   computeMin                               Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:29:1-53             3094           1    0.0    0.0     0.0    0.0
+    memoize                                 Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(87,3)-(90,42)    3098           0    0.0    0.0     0.0    0.0
+     memoize.m                              Subclasses.Symmetric  src/Subclasses/Symmetric.hs:89:5-44           3105           1    0.0    0.0     0.0    0.0
+     memoize                                Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3102           0    0.0    0.0     0.0    0.0
+      memoize.\                             Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3103           0    0.0    0.0     0.0    0.0
+       memoize.\.\                          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3104           2    0.0    0.0     0.0    0.0
+        memoize.\.cache                     Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3146           0    0.0    0.0     0.0    0.0
+         memoize                            Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3174           0    0.0    0.0     0.0    0.0
+          memoize.\                         Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3175           0    0.0    0.0     0.0    0.0
+           memoize.\.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3176           0    0.0    0.0     0.0    0.0
+         memoize                            Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3147           0    0.0    0.0     0.0    0.0
+          memoize.\                         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3148           0    0.0    0.0     0.0    0.0
+           memoize.\.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3149           0    0.0    0.0     0.0    0.0
+       memoize.\.cache                      Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3112           0    0.0    0.0     0.0    0.0
+        memoize                             Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3167           0    0.0    0.0     0.0    0.0
+         memoize.\                          Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3168           0    0.0    0.0     0.0    0.0
+          memoize.\.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3169           1    0.0    0.0     0.0    0.0
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3177           0    0.0    0.0     0.0    0.0
+           memoize.\.cache.\                Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3178           0    0.0    0.0     0.0    0.0
+            memoizeFinite                   Data.Function.Memoize src/Data/Function/Memoize.hs:214:1-53         3179           0    0.0    0.0     0.0    0.0
+             memoize                        Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3181           0    0.0    0.0     0.0    0.0
+              finiteLookup                  Data.Function.Memoize src/Data/Function/Memoize.hs:(182,1)-(192,52) 3182           1    0.0    0.0     0.0    0.0
+               finiteLookup.loop            Data.Function.Memoize src/Data/Function/Memoize.hs:(187,5)-(192,52) 3202          63    0.0    0.0     0.0    0.0
+                finiteLookup.loop.mean      Data.Function.Memoize src/Data/Function/Memoize.hs:188:11-38        3203          63    0.0    0.0     0.0    0.0
+                 meanFinite                 Data.Function.Memoize src/Data/Function/Memoize.hs:(195,1)-(199,19) 3204          63    0.0    0.0     0.0    0.0
+                  meanFinite.ia             Data.Function.Memoize src/Data/Function/Memoize.hs:198:5-19         3205          63    0.0    0.0     0.0    0.0
+                  meanFinite.ib             Data.Function.Memoize src/Data/Function/Memoize.hs:199:5-19         3206          63    0.0    0.0     0.0    0.0
+                btLeft                      Data.Function.Memoize src/Data/Function/Memoize.hs:155:5-10         3208          57    0.0    0.0     0.0    0.0
+                btRight                     Data.Function.Memoize src/Data/Function/Memoize.hs:155:13-19        3207           5    0.0    0.0     0.0    0.0
+                btValue                     Data.Function.Memoize src/Data/Function/Memoize.hs:154:5-11         3209           1    0.0    0.0     0.0    0.0
+               finiteLookup.a               Data.Function.Memoize src/Data/Function/Memoize.hs:186:5-24         3183           1    0.0    0.0     0.0    0.0
+                fromEnum                    Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3184           1    0.0    0.0     0.0    0.0
+               finiteLookup.start0          Data.Function.Memoize src/Data/Function/Memoize.hs:184:5-46         3185           1    0.0    0.0     0.0    0.0
+               finiteLookup.stop0           Data.Function.Memoize src/Data/Function/Memoize.hs:185:5-46         3186           1    0.0    0.0     0.0    0.0
+              fmap                          Data.Function.Memoize src/Data/Function/Memoize.hs:157:13-19        3225           0    0.0    0.0     0.0    0.0
+               memoize.\.cache.\.\          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3226           0    0.0    0.0     0.0    0.0
+                memoize                     Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3227           0    0.0    0.0     0.0    0.0
+                 memoize.\                  Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3228           0    0.0    0.0     0.0    0.0
+                  memoize.\.\               Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3229           1    0.0    0.0     0.0    0.0
+        memoize                             Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3113           0    0.0    0.0     0.0    0.0
+         memoize.\                          Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3114           0    0.0    0.0     0.0    0.0
+          memoize.\.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3115         304    0.0    0.0     0.0    0.0
+           memoize                          Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3216           0    0.0    0.0     0.0    0.0
+            memoize.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3217           0    0.0    0.0     0.0    0.0
+             memoize.\.cache                Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3218           0    0.0    0.0     0.0    0.0
+              memoize.\.cache.\             Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3219           0    0.0    0.0     0.0    0.0
+               memoizeFinite                Data.Function.Memoize src/Data/Function/Memoize.hs:214:1-53         3220           0    0.0    0.0     0.0    0.0
+                memoize                     Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3221           0    0.0    0.0     0.0    0.0
+                 finiteLookup               Data.Function.Memoize src/Data/Function/Memoize.hs:(182,1)-(192,52) 3222           0    0.0    0.0     0.0    0.0
+                  finiteLookup.loop         Data.Function.Memoize src/Data/Function/Memoize.hs:(187,5)-(192,52) 3223           0    0.0    0.0     0.0    0.0
+                   btValue                  Data.Function.Memoize src/Data/Function/Memoize.hs:154:5-11         3224           0    0.0    0.0     0.0    0.0
+           memoize.\.cache                  Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3128           0    0.0    0.0     0.0    0.0
+            memoize                         Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3129           0    0.0    0.0     0.0    0.0
+             memoize.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3130           0    0.0    0.0     0.0    0.0
+              memoize.\.\                   Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3131           0    0.0    0.0     0.0    0.0
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3150           0    0.0    0.0     0.0    0.0
+           memoize.\.cache                  Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3151           0    0.0    0.0     0.0    0.0
+            memoize                         Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3152           0    0.0    0.0     0.0    0.0
+             memoize.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3153           0    0.0    0.0     0.0    0.0
+              memoize.\.cache               Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3154           0    0.0    0.0     0.0    0.0
+               memoize.\.cache.\            Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3155           0    0.0    0.0     0.0    0.0
+                memoize.\.cache.\.\         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3156           0    0.0    0.0     0.0    0.0
+                 memoize.\.cache.\          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3157           0    0.0    0.0     0.0    0.0
+                  memoize                   Utils                 src/Utils.hs:28:3-83                          3158           0    0.0    0.0     0.0    0.0
+                   toAscOccurList           Data.MultiSet         Data/MultiSet.hs:614:1-37                     3161           0    0.0    0.0     0.0    0.0
+                    unMS                    Data.MultiSet         Data/MultiSet.hs:193:27-30                    3162           1    0.0    0.0     0.0    0.0
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3121           0    0.0    0.0     0.0    0.0
+           memoize                          Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3122           0    0.0    0.0     0.0    0.0
+            memoize.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3123           0    0.0    0.0     0.0    0.0
+             memoize.\.\                    Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3124         302    0.0    0.0     0.0    0.0
+ CAF:main_x1                                LibMain               <no location info>                            3042           0    0.0    0.0   100.0  100.0
+  main                                      LibMain               src/LibMain.hs:(24,1)-(26,11)                 3095           0    0.0    0.0   100.0  100.0
+   computeMin                               Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:29:1-53             3096           0    0.0    0.0   100.0  100.0
+    memoize                                 Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(87,3)-(90,42)    3097           1    0.0    0.0     3.3    7.5
+     memoize                                Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3100           0    0.0    0.0     3.3    7.5
+      memoize.\                             Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3101       23102    0.0    0.0     3.3    7.5
+       memoize.\.cache                      Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3108       23102    0.0    0.0     3.3    7.4
+        memoize                             Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3165           0    0.0    0.0     0.9    5.0
+         memoize.\                          Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3166       23101    0.0    0.0     0.9    5.0
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3170       23101    0.0    0.0     0.9    5.0
+           memoize.\.cache.\                Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3171       23101    0.0    0.0     0.8    5.0
+            memoize.\.cache.\.\             Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3249       23101    0.0    0.0     0.0    0.0
+             memoize.n                      Subclasses.Symmetric  src/Subclasses/Symmetric.hs:90:5-42           3257       23101    0.0    0.0     0.0    0.0
+            memoizeFinite                   Data.Function.Memoize src/Data/Function/Memoize.hs:214:1-53         3173       23101    0.0    0.0     0.8    4.9
+             memoize                        Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3180       23101    0.0    0.0     0.7    4.9
+              fmap                          Data.Function.Memoize src/Data/Function/Memoize.hs:157:13-19        3198     1455517    0.6    4.7     0.7    4.8
+               memoize.\.cache.\.\          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3210       23101    0.0    0.0     0.1    0.1
+                memoize                     Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3211           0    0.0    0.0     0.1    0.1
+                 memoize.\                  Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3212       23101    0.0    0.1     0.1    0.1
+                  memoize.\.cache           Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3230       23101    0.0    0.0     0.0    0.0
+                   memoize.\.cache          Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3231           0    0.0    0.0     0.0    0.0
+                    memoize                 Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3234           0    0.0    0.0     0.0    0.0
+                     memoize.\              Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3235           0    0.0    0.0     0.0    0.0
+                      memoize.\.cache       Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3456           0    0.0    0.0     0.0    0.0
+                       memoize.\.cache.\    Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3457           0    0.0    0.0     0.0    0.0
+                        memoize.\.cache.\.\ Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3458           0    0.0    0.0     0.0    0.0
+                      memoize.\.cache       Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3236           0    0.0    0.0     0.0    0.0
+                       memoize.\.cache.\    Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3237           0    0.0    0.0     0.0    0.0
+                        memoize.\.cache.\.\ Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3238           0    0.0    0.0     0.0    0.0
+                    memoize.\.cache.\       Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3232           0    0.0    0.0     0.0    0.0
+                     memoize.\.cache.\.\    Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3233       23101    0.0    0.0     0.0    0.0
+                  memoize.\.cache           Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3213           0    0.0    0.0     0.0    0.0
+                   memoize.\.cache.\        Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3214       23101    0.0    0.0     0.0    0.0
+               fromFinite                   Data.Function.Memoize src/Data/Function/Memoize.hs:163:31-40        3293       22801    0.0    0.0     0.0    0.0
+              theFinites                    Data.Function.Memoize src/Data/Function/Memoize.hs:(172,1)-(179,38) 3197       23101    0.0    0.0     0.0    0.0
+            memoize                         Utils                 src/Utils.hs:28:3-83                          3239           0    0.0    0.0     0.0    0.0
+             fromAscOccurList               Data.MultiSet         Data/MultiSet.hs:627:1-47                     3292           0    0.0    0.0     0.0    0.0
+             memoize                        Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3240           0    0.0    0.0     0.0    0.0
+              memoize.\                     Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3241           0    0.0    0.0     0.0    0.0
+               memoize.\.cache              Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3242           0    0.0    0.0     0.0    0.0
+                memoize.\.cache             Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3243           0    0.0    0.0     0.0    0.0
+                 memoize                    Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3244           0    0.0    0.0     0.0    0.0
+                  memoize.\                 Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3245           0    0.0    0.0     0.0    0.0
+                   memoize.\.cache          Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3459           0    0.0    0.0     0.0    0.0
+                    memoize.\.cache.\       Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3460           0    0.0    0.0     0.0    0.0
+                     memoize.\.cache.\.\    Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3461           0    0.0    0.0     0.0    0.0
+                   memoize.\.cache          Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3246           0    0.0    0.0     0.0    0.0
+                    memoize.\.cache.\       Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3247           0    0.0    0.0     0.0    0.0
+                     memoize.\.cache.\.\    Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3248           0    0.0    0.0     0.0    0.0
+        memoize                             Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3110           0    0.0    0.0     2.4    2.4
+         memoize.\                          Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3111       46207    0.1    0.1     2.4    2.4
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3117       46053    0.0    0.0     0.1    0.1
+           memoize                          Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3119           0    0.0    0.0     0.1    0.1
+            memoize.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3120       22952    0.0    0.0     0.1    0.1
+             memoize.\.cache                Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3132       22952    0.0    0.0     0.0    0.0
+              memoize.\.cache.\             Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3133       22952    0.0    0.0     0.0    0.0
+             memoize.\.cache                Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3125         151    0.0    0.0     0.0    0.0
+              memoize.\.cache.\             Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3126         151    0.0    0.0     0.0    0.0
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3134       23105    0.0    0.0     2.3    2.2
+           memoize.\.cache                  Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3135           0    0.0    0.0     2.2    2.2
+            memoize                         Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3136           0    0.0    0.0     2.2    2.2
+             memoize.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3137           0    0.0    0.0     2.2    2.2
+              memoize.\.cache               Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3141           0    0.0    0.0     0.7    1.1
+               memoize.\.cache.\            Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3142           0    0.1    0.0     0.7    1.1
+                memoize.\.cache.\.\         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3143     1744352    0.4    1.1     0.5    1.1
+                 memoize.\.cache.\          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3144       22952    0.0    0.0     0.1    0.1
+                  memoize                   Utils                 src/Utils.hs:28:3-83                          3145       22952    0.0    0.0     0.0    0.0
+                   memoize.\.cache.\.\      Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3443           1    0.0    0.0     0.0    0.0
+                    memoize.n               Subclasses.Symmetric  src/Subclasses/Symmetric.hs:90:5-42           3444           1    0.0    0.0     0.0    0.0
+              memoize.\.cache               Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3138           0    0.0    0.0     1.6    1.1
+               memoize.\.cache.\            Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3139           0    0.1    0.0     1.6    1.1
+                memoize.\.cache.\.\         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3140     1744352    1.5    1.1     1.5    1.1
+                 memoize.\.cache.\          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3445         151    0.0    0.0     0.0    0.0
+                  memoize                   Utils                 src/Utils.hs:28:3-83                          3446         151    0.0    0.0     0.0    0.0
+                   memoize.\.cache.\.\      Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3454           1    0.0    0.0     0.0    0.0
+                    memoize.n               Subclasses.Symmetric  src/Subclasses/Symmetric.hs:90:5-42           3455           1    0.0    0.0     0.0    0.0
+    computeMinStep                          Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,1)-(26,18)      3255           0    0.0    0.0    96.6   92.5
+     computeMinStep.\                       Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(18,41)-(26,18)     3256       23103    0.2    0.2    96.6   92.5
+      isConst                               Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(94,3)-(97,25)    3258       23103    3.3    3.7     3.3    3.7
+       symmResultvector                     Subclasses.Symmetric  src/Subclasses/Symmetric.hs:66:3-18           3259       46055    0.0    0.0     0.0    0.0
+      +                                     DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:134:62-77           3260       22801    0.0    0.0     0.5    0.5
+       lift2                                DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:132:1-37            3261       22801    0.0    0.0     0.0    0.0
+        lift2.\                             DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:132:23-37           3262       22801    0.0    0.0     0.0    0.0
+       +                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:515:3-50            3267           0    0.1    0.1     0.4    0.5
+        fmap                                Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3498       22801    0.0    0.0     0.0    0.0
+        +                                   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:66-73              3502           0    0.0    0.0     0.2    0.1
+         addP                               DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:83:1-35               3503       22802    0.0    0.0     0.2    0.1
+          addL                              DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3504       22802    0.0    0.0     0.2    0.1
+           zipWithLonger                    DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(91,1)-(94,51)        3505       22802    0.0    0.0     0.2    0.1
+            zipWithLonger.zWL               DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3506       45603    0.1    0.1     0.2    0.1
+             +                              DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3598           0    0.1    0.0     0.1    0.0
+           +                                DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3597           0    0.0    0.0     0.0    0.0
+        piecewiseBinOp                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3269           0    0.0    0.0     0.1    0.2
+         piecewiseBinOp.h                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(496,3)-(511,93)    3280       22801    0.0    0.1     0.0    0.1
+          piecewiseBinOp.op'                Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3468           0    0.0    0.0     0.0    0.0
+           piecewiseBinOp.opNotRegen        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3469           0    0.0    0.0     0.0    0.0
+         piecewiseBinOp.op'                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3466           0    0.0    0.0     0.1    0.2
+          piecewiseBinOp.opNotRegen         Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3467       22801    0.0    0.0     0.1    0.2
+           liftA2                           Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:99:10-31            3474           0    0.0    0.0     0.1    0.2
+            <*>                             Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:101:3-94            3475       22801    0.0    0.1     0.0    0.1
+             fmap                           Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3507           0    0.0    0.0     0.0    0.0
+            fmap                            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3476       22801    0.0    0.1     0.0    0.1
+      computeMinStep.\.(...)                Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3312       22801    0.2    0.2    76.3   73.5
+       setBit                               Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(104,3)-(111,36)  3331       45602    0.1    0.2     1.2    5.3
+        setBit.(...)                        Subclasses.Symmetric  src/Subclasses/Symmetric.hs:109:5-54          3335       45602    0.0    0.0     0.0    0.1
+         toAscOccurList                     Data.MultiSet         Data/MultiSet.hs:614:1-37                     3336           0    0.0    0.1     0.0    0.1
+          unMS                              Data.MultiSet         Data/MultiSet.hs:193:27-30                    3337       45602    0.0    0.0     0.0    0.0
+        setBit.rv'                          Subclasses.Symmetric  src/Subclasses/Symmetric.hs:106:13-50         3343       45602    0.8    4.9     0.8    4.9
+        setBit.subFun                       Subclasses.Symmetric  src/Subclasses/Symmetric.hs:109:5-54          3338       45602    0.0    0.0     0.0    0.0
+        setBit.subFun'                      Subclasses.Symmetric  src/Subclasses/Symmetric.hs:111:5-36          3333       45602    0.0    0.0     0.0    0.0
+         setBit                             Subclasses.Id         src/Subclasses/Id.hs:(18,3)-(19,38)           3334       45602    0.0    0.0     0.0    0.0
+        setBit.subFuns'                     Subclasses.Symmetric  src/Subclasses/Symmetric.hs:110:5-47          3367       45602    0.0    0.0     0.1    0.1
+         delete                             Data.MultiSet         Data/MultiSet.hs:331:1-47                     3368       45602    0.1    0.1     0.1    0.1
+          deleteN                           Data.MultiSet         Data/MultiSet.hs:(344,1)-(346,28)             3370       45602    0.0    0.0     0.0    0.0
+          unMS                              Data.MultiSet         Data/MultiSet.hs:193:27-30                    3369       45602    0.0    0.0     0.0    0.0
+       *                                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:522:3-49            3317           0    0.1    0.1    59.8   67.8
+        *                                   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:74:66-73              3523           0    0.0    0.0    59.0   66.5
+         mulP                               DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:97:1-35               3524       45602    0.7    0.0    59.0   66.5
+          zipWithLonger.zWL                 DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3593     6862950    7.8   18.0     7.8   18.0
+           mulL                             DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(100,1)-(102,53)      3609           0    0.0    0.0     0.1    0.0
+            addL                            DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3610           0    0.0    0.0     0.1    0.0
+             +                              DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3611           0    0.1    0.0     0.1    0.0
+          mulL                              DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(100,1)-(102,53)      3526      136202    0.1    0.1    50.5   48.5
+           addL                             DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3591       90600    0.0    0.0    12.2    7.8
+            zipWithLonger                   DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(91,1)-(94,51)        3592       90600    0.0    0.0     0.0    0.0
+            +                               DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3605           0   12.2    7.8    12.2    7.8
+           scaleL                           DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:108:1-19              3590       90600   17.6   30.7    38.0   40.4
+            *                               DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:43-60           3607           0   20.4    9.7    20.4    9.7
+           zipWithLonger.zWL                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3616       90600    0.1    0.1     0.1    0.1
+            addL                            DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3617           0    0.0    0.0     0.0    0.0
+             +                              DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3618           0    0.0    0.0     0.0    0.0
+        piecewiseBinOp                      Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3319           0    0.0    0.0     0.7    1.2
+         piecewiseBinOp.h                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(496,3)-(511,93)    3325       45602    0.0    0.1     0.1    0.2
+          piecewiseBinOp.op'                Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3496           0    0.0    0.0     0.0    0.0
+           piecewiseBinOp.opRegen           Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:492:3-58            3546           0    0.0    0.0     0.0    0.0
+            zoomedGenerate                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:108:1-42            3547          17    0.0    0.0     0.0    0.0
+          piecewiseBinOp.opRegen            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:492:3-58            3494           0    0.1    0.1     0.1    0.1
+           zoomedGenerate                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:108:1-42            3495       45559    0.0    0.0     0.0    0.0
+            zoom                            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:81:3-45             3646           2    0.0    0.0     0.0    0.0
+             affinePoly                     Poly.PolynomialExtra  src/Poly/PolynomialExtra.hs:133:1-56          3657           2    0.0    0.0     0.0    0.0
+             comP                           DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:335:1-35              3648           2    0.0    0.0     0.0    0.0
+         piecewiseBinOp.opRegen             Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:492:3-58            3493       45602    0.0    0.0     0.6    0.9
+          mapPair                           Utils                 src/Utils.hs:84:1-49                          3530           0    0.0    0.1     0.1    0.1
+           tabulateBool                     Utils                 src/Utils.hs:78:1-34                          3531       45602    0.1    0.0     0.1    0.0
+            lookupBool                      Utils                 src/Utils.hs:81:1-40                          3532       91204    0.0    0.0     0.0    0.0
+            original                        Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:87:5-12             3539       91204    0.0    0.0     0.0    0.0
+          zoomedGenerate                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:108:1-42            3653           0    0.0    0.0     0.5    0.8
+           zoom                             Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:81:3-45             3654           0    0.0    0.0     0.5    0.8
+            comP                            DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:335:1-35              3655           0    0.0    0.0     0.5    0.8
+             comL                           DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(338,1)-(340,51)      3656         604    0.0    0.0     0.5    0.8
+              zipWithLonger.zWL             DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3663       92098    0.0    0.2     0.0    0.2
+               addL                         DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3687           0    0.0    0.0     0.0    0.0
+                +                           DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3688           0    0.0    0.0     0.0    0.0
+               mulL                         DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(100,1)-(102,53)      3684           0    0.0    0.0     0.0    0.0
+                addL                        DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3685           0    0.0    0.0     0.0    0.0
+                 +                          DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3686           0    0.0    0.0     0.0    0.0
+              mulL                          DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(100,1)-(102,53)      3660        1802    0.0    0.0     0.4    0.6
+               addL                         DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3665        1200    0.0    0.0     0.2    0.1
+                zipWithLonger               DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(91,1)-(94,51)        3666        1200    0.0    0.0     0.0    0.0
+                +                           DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3674           0    0.2    0.1     0.2    0.1
+               scaleL                       DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:108:1-19              3664        1200    0.1    0.4     0.3    0.5
+                *                           DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:121:43-60           3675           0    0.1    0.1     0.1    0.1
+               zipWithLonger.zWL            DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3689        1200    0.0    0.0     0.0    0.0
+                addL                        DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3691           0    0.0    0.0     0.0    0.0
+                 +                          DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3692           0    0.0    0.0     0.0    0.0
+              addL                          DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3661         602    0.0    0.0     0.0    0.0
+               zipWithLonger                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(91,1)-(94,51)        3662         602    0.0    0.0     0.0    0.0
+               +                            DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3670           0    0.0    0.0     0.0    0.0
+             zipWithLonger.zWL              DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3667           4    0.0    0.0     0.0    0.0
+              comL                          DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(338,1)-(340,51)      3681           0    0.0    0.0     0.0    0.0
+               addL                         DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3682           0    0.0    0.0     0.0    0.0
+                +                           DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3683           0    0.0    0.0     0.0    0.0
+         piecewiseBinOp.op'                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3492           0    0.0    0.0     0.0    0.0
+          piecewiseBinOp.opRegen            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:492:3-58            3594           0    0.0    0.0     0.0    0.0
+           zoomedGenerate                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:108:1-42            3595          26    0.0    0.0     0.0    0.0
+       memoize                              Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(87,3)-(90,42)    3326           0    0.0    0.0    15.2    0.2
+        memoize.m                           Subclasses.Symmetric  src/Subclasses/Symmetric.hs:89:5-44           3330       45602    0.0    0.0     0.0    0.0
+        memoize                             Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3327           0    0.0    0.0    15.1    0.1
+         memoize.\                          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3328           0    0.0    0.0    15.1    0.1
+          memoize.\.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3329       91202    0.2    0.0     0.2    0.0
+           memoize.\.cache                  Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3352           0    0.0    0.0     0.0    0.0
+            memoize                         Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3374           0    0.0    0.0     0.0    0.0
+             memoize.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3375           0    0.0    0.0     0.0    0.0
+              memoize.\.\                   Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3376           0    0.0    0.0     0.0    0.0
+            memoize                         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3353           0    0.0    0.0     0.0    0.0
+             memoize.\                      Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3354           0    0.0    0.0     0.0    0.0
+              memoize.\.\                   Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3355           0    0.0    0.0     0.0    0.0
+          memoize.\.cache                   Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3339           0    0.0    0.0    15.0    0.1
+           memoize                          Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3371           0    0.0    0.0     3.5    0.0
+            memoize.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3372           0    0.0    0.0     3.5    0.0
+             memoize.\.\                    Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3373       45600    0.0    0.0     0.0    0.0
+             memoize.\.cache                Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3377           0    0.0    0.0     3.5    0.0
+              memoize.\.cache.\             Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3378           0    0.0    0.0     3.5    0.0
+               memoizeFinite                Data.Function.Memoize src/Data/Function/Memoize.hs:214:1-53         3379           0    0.0    0.0     3.5    0.0
+                memoize                     Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3380           0    0.0    0.0     3.5    0.0
+                 finiteLookup               Data.Function.Memoize src/Data/Function/Memoize.hs:(182,1)-(192,52) 3381       45600    0.1    0.0     3.4    0.0
+                  finiteLookup.loop         Data.Function.Memoize src/Data/Function/Memoize.hs:(187,5)-(192,52) 3386     2873100    1.2    0.0     3.3    0.0
+                   finiteLookup.loop.mean   Data.Function.Memoize src/Data/Function/Memoize.hs:188:11-38        3387     2873100    0.4    0.0     0.8    0.0
+                    meanFinite              Data.Function.Memoize src/Data/Function/Memoize.hs:(195,1)-(199,19) 3388     2873100    0.4    0.0     0.4    0.0
+                     meanFinite.ia          Data.Function.Memoize src/Data/Function/Memoize.hs:198:5-19         3389     2873100    0.0    0.0     0.0    0.0
+                     meanFinite.ib          Data.Function.Memoize src/Data/Function/Memoize.hs:199:5-19         3390     2873100    0.0    0.0     0.0    0.0
+                   btLeft                   Data.Function.Memoize src/Data/Function/Memoize.hs:155:5-10         3392     2639322    1.3    0.0     1.3    0.0
+                   btRight                  Data.Function.Memoize src/Data/Function/Memoize.hs:155:13-19        3391      188178    0.0    0.0     0.0    0.0
+                   btValue                  Data.Function.Memoize src/Data/Function/Memoize.hs:154:5-11         3393       45600    0.0    0.0     0.0    0.0
+                  finiteLookup.a            Data.Function.Memoize src/Data/Function/Memoize.hs:186:5-24         3382       45600    0.0    0.0     0.0    0.0
+                   fromEnum                 Data.Function.Memoize src/Data/Function/Memoize.hs:164:26-29        3383       45600    0.0    0.0     0.0    0.0
+                  finiteLookup.start0       Data.Function.Memoize src/Data/Function/Memoize.hs:184:5-46         3384       45600    0.0    0.0     0.0    0.0
+                  finiteLookup.stop0        Data.Function.Memoize src/Data/Function/Memoize.hs:185:5-46         3385       45600    0.0    0.0     0.0    0.0
+                 fmap                       Data.Function.Memoize src/Data/Function/Memoize.hs:157:13-19        3403           0    0.0    0.0     0.0    0.0
+                  memoize.\.cache.\.\       Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3404           0    0.0    0.0     0.0    0.0
+                   memoize                  Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3405           0    0.0    0.0     0.0    0.0
+                    memoize.\               Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3406           0    0.0    0.0     0.0    0.0
+                     memoize.\.\            Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3407       45600    0.0    0.0     0.0    0.0
+           memoize                          Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3340           0    0.0    0.0    11.4    0.1
+            memoize.\                       Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3341           0    1.2    0.0    11.4    0.1
+             memoize.\.\                    Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3342     6977106    4.3    0.0     5.3    0.0
+              memoize                       Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3394           0    0.0    0.0     0.0    0.0
+               memoize.\                    Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3395           0    0.0    0.0     0.0    0.0
+                memoize.\.cache             Data.Function.Memoize src/Data/Function/Memoize.hs:231:1-24         3396           0    0.0    0.0     0.0    0.0
+                 memoize.\.cache.\          Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3397           0    0.0    0.0     0.0    0.0
+                  memoizeFinite             Data.Function.Memoize src/Data/Function/Memoize.hs:214:1-53         3398           0    0.0    0.0     0.0    0.0
+                   memoize                  Data.Function.Memoize src/Data/Function/Memoize.hs:167:3-45         3399           0    0.0    0.0     0.0    0.0
+                    finiteLookup            Data.Function.Memoize src/Data/Function/Memoize.hs:(182,1)-(192,52) 3400           0    0.0    0.0     0.0    0.0
+                     finiteLookup.loop      Data.Function.Memoize src/Data/Function/Memoize.hs:(187,5)-(192,52) 3401           0    0.0    0.0     0.0    0.0
+                      btValue               Data.Function.Memoize src/Data/Function/Memoize.hs:154:5-11         3402           0    0.0    0.0     0.0    0.0
+              memoize.\.cache               Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3348           0    0.0    0.0     1.0    0.0
+               memoize                      Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3349           0    0.0    0.0     1.0    0.0
+                memoize.\                   Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3350           0    0.0    0.0     1.0    0.0
+                 memoize.\.\                Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3351           0    1.0    0.0     1.0    0.0
+             memoize.\.cache                Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3356           0    0.0    0.0     0.1    0.1
+              memoize.\.cache               Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3357           0    0.0    0.0     0.1    0.1
+               memoize                      Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3358           0    0.0    0.0     0.1    0.1
+                memoize.\                   Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3359           0    0.0    0.0     0.1    0.1
+                 memoize.\.cache            Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3447           0    0.0    0.0     0.0    0.0
+                  memoize.\.cache.\         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3448           0    0.0    0.0     0.0    0.0
+                   memoize.\.cache.\.\      Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3449           0    0.0    0.0     0.0    0.0
+                    memoize.\.cache.\       Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3450           0    0.0    0.0     0.0    0.0
+                     memoize                Utils                 src/Utils.hs:28:3-83                          3451           0    0.0    0.0     0.0    0.0
+                      toAscOccurList        Data.MultiSet         Data/MultiSet.hs:614:1-37                     3452           0    0.0    0.0     0.0    0.0
+                       unMS                 Data.MultiSet         Data/MultiSet.hs:193:27-30                    3453         151    0.0    0.0     0.0    0.0
+                 memoize.\.cache            Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3360           0    0.0    0.0     0.1    0.1
+                  memoize.\.cache.\         Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3361           0    0.0    0.0     0.1    0.1
+                   memoize.\.cache.\.\      Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3362           0    0.0    0.0     0.1    0.1
+                    memoize.\.cache.\       Data.Function.Memoize src/Data/Function/Memoize.hs:240:1-22         3363           0    0.0    0.0     0.1    0.1
+                     memoize                Utils                 src/Utils.hs:28:3-83                          3364           0    0.0    0.0     0.1    0.1
+                      toAscOccurList        Data.MultiSet         Data/MultiSet.hs:614:1-37                     3365           0    0.1    0.1     0.1    0.1
+                       unMS                 Data.MultiSet         Data/MultiSet.hs:193:27-30                    3366       45451    0.0    0.0     0.0    0.0
+             memoize.\.cache                Data.Function.Memoize src/Data/Function/Memoize.hs:233:1-21         3344           0    0.0    0.0     4.9    0.0
+              memoize                       Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3345           0    0.0    0.0     4.9    0.0
+               memoize.\                    Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3346           0    0.9    0.0     4.9    0.0
+                memoize.\.\                 Data.Function.Memoize src/Data/Function/Memoize.hs:229:1-23         3347     6885902    3.9    0.0     3.9    0.0
+      computeMinStep.\.a                    Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3311       22801    0.0    0.0     0.0    0.0
+      computeMinStep.\.b                    Algorithm.GenAlgPW    src/Algorithm/GenAlgPW.hs:(23,7)-(25,57)      3413       22801    0.0    0.0     0.0    0.0
+      variables                             Subclasses.Symmetric  src/Subclasses/Symmetric.hs:(99,3)-(102,17)   3285       22801    0.1    0.1     0.1    0.2
+       toAscOccurList                       Data.MultiSet         Data/MultiSet.hs:614:1-37                     3288           0    0.0    0.0     0.0    0.0
+        unMS                                Data.MultiSet         Data/MultiSet.hs:193:27-30                    3289       22801    0.0    0.0     0.0    0.0
+      zero                                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:514:3-31            3410         302    0.0    0.0     0.0    0.0
+       piecewiseFromPoly                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:245:1-44            3411         302    0.0    0.0     0.0    0.0
+      +                                     Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:515:3-50            3308           0    0.2    0.1    16.0   14.5
+       fmap                                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3497       22801    0.0    0.0     0.0    0.0
+       +                                    DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:72:66-73              3516           0    0.0    0.0    15.8   14.2
+        addP                                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:83:1-35               3517       22802    0.0    0.0    15.7   14.2
+         addL                               DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:88:1-32               3518       22802    0.0    0.0    15.7   14.2
+          zipWithLonger                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(91,1)-(94,51)        3519       22802    0.0    0.0    15.7   14.2
+           zipWithLonger.zWL                DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:(92,10)-(94,51)       3520     3443103    8.2    9.0    15.7   14.2
+            +                               DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:111:43-60           3601           0    7.6    5.1     7.6    5.1
+       piecewiseBinOp                       Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3310           0    0.0    0.0     0.1    0.2
+        piecewiseBinOp.h                    Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(496,3)-(511,93)    3412       22801    0.0    0.1     0.0    0.1
+         piecewiseBinOp.op'                 Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3486           0    0.0    0.0     0.0    0.0
+          piecewiseBinOp.opNotRegen         Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3487           0    0.0    0.0     0.0    0.0
+        piecewiseBinOp.op'                  Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3484           0    0.0    0.0     0.1    0.2
+         piecewiseBinOp.opNotRegen          Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3485       22801    0.0    0.0     0.1    0.2
+          liftA2                            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:99:10-31            3488           0    0.0    0.0     0.1    0.2
+           <*>                              Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:101:3-94            3489       22801    0.0    0.1     0.0    0.1
+            fmap                            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3521           0    0.0    0.0     0.0    0.0
+           fmap                             Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:93:3-70             3490       22801    0.0    0.1     0.0    0.1
+      minPWs                                Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:487:1-29            3284           0    0.0    0.0     0.0    0.0
+      one                                   DSLsofMath.Algebra    src/DSLsofMath/Algebra.hs:135:81-97           3277           0    0.0    0.0     0.0    0.0
+ CAF:poly_f_rLZw                            Poly.PiecewisePoly    <no location info>                            2868           0    0.0    0.0     0.0    0.0
+  piecewiseBinOp                            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3470           0    0.0    0.0     0.0    0.0
+   piecewiseBinOp.op'                       Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:494:3-45            3471           0    0.0    0.0     0.0    0.0
+    piecewiseBinOp.opNotRegen               Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:493:3-49            3472           0    0.0    0.0     0.0    0.0
+ CAF:poly_g_rLZu                            Poly.PiecewisePoly    <no location info>                            2867           0    0.0    0.0     0.0    0.0
+  piecewiseBinOp                            Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:(491,1)-(511,93)    3527           0    0.0    0.0     0.0    0.0
+   piecewiseBinOp.opRegen                   Poly.PiecewisePoly    src/Poly/PiecewisePoly.hs:492:3-58            3528           0    0.0    0.0     0.0    0.0
+    mapPair                                 Utils                 src/Utils.hs:84:1-49                          3529           1    0.0    0.0     0.0    0.0
+ CAF:toAscOccurList                         Data.MultiSet         Data/MultiSet.hs:614:1-14                     2710           0    0.0    0.0     0.0    0.0
+  toAscOccurList                            Data.MultiSet         Data/MultiSet.hs:614:1-37                     3160           1    0.0    0.0     0.0    0.0
+ CAF:zeroL                                  DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:77:20-24              2927           0    0.0    0.0     0.0    0.0
+  zeroL                                     DSLsofMath.PSDS       src/DSLsofMath/PSDS.lhs:77:20-29              3556           1    0.0    0.0     0.0    0.0
+ main                                       LibMain               src/LibMain.hs:(24,1)-(26,11)                 3088           0    0.0    0.0     0.0    0.0
