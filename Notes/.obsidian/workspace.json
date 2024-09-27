@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Other/Memoize - Arvid.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Other/Memoize - Arvid.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Other/Memoize - Arvid.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/TODO för veckan.md"
+                "file": "Other/Memoize - Arvid.md"
               }
             }
           }
@@ -148,9 +148,10 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
-    "Admin/TODO generell.md",
-    "Admin/TODO för veckan.md",
     "Admin/Frågor till nästa möte.md",
+    "Other/Memoize - Arvid.md",
+    "Admin/TODO för veckan.md",
+    "Admin/TODO generell.md",
     "Comparisons/symm-maj301-old/Notes.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.svg",
     "Comparisons/symm-maj301-old/exploring-level-p-exe.svg",

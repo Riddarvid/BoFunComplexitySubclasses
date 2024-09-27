@@ -7,4 +7,5 @@
 	- Ser inte hur vi ska kunna göra något mer effektivt med setBit i den här typen av klasser.
 - Potentiell application: Hitta den mest effektiva item orderingen för en BDD.
 - Kan vi få BDD forests gratis via https://hackage.haskell.org/package/decision-diagrams-0.2.0.0/docs/Data-DecisionDiagram-BDD.html#g:14?
+- Vad är poängen av fix/memoFix?
 - Hur går vi vidare?
