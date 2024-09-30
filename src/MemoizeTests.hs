@@ -1,4 +1,6 @@
-module MemoizeTests (myDeriveMemoize) where
+module MemoizeTests (
+  myDeriveMemoize
+) where
 import           Data.Function.Memoize (Memoizable (memoize))
 
 myDeriveMemoize :: Memoizable b => (a -> b) -> (b -> a) -> (a -> v) -> a -> v

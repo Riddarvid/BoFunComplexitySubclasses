@@ -4,10 +4,17 @@ module BDD (
   bddAsc,
   bddDesc,
   allBDDFuns,
-  bddFromOutput
+  bddFromOutput,
+  normalizeBDD
 ) where
 import           Data.DecisionDiagram.BDD (AscOrder, BDD, DescOrder, ItemOrder,
-                                           false, ite, true, var)
+                                           Sig (SBranch, SLeaf), false,
+                                           fromGraph, ite, support, toGraph,
+                                           true, var)
+import           Data.IntMap              (IntMap)
+import qualified Data.IntMap              as IM
+import qualified Data.IntSet              as IS
+import           Utils                    (naturals)
 
 type BDDFun = BDD AscOrder
 
@@ -47,3 +54,26 @@ permutations n = do
   v <- [False, True]
   vs <- permutations (n - 1)
   return (v : vs)
+
+-------------------- Normalization -------------------------------
+
+-- The problem that comparisons of BDDs take variable indeces into account.
+-- normalizeBDD ensures that for n variables and an ascending order,
+-- the function will return an equivalent function with variables [1 .. n].
+
+-- The logic here is that if we assume an ascending order, then we should be able to simply
+-- map the variable indices to [1 .. n] where n is the number of variables, without changing
+-- the order.
+-- We assume that the second parameter in the result of toGraph represents the number of
+-- nodes in the graph, which shouldn't change by simply changing the indeces.
+normalizeBDD :: BDD AscOrder -> BDD AscOrder
+normalizeBDD bdd = fromGraph (g', n)
+  where
+    vars = support bdd
+    orderMapping = IM.fromAscList $ zip (IS.toAscList vars) naturals
+    (g, n) = toGraph bdd
+    g' = IM.map (mapOrder orderMapping) g
+
+mapOrder :: IntMap Int -> Sig Int -> Sig Int
+mapOrder _ s@(SLeaf _)              = s
+mapOrder orderMap (SBranch i lo hi) = SBranch (orderMap IM.! i) lo hi
