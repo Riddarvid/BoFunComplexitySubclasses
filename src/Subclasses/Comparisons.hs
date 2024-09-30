@@ -1,45 +1,55 @@
-{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE InstanceSigs              #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
 {-# HLINT ignore "Use list comprehension" #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 module Subclasses.Comparisons (
-  mainBench,
-  benchBoFun,
-  complexityBench,
   propMajEqual,
-  propSameComplexity
+  propSameComplexity,
+  measureComplexityTime,
+  mainBenchMaj,
+  mainBench
 ) where
 import           Algorithm.GenAlgPW    (computeMin)
 import           BDD                   (bddAsc)
 import           BDD.BDDInstances      ()
 import           BoFun                 (BoFun, eval)
+import           Control.DeepSeq       (force)
+import           Control.Exception     (evaluate)
+import           Control.Monad         (forM)
 import           Criterion             (Benchmark, bench, bgroup, nf)
 import           Criterion.Main        (defaultMain)
 import           Data.Function.Memoize (Memoizable)
-import           Subclasses.General    (majGeneral)
+import           Data.Time             (NominalDiffTime, diffUTCTime,
+                                        getCurrentTime)
+import qualified Subclasses.General    as Gen
 import           Subclasses.Id         ()
-import           Subclasses.Symmetric  (iteratedMajFun, majSymm, majSymmBasic)
-import           Subclasses.Threshold  (iteratedMajFun', majThreshold)
+import qualified Subclasses.Symmetric  as Symm
+import qualified Subclasses.Threshold  as Thresh
 import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
-                                        Property, chooseInt, conjoin, vector,
-                                        (===))
+                                        Property, chooseInt, conjoin, resize,
+                                        sized, vector, (===))
 
-mainBench :: Int -> IO ()
-mainBench n = benchBoFun name
-  [
-    complexityBench ("symmetric basic" ++ name) (majSymmBasic n),
-    complexityBench ("symmetric " ++ name) (majSymm n),
-    complexityBench ("threshold " ++ name) (majThreshold n),
-    complexityBench ("generic " ++ name) (majGeneral n)
+data BoFunType = forall f i. (BoFun f i, Memoizable f) => BoFunType f
+
+mainBenchMaj :: Int -> IO [NominalDiffTime]
+mainBenchMaj = measureComplexityTime . majFuns
+
+majFuns :: Int -> [BoFunType]
+majFuns n = [
+  BoFunType $ Symm.majFunBasic n,
+  BoFunType $ Symm.majFun n,
+  BoFunType $ Thresh.majFun n,
+  BoFunType $ Gen.majFun n
   ]
-  where
-    name = "maj" ++ show n
 
-benchBoFun :: String -> [Benchmark] -> IO ()
-benchBoFun name benchmarks = defaultMain [bgroup name benchmarks]
-
-complexityBench :: (BoFun f i, Memoizable f) => String -> f -> Benchmark
-complexityBench name f = bench name $ nf computeMin f
+measureComplexityTime :: [BoFunType] -> IO [NominalDiffTime]
+measureComplexityTime funs = forM funs $ \(BoFunType f) -> do
+  start <- getCurrentTime
+  _ <- evaluate $ force $ computeMin f
+  end <- getCurrentTime
+  return (diffUTCTime end start)
 
 -- Should always have odd length
 newtype MajInput = Input [Bool]
@@ -47,12 +57,14 @@ newtype MajInput = Input [Bool]
 
 instance Arbitrary MajInput where
   arbitrary :: Gen MajInput
-  arbitrary = do
-    n <- chooseInt (1, 9)
-    let n' = if even n then n + 1 else n
-    Input <$> vector n'
+  arbitrary = resize 10 $ sized $ \n -> do
+    n' <- chooseInt (1, n)
+    let n'' = if even n' then n' + 1 else n'
+    Input <$> vector n''
   shrink :: MajInput -> [MajInput]
-  shrink (Input vals) = shorter ++ map Input (changeOneToFalse vals)
+  shrink (Input [False]) = []
+  shrink (Input [True]) = [Input [False]]
+  shrink (Input vals) = [Input [False], Input [True]] ++ shorter ++ map Input (changeOneToFalse vals)
     where
       changeOneToFalse []           = []
       changeOneToFalse (True : xs)  = (False : xs) : map (True :) (changeOneToFalse xs)
@@ -68,18 +80,44 @@ propMajEqual (Input vals) = conjoin
   ]
   where
     n = length vals
-    majSymm' = majSymm n
-    majGeneral' = majGeneral n
-    majThreshold' = majThreshold n
-    resSymm = eval majSymm'
+    majSymm = Symm.majFun n
+    majGeneral = Gen.majFun n
+    majThreshold = Thresh.majFun n
+    resSymm = eval majSymm
       (map (\v -> ((0, ()), v)) vals)
-    resGen = eval (bddAsc majGeneral')
-      (zip [1 :: Int ..] vals)
-    resThresh = eval majThreshold'
+    resGen = eval (bddAsc majGeneral)
+      (map (\v -> (0, v)) vals)
+    resThresh = eval majThreshold
       (map (\v -> ((0, ()), v)) vals)
 
 propSameComplexity :: Property
-propSameComplexity = computeMin f === computeMin g
+propSameComplexity = conjoin
+  [
+    symm === gen,
+    thresh === gen
+  ]
   where
-    f = iteratedMajFun 3 2
-    g = iteratedMajFun' 3 2
+    gen = computeMin $ Gen.iteratedMajFun 3 2
+    symm = computeMin $ Symm.iteratedMajFun 3 2
+    thresh = computeMin $ Thresh.iteratedMajFun 3 2
+
+--------------- Criterion code, not currently used ------------------
+
+-- This does not seem to work, the results we get do not match our expectations.
+mainBench :: Int -> IO ()
+mainBench n = do
+  benchBoFun name [
+    --bench ("symmetric basic" ++ name) $ nf computeMin (majSymmBasic n),
+    --bench ("symmetric " ++ name) $ nf computeMin (majSymm n),
+    --bench ("threshold " ++ name) $ nf computeMin (maj n),
+    bench ("generic " ++ name) $ nf computeMin mg
+    ]
+  where
+    name = "maj" ++ show n
+    mg = Gen.majFun n
+
+benchBoFun :: String -> [Benchmark] -> IO ()
+benchBoFun name benchmarks = defaultMain [bgroup name benchmarks]
+
+complexityBench :: (BoFun f i, Memoizable f) => String -> f -> Benchmark
+complexityBench name f = bench name $ nf computeMin f

@@ -6,7 +6,15 @@
 {-# LANGUAGE UndecidableInstances   #-}
 {-# HLINT ignore "Replace case with maybe" #-}
 {-# LANGUAGE InstanceSigs           #-}
-module Subclasses.Threshold where
+module Subclasses.Threshold (
+  Threshold(Threshold),
+  ThresholdFun(ThresholdFun),
+  majFun,
+  iteratedFun,
+  iteratedMajFun,
+  iteratedThresholdFunConst,
+  toBDD
+) where
 
 import           Control.Arrow            ((>>>))
 import           Control.Monad.Free       (Free (..))
@@ -206,16 +214,16 @@ instance (Ord f, BoFun f i) => BoFun (IteratedThresholdFun f) ([Int], i) where
 
 -- | Majority on five bits
 maj5 :: ThresholdFun (Maybe Bool)
-maj5 = majThreshold 5
+maj5 = majFun 5
 
-majThreshold :: Int -> ThresholdFun (Maybe Bool)
-majThreshold n = thresholdFunReplicate (thresholdMaj n') Nothing
+majFun :: Int -> ThresholdFun (Maybe Bool)
+majFun n = thresholdFunReplicate (thresholdMaj n') Nothing
   where
     n' = (n `div` 2) + 1
 
-iteratedThresholdFun :: [Threshold] -> IteratedThresholdFun
-iteratedThresholdFun [] = Pure ()
-iteratedThresholdFun (t : ts) = Free $ thresholdFunReplicate t $ iteratedThresholdFun ts
+iteratedFun :: [Threshold] -> IteratedThresholdFun
+iteratedFun []       = Pure ()
+iteratedFun (t : ts) = Free $ thresholdFunReplicate t $ iteratedFun ts
 
 -- | Reachable excluding constant functions.
 numReachable' :: [Threshold] -> Integer
@@ -235,17 +243,17 @@ That is:
 numReachable :: [Threshold] -> Integer
 numReachable = numReachable' >>> (+ 2)
 
-iteratedMajFun :: [Int] -> IteratedThresholdFun
-iteratedMajFun = map thresholdMaj >>> iteratedThresholdFun
+iteratedMajFun' :: [Int] -> IteratedThresholdFun
+iteratedMajFun' = map thresholdMaj >>> iteratedFun
 
 -- Argument are votes needed at each stage and number of stages.
-iteratedMajFun' :: Int -> Int -> IteratedThresholdFun
-iteratedMajFun' nBits numStages = replicate numStages threshold & iteratedMajFun
+iteratedMajFun :: Int -> Int -> IteratedThresholdFun
+iteratedMajFun nBits numStages = replicate numStages threshold & iteratedMajFun'
   where
     threshold = (nBits + 1) `div` 2
 
 iteratedMaj3 :: Int -> IteratedThresholdFun
-iteratedMaj3 = iteratedMajFun' 3
+iteratedMaj3 = iteratedMajFun 3
 {-
 The number of Boolean functions reachable from iteratedMaj3 is 2 plus s_n where
 * s_0 = 1,
@@ -259,7 +267,7 @@ For example:
 -}
 
 iteratedMaj5 :: Int -> IteratedThresholdFun
-iteratedMaj5 = iteratedMajFun' 5
+iteratedMaj5 = iteratedMajFun 5
 {-
 The number of Boolean functions reachable from iteratedMaj5 is 2 plus t_n where
 * t_0 = 1,

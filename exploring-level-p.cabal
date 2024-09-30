@@ -28,6 +28,7 @@ library
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
+      AllProperties
       Archived.Algebraic
       Archived.MatrixBridge
       BDD

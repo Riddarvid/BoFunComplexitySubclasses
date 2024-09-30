@@ -4,7 +4,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE FlexibleInstances     #-}
 module BDD.BDDInstances () where
-import           BDD                      (bddFromOutput)
+import           BDD                      (BDDFun, bddFromOutput, normalizeBDD)
 import           BoFun                    (BoFun (..))
 import           Data.DecisionDiagram.BDD (BDD (..), ItemOrder, Sig, inSig,
                                            outSig, restrict, support)
@@ -35,21 +35,23 @@ memoizeBF' f = \bdd -> case bdd of
   Branch n bdd1 bdd2 -> memoize (\(n', bdd1', bdd2') -> f $ Branch n' bdd1' bdd2') (n, bdd1, bdd2)
 -}
 
-instance ItemOrder o => BoFun (BDD o) Int where
-  isConst :: BDD o -> Maybe Bool
+instance BoFun BDDFun Int where
+  isConst :: BDDFun -> Maybe Bool
   isConst = isConstBDD
-  variables :: BDD o -> [Int]
+  variables :: BDDFun -> [Int]
   variables = IS.toList . support
-  setBit :: (Int, Bool) -> BDD o -> BDD o
-  setBit (i, v) = restrict i v
+  setBit :: (Int, Bool) -> BDDFun -> BDDFun
+  setBit (i, v) = normalizeBDD . restrict i v
 
 isConstBDD :: BDD o -> Maybe Bool
 isConstBDD (Leaf b) = Just b
 isConstBDD _        = Nothing
 
+-- TODO-NEW: Implement shrink, should be similar to MajInput.
+-- TODO-NEW: The resizing really shouldn't be done here.
 instance ItemOrder o => Arbitrary (BDD o) where
   arbitrary :: Gen (BDD o)
-  arbitrary = resize 5 $ sized genFun
+  arbitrary = resize 4 $ sized genFun
 
 genFun :: ItemOrder o => Int -> Gen (BDD o)
 genFun n' = do

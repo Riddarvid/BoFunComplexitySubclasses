@@ -10,9 +10,9 @@ module Subclasses.Symmetric (
   Symmetric,
   symmResultvector,
   symmSubFuns,
-  majSymm,
-  majSymmBasic,
-  maj33,
+  majFunBasic,
+  majFun,
+  iteratedFun,
   iteratedMajFun
 ) where
 
@@ -59,8 +59,8 @@ mkBasicSymmetric :: Int -> (Int -> Bool) -> BasicSymmetric
 mkBasicSymmetric nBits eval = BasicSymmetric $ map eval [0 .. nBits]
 
 -- Only defined for positive, odd values of n.
-majSymmBasic :: Int -> BasicSymmetric
-majSymmBasic n = mkBasicSymmetric n (>= threshold)
+majFunBasic :: Int -> BasicSymmetric
+majFunBasic n = mkBasicSymmetric n (>= threshold)
   where
     threshold = (n `div` 2) + 1
 
@@ -142,34 +142,27 @@ instance Constable Symmetric where
 
 -- Examples:
 
-majSymm :: Int -> Symmetric (Maybe Bool)
-majSymm n = Symmetric (Seq.fromList [((0, n'), False), ((n', n' + n'), True)]) $ MultiSet.fromOccurList [(Nothing, n)]
+majFun :: Int -> Symmetric (Maybe Bool)
+majFun n = Symmetric (Seq.fromList [((0, n'), False), ((n', n' + n'), True)]) $ MultiSet.fromOccurList [(Nothing, n)]
   where
     n' = (n `div` 2) + 1
 
 ----------- Iterated Symmetric -------------------------
 
-iteratedSymmFun :: [(Int, Seq (Range, Bool))] -> Iterated Symmetric
-iteratedSymmFun [] = Pure ()
-iteratedSymmFun ((nBits, res) : ress) = Free $
+iteratedFun :: [(Int, Seq (Range, Bool))] -> Iterated Symmetric
+iteratedFun [] = Pure ()
+iteratedFun ((nBits, res) : ress) = Free $
   Symmetric res $ MultiSet.fromOccurList [(subFun, nBits)]
   where
-    subFun = iteratedSymmFun ress
+    subFun = iteratedFun ress
 
 iteratedMajFun :: Int -> Int -> Iterated Symmetric
 iteratedMajFun nBits numStages = replicate numStages nBits & iteratedMajFun'
 
 iteratedMajFun' :: [Int] -> Iterated Symmetric
-iteratedMajFun' = iteratedSymmFun . map (\nBits -> (nBits, majRes nBits))
+iteratedMajFun' = iteratedFun . map (\nBits -> (nBits, majSequence nBits))
 
-majRes :: Int -> Seq (Range, Bool)
-majRes nBits = Seq.fromList [((0, votes), False), ((votes, votes + votes), True)]
+majSequence :: Int -> Seq (Range, Bool)
+majSequence nBits = Seq.fromList [((0, votes), False), ((votes, votes + votes), True)]
   where
     votes = (nBits + 1) `div` 2
-
-maj33 :: Iterated Symmetric
-maj33 = iteratedMajFun 3 2
-
-
-
-

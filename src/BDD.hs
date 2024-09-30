@@ -14,7 +14,6 @@ import           Data.DecisionDiagram.BDD (AscOrder, BDD, DescOrder, ItemOrder,
 import           Data.IntMap              (IntMap)
 import qualified Data.IntMap              as IM
 import qualified Data.IntSet              as IS
-import           Utils                    (naturals)
 
 type BDDFun = BDD AscOrder
 
@@ -58,19 +57,24 @@ permutations n = do
 -------------------- Normalization -------------------------------
 
 -- The problem that comparisons of BDDs take variable indeces into account.
+-- The fact is that two BDDs for the same function and item order are
+-- unique up to isomorphism. Thus, the same function CAN have different BDDs
+-- describing it.
 -- normalizeBDD ensures that for n variables and an ascending order,
--- the function will return an equivalent function with variables [1 .. n].
+-- the function will return an equivalent function with variables [0 .. n - 1].
 
 -- The logic here is that if we assume an ascending order, then we should be able to simply
--- map the variable indices to [1 .. n] where n is the number of variables, without changing
+-- map the variable indices to [0 .. n - 1] where n is the number of variables, without changing
 -- the order.
 -- We assume that the second parameter in the result of toGraph represents the number of
 -- nodes in the graph, which shouldn't change by simply changing the indeces.
+
+-- TODO-NEW: We could check if the BDD is already normalized first.
 normalizeBDD :: BDD AscOrder -> BDD AscOrder
 normalizeBDD bdd = fromGraph (g', n)
   where
     vars = support bdd
-    orderMapping = IM.fromAscList $ zip (IS.toAscList vars) naturals
+    orderMapping = IM.fromAscList $ zip (IS.toAscList vars) [0 ..]
     (g, n) = toGraph bdd
     g' = IM.map (mapOrder orderMapping) g
 

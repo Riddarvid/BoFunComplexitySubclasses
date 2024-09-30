@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Other/Memoize - Arvid.md",
+                "file": "Admin/Frågor till nästa möte.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Other/Memoize - Arvid.md",
+                "file": "Admin/Frågor till nästa möte.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Other/Memoize - Arvid.md",
+                "file": "Admin/Frågor till nästa möte.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Other/Memoize - Arvid.md"
+                "file": "Admin/Frågor till nästa möte.md"
               }
             }
           }
@@ -148,6 +148,7 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
+    "Comparisons/Benchmarking.md",
     "Admin/Frågor till nästa möte.md",
     "Other/Memoize - Arvid.md",
     "Admin/TODO för veckan.md",
@@ -187,7 +188,6 @@
     "Exploration of classes/Benchmark comparisons.md",
     "Other/Förklaring av arbetet.md",
     "Readme.md",
-    "TODO Arvid.md",
     "Images/Pasted image 20240905093302.png",
     "Images/Pasted image 20240906154104.png"
   ]
