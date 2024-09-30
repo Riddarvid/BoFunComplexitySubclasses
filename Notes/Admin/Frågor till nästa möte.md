@@ -1,15 +1,16 @@
 
 - Vad vi har gjort:
 	- En normalisering av BDDs som gör att variabelordning inte tas med i jämförelse/memoization.
+		- Klarar nu 17 bitar, klarade endast 11 innan.
 		- Är våran implementation rimlig? Finns det ett argument för att istället lägga denna normalisering i memoize? Vore det bättre att helt kasta bort variabel-index i memoization/jämförelse?
+		- Något blir fortfarande konstigt med våra benchmarks.
 	- Counting of iterated threshold funs
 	- Pretty printing
 - Just nu känns det väldigt oförutsägbart vilken variabel som faktiskt sätts när vi callar setBit på en ThresholdFun.
 - Klassen <= k ettor
 	- Ser inte hur vi ska kunna göra något mer effektivt med setBit i den här typen av klasser.
 	- Vi har identifierat en klass av klasser där output på en rad i sanningstabellen kan säga oss saker om andra rader, men vi får inte direkt någon info av att bara veta en del av inputen. Dessa känns svårare att tackla.
-- Potentiell application: Hitta den mest effektiva item orderingen för en BDD.
+- Potentiell application: Hitta den mest effektiva item-orderingen för en BDD.
 	- Kanske inte ändå...
 - Kan vi få BDD forests gratis via https://hackage.haskell.org/package/decision-diagrams-0.2.0.0/docs/Data-DecisionDiagram-BDD.html#g:14?
-- Något blir fortfarande konstigt med våra benchmarks.
 - Hur går vi vidare?
