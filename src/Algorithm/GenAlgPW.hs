@@ -21,7 +21,7 @@ computeMinStep = Endo $ \recCall fun -> if isJust (isConst fun)
     i <- variables fun -- for each unevaluated var
     let
       [a, b] = do
-        (value, factor) <- [(False, mempty), (True, one - mempty)] -- represents choosing 0 or 1
+        (value, factor) <- [(False, one - mempty), (True, mempty)] -- represents choosing 0 or 1
         return $ factor * recCall (setBit (i, value) fun)
     return $ a + b
 
