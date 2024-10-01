@@ -1,8 +1,0 @@
-- Kan vara bra att göra en newtype för generiska boolska funktioner (som internt använder en BDD), som även har en variabel n som representerar hur många bitar funktionen har.
-- 
-- Testa egenskaperna som har att göra med att flippa input/output.
-- Bestäm vad vi räknar när vi räknar antalet funktioner av olika klasser.
-	- Kan ha två varianter, en där man endast kollar på dependent bits och en där man inte gör det.
-	- Kan verifiera våra resultat med the dictionary of integer sequences.
-- Man skulle kunna översätta från specifik klass till setet av alla medlemmar i klassen. På samma sätt från funktion till en klass den är medlem av.
-- Kolla upp ZDDs för "BDD forests"

@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md"
+                "file": "Admin/TODO för veckan.md"
               }
             }
           }
@@ -148,20 +148,25 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
-    "Comparisons/Benchmarking.md",
-    "Admin/Frågor till nästa möte.md",
-    "Other/Memoize - Arvid.md",
+    "Untitled.md",
     "Admin/TODO för veckan.md",
+    "Admin/Svar från senaste mötet.md",
+    "Admin/Frågor till nästa möte.md",
     "Admin/TODO generell.md",
+    "Other/Observations and proofs.md",
+    "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
+    "Exploration of classes/Egenskaper hos boolska funktioner.md",
+    "Exploration of classes/Analysis of classes.md",
+    "Comparisons/Benchmarking.md",
+    "Comparisons/Notes.md",
+    "Other/Memoize - Arvid.md",
     "Comparisons/symm-maj301-old/Notes.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.svg",
     "Comparisons/symm-maj301-old/exploring-level-p-exe.svg",
     "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
     "Comparisons/symm-maj301-old/exploring-level-p-exe.prof",
-    "Other/Observations and proofs.md",
     "Other/BDD forest.md",
     "Comparisons/gen-maj9/Notes.md",
-    "Comparisons/Notes.md",
     "Comparisons/symm-maj301-old",
     "Other/Random observations.md",
     "Comparisons/symm-maj301/exploring-level-p-exe.svg",
@@ -173,10 +178,7 @@
     "Comparisons/gen-maj9",
     "Comparisons",
     "Exploration of classes/ThresholdFuns.md",
-    "Exploration of classes/Analysis of classes.md",
-    "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj?.md",
-    "Admin/Svar från senaste mötet.md",
     "Report/Things to put in the paper.md",
     "Exploration of classes/Observation about PPs.md",
     "Other/Cleanup.md",
@@ -186,8 +188,6 @@
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Algebraic numbers/evalpoly.org",
     "Exploration of classes/Benchmark comparisons.md",
-    "Other/Förklaring av arbetet.md",
-    "Readme.md",
     "Images/Pasted image 20240905093302.png",
     "Images/Pasted image 20240906154104.png"
   ]

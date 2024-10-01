@@ -19,3 +19,14 @@ where we see that the value is ignored.
 Thus, the functions will have the same complexity, since they are represented by decision trees that are identical with regards to structure.
 
 QED.
+
+## Proof that D(f) = D(f . flipAllInputs)
+
+Spegling
+
+## Proof that D(f) = D(f . flipSingleInput)
+
+## Observations
+
+Tänk på det som att det setBit av en 3-bitars funktion ska returnera inte är en ny 3-bitars funktion med en bit fixerad, utan faktiskt en 2-bitars funktion. 
+	- setBit ska inte användas för att sätta en bit i en specifik funktion, utan för att röra sig till en ny ekvivalensklass av funktioner.
