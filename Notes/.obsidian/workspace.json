@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Other/List of Known Bugs.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Other/List of Known Bugs.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Other/List of Known Bugs.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/TODO för veckan.md"
+                "file": "Other/List of Known Bugs.md"
               }
             }
           }
@@ -148,8 +148,10 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
-    "Untitled.md",
+    "Images/D-flip-inputs.png",
+    "Images/Pasted image 20240905093302.png",
     "Admin/TODO för veckan.md",
+    "Untitled.md",
     "Admin/Svar från senaste mötet.md",
     "Admin/Frågor till nästa möte.md",
     "Admin/TODO generell.md",
@@ -187,8 +189,6 @@
     "Algebraic numbers/Algebraiska tal.md",
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Algebraic numbers/evalpoly.org",
-    "Exploration of classes/Benchmark comparisons.md",
-    "Images/Pasted image 20240905093302.png",
     "Images/Pasted image 20240906154104.png"
   ]
 }

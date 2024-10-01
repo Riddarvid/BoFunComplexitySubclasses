@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveAnyClass         #-}
 {-# LANGUAGE DeriveFunctor          #-}
 {-# LANGUAGE DeriveGeneric          #-}
@@ -25,8 +24,10 @@ import           DSLsofMath.PSDS      (Poly (unP), comP, degree, evalP)
 
 import           Algorithm.Algor      (DecTree)
 import           Control.DeepSeq      (NFData)
+import           Data.Either          (lefts)
 import           GHC.Generics         (Generic)
 import           Poly.PolynomialExtra
+import           Test.QuickCheck      (Property, (===))
 import           Utils
 
 
@@ -220,7 +221,11 @@ data PiecewisePoly a =
     PWPoly (ZoomedPoly a)
   | PWIntersect (Intersect a)
   | PWBisect (Square (PiecewisePoly a))
-  deriving (Eq, Ord, Show, Generic, NFData)
+  deriving (Eq, Ord, Generic, NFData)
+
+instance Show (PiecewisePoly Rational) where
+  show :: PiecewisePoly Rational -> String
+  show = showPW
 
 instance Functor PiecewisePoly where fmap = fmapPW
 
@@ -643,3 +648,18 @@ instance (AddGroup a, MulGroup a, Eq a, Show a) => Show (BothPW a) where
   show :: BothPW a -> String
   show (BothPW pw lookupPolys) = showPWAny pw ++ "\n" ++ unlines
     (map (\(poly, al) -> show poly ++ ":\t\t" ++ show al) lookupPolys)
+
+pieces :: (AddGroup a, MulGroup a, Eq a) => PiecewisePoly a -> [Poly a]
+pieces = lefts . linearizePW
+
+mirrorPW :: (AddGroup a, MulGroup a, Show a, Ord a) =>
+  a -> PiecewisePoly a -> PiecewisePoly a
+mirrorPW m pw = minPWs $ map (piecewiseFromPoly . mirrorP m) $ pieces pw
+
+isMirrorPW :: (AddGroup a, MulGroup a, Show a, Ord a) =>
+  a -> PiecewisePoly a -> PiecewisePoly a -> Bool
+isMirrorPW m pw1 pw2 = pieces pw1 == pieces (mirrorPW m pw2)
+
+propIsMirrorPW :: (AddGroup a, MulGroup a, Show a, Ord a) =>
+  a -> PiecewisePoly a -> PiecewisePoly a -> Property
+propIsMirrorPW m pw1 pw2 = pieces pw1 === pieces (mirrorPW m pw2)

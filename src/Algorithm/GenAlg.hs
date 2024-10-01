@@ -5,9 +5,10 @@ module Algorithm.GenAlg (
   genAlgThinMemo,
   genAlgThinMemoPoly,
   piecewiseBoth,
-  genAllBoths
+  genAllBoths,
+  genAlgThinMemoPolyAndTree
 ) where
-import           Algorithm.Algor       (Algor (pic), res)
+import           Algorithm.Algor       (Algor (pic), DecTree, res)
 import           BDD                   (allBDDFuns, bddAsc)
 import           BDD.BDDInstances      ()
 import           BoFun                 (BoFun (isConst, setBit, variables))
@@ -37,8 +38,8 @@ genAlgThinMemoPoly :: (Memoizable fun, BoFun fun Int) => fun -> S.Set (Poly Rati
 genAlgThinMemoPoly = genAlgThinMemo
 
 -- Same as above but type specified to (Poly Rational, DecTree)
---genAlgThinMemoPolyAndTree :: BDDFun -> S.Set (Poly Rational, DecTree)
---genAlgThinMemoPolyAndTree = genAlgThinMemo
+genAlgThinMemoPolyAndTree :: (Memoizable f, BoFun f i0) => f -> S.Set (Poly Rational, DecTree)
+genAlgThinMemoPolyAndTree = genAlgThinMemo
 
 -- Alg steps
 

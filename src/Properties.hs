@@ -2,19 +2,25 @@
 module Properties (
   propComplexityNot,
   propNormalizedEqual,
-  propNormalizedEval
+  propNormalizedEval,
+  propFlipCorrect,
+  propFlipOutput,
+  propFlipAllInputs
 ) where
 import           Algorithm.GenAlgPW       (computeMin)
-import           BDD                      (BDDFun, normalizeBDD)
+import           BDD                      (BDDFun, flipInputs, normalizeBDD)
 import           BDD.BDDInstances         ()
 import           Data.DecisionDiagram.BDD (evaluate, false, notB, support, true,
                                            var, xor, (.&&.), (.<=>.), (.=>.),
                                            (.||.))
 import qualified Data.IntSet              as IS
 import           Data.Maybe               (fromJust)
+import           Data.Ratio               ((%))
+import           Poly.PiecewisePoly       (propIsMirrorPW)
 import           Test.QuickCheck          (Arbitrary (arbitrary), Property,
                                            choose, elements, oneof, resize,
-                                           sized, vector, vectorOf, (===))
+                                           sized, vector, vectorOf, (=/=),
+                                           (===))
 import           Test.QuickCheck.Gen      (Gen)
 
 -- Currently becomes very slow with more than 5 bits, so the arbitrary instance
@@ -83,3 +89,20 @@ propNormalizedEval :: BDDAndInput -> Property
 propNormalizedEval (BDDAndInput (BDDFun' bdd) input) = eval' bdd === eval' (normalizeBDD bdd)
   where
     eval' f = evalBDDFun f input
+
+----------------- Complexity properties --------------------------------
+
+propFlipCorrect :: BDDAndInput -> Property
+propFlipCorrect (BDDAndInput (BDDFun' bdd) input) = eval' bdd =/= eval' (notB bdd)
+  where
+    eval' f = evalBDDFun f input
+
+propFlipOutput :: BDDFun -> Property
+propFlipOutput bdd = computeMin bdd === computeMin (notB bdd)
+
+propFlipAllInputs :: BDDFun -> Property
+propFlipAllInputs bdd = propIsMirrorPW (1 % 2)
+  (computeMin bdd)
+  (computeMin (flipInputs bdd))
+
+

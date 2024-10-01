@@ -5,12 +5,13 @@ module BDD (
   bddDesc,
   allBDDFuns,
   bddFromOutput,
-  normalizeBDD
+  normalizeBDD,
+  flipInputs
 ) where
 import           Data.DecisionDiagram.BDD (AscOrder, BDD, DescOrder, ItemOrder,
                                            Sig (SBranch, SLeaf), false,
-                                           fromGraph, ite, support, toGraph,
-                                           true, var)
+                                           fromGraph, ite, notB, substSet,
+                                           support, toGraph, true, var)
 import           Data.IntMap              (IntMap)
 import qualified Data.IntMap              as IM
 import qualified Data.IntSet              as IS
@@ -53,6 +54,12 @@ permutations n = do
   v <- [False, True]
   vs <- permutations (n - 1)
   return (v : vs)
+
+flipInputs :: BDDFun -> BDDFun
+flipInputs bdd = substSet mapping bdd
+  where
+    vars = IS.toList $ support bdd
+    mapping = IM.fromList $ map (\x -> (x, notB (var x))) vars
 
 -------------------- Normalization -------------------------------
 

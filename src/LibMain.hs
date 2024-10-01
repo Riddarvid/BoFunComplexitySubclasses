@@ -4,24 +4,43 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg       (genAllBoths)
-import           Algorithm.GenAlgPW     (computeMin)
-import           Control.DeepSeq        (force)
-import           Control.Exception      (evaluate)
-import           Control.Monad          (void)
-import qualified Data.Set               as Set
-import           DSLsofMath.Algebra     (AddGroup, MulGroup)
-import           Filters                (degreePred, maximaPred)
-import           Poly.PiecewisePoly     (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils             (minDegree)
-import           Prelude                hiding ((*), (+))
-import           PrettyPrinting         (desmosShowPW)
-import           Subclasses.Comparisons (mainBench, mainBenchMaj)
-import qualified Subclasses.General     as Gen
-import           Subclasses.Id          ()
+import           Algorithm.GenAlg         (genAllBoths)
+import           Algorithm.GenAlgPW       (computeMin)
+import           BDD                      (BDDFun, flipInputs)
+import           Control.DeepSeq          (force)
+import           Control.Exception        (evaluate)
+import           Control.Monad            (void)
+import           Data.DecisionDiagram.BDD (notB, var, (.&&.), (.||.))
+import           Data.Ratio               ((%))
+import qualified Data.Set                 as Set
+import           DSLsofMath.Algebra       (AddGroup, MulGroup)
+import           DSLsofMath.PSDS          (Poly (P))
+import           Filters                  (degreePred, maximaPred)
+import           Poly.PiecewisePoly       (BothPW (BothPW), PiecewisePoly)
+import           Poly.PolynomialExtra     (mirrorP)
+import           Poly.Utils               (minDegree)
+import           Prelude                  hiding ((*), (+))
+import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
+import           Subclasses.Comparisons   (mainBench, mainBenchMaj)
+import qualified Subclasses.General       as Gen
+import           Subclasses.Id            ()
+import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
 
 main :: IO ()
-main = mainBench 11
+main = print $ mirrorP (1 % 2) (P [1 :: Rational, 1])
+
+main9 :: IO ()
+main9 = do
+  bf <- generate arbitrary :: IO BDDFun
+  let bf' = flipInputs bf
+  desmosPrintPW $ computeMin bf
+  desmosPrintPW $ computeMin bf'
+
+tOR :: BDDFun
+tOR = var 0 .||. var 1
+
+tNAND :: BDDFun
+tNAND = notB (var 0 .&&. var 1)
 
 main6 :: IO ()
 main6 = do

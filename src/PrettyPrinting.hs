@@ -12,18 +12,14 @@ module PrettyPrinting (
 import           Data.Ratio         (denominator, numerator)
 import           DSLsofMath.Algebra (Additive ((+)), ifThenElse, negate)
 import           DSLsofMath.PSDS    (Poly (P))
-import           Poly.PiecewisePoly (PiecewisePoly, linearizePW)
+import           Poly.PiecewisePoly (PiecewisePoly, pieces)
 import           Prelude            hiding (negate, (+))
 
 desmosPrintPW :: PiecewisePoly Rational -> IO ()
 desmosPrintPW = putStrLn . desmosShowPW
 
 desmosShowPW :: PiecewisePoly Rational -> String
-desmosShowPW pw = unlines $ zipWith desmosShowP (map (:[]) ['p' ..]) (filterPolys $ linearizePW pw)
-  where
-    filterPolys []             = []
-    filterPolys (Right _ : xs) = filterPolys xs
-    filterPolys (Left p : xs)  = p : filterPolys xs
+desmosShowPW pw = unlines $ zipWith desmosShowP (map (:[]) ['p' ..]) (pieces pw)
 
 desmosShowP :: String -> Poly Rational -> String
 desmosShowP name (P coeffs) = desmosShowL name coeffs

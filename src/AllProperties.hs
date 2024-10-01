@@ -8,10 +8,16 @@ module AllProperties (
 
   propMajEqual,
   propSameComplexity,
-  testAll
+  testAll,
+
+  propFlipCorrect,
+  propFlipOutput,
+  propFlipAllInputs
 ) where
 import           Filters                (propRationalSign)
-import           Properties             (propComplexityNot, propNormalizedEqual,
+import           Properties             (propComplexityNot, propFlipAllInputs,
+                                         propFlipCorrect, propFlipOutput,
+                                         propNormalizedEqual,
                                          propNormalizedEval)
 import           Subclasses.Comparisons (propMajEqual, propSameComplexity)
 import           Test.QuickCheck        (Testable, quickCheck)
@@ -25,7 +31,10 @@ allProps = [
   Check propNormalizedEqual,
   Check propNormalizedEval,
   Check propMajEqual,
-  Check propSameComplexity
+  Check propSameComplexity,
+  Check propFlipCorrect,
+  Check propFlipOutput,
+  Check propFlipAllInputs
   ]
 
 testAll :: IO ()

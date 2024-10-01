@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveFunctor  #-}
 {-# LANGUAGE DeriveGeneric  #-}
@@ -14,7 +13,7 @@ import qualified Prelude            ((*))
 import           DSLsofMath.Algebra (AddGroup (negate), Additive (..),
                                      Euclidean, Field, MulGroup (recip),
                                      Multiplicative (one, (*)), Ring, generator,
-                                     quot)
+                                     quot, two)
 import           DSLsofMath.PSDS    (Poly (..), comP, gcdP, normalPoly, scaleL,
                                      scaleP, xP, yun)
 
@@ -255,3 +254,6 @@ zipZero (xs, ys) = (x, y) : zipZero (xs', ys')
   where
   (x, xs') = viewZero xs
   (y, ys') = viewZero ys
+
+mirrorP :: (AddGroup a, Multiplicative a) => a -> Poly a -> Poly a
+mirrorP s p = scaleInput (negate one) $ translateInput (two * s) p

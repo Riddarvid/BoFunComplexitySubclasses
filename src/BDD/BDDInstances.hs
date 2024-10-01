@@ -3,16 +3,20 @@
 {-# LANGUAGE TemplateHaskell       #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use list comprehension" #-}
 module BDD.BDDInstances () where
-import           BDD                      (BDDFun, bddFromOutput, normalizeBDD)
-import           BoFun                    (BoFun (..))
-import           Data.DecisionDiagram.BDD (BDD (..), ItemOrder, Sig, inSig,
-                                           outSig, restrict, support)
-import           Data.Function.Memoize    (Memoizable (memoize),
-                                           deriveMemoizable)
-import qualified Data.IntSet              as IS
-import           Test.QuickCheck          (Arbitrary (arbitrary), Gen,
-                                           chooseInt, resize, sized, vector)
+import           BDD                       (BDDFun, bddFromOutput, normalizeBDD)
+import           BoFun                     (BoFun (..))
+import           Data.DecisionDiagram.BDD  (BDD (..), ItemOrder, Sig, false,
+                                            inSig, outSig, restrict, support,
+                                            true)
+import           Data.Function.Memoize     (Memoizable (memoize),
+                                            deriveMemoizable)
+import qualified Data.IntSet               as IS
+import           Test.QuickCheck           (Arbitrary (arbitrary), Gen,
+                                            chooseInt, resize, sized, vector)
+import           Test.QuickCheck.Arbitrary (shrink)
 
 $(deriveMemoizable ''Sig)
 
@@ -47,11 +51,21 @@ isConstBDD :: BDD o -> Maybe Bool
 isConstBDD (Leaf b) = Just b
 isConstBDD _        = Nothing
 
--- TODO-NEW: Implement shrink, should be similar to MajInput.
 -- TODO-NEW: The resizing really shouldn't be done here.
-instance ItemOrder o => Arbitrary (BDD o) where
-  arbitrary :: Gen (BDD o)
+instance Arbitrary BDDFun where
+  arbitrary :: Gen BDDFun
   arbitrary = resize 4 $ sized genFun
+
+  shrink :: BDDFun -> [BDDFun]
+  shrink bdd
+    | bdd /= bdd' = shrink bdd'
+    where
+      bdd' = normalizeBDD bdd
+  shrink bdd = case bdd of
+    Leaf v    -> if v then [false] else []
+    Branch {} -> [false, true] ++ [normalizeBDD $ restrict v val bdd | v <- vars, val <- [False, True]]
+    where
+      vars = IS.toAscList $ support bdd
 
 genFun :: ItemOrder o => Int -> Gen (BDD o)
 genFun n' = do
