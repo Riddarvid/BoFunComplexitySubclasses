@@ -5,12 +5,10 @@ module Algorithm.GenAlg (
   genAlgThinMemo,
   genAlgThinMemoPoly,
   piecewiseBoth,
-  genAllBoths,
-  genAlgThinMemoPolyAndTree
+  genAlgThinMemoPolyAndTree,
+  funToAlg
 ) where
 import           Algorithm.Algor       (Algor (pic), DecTree, res)
-import           BDD                   (allBDDFuns, bddAsc)
-import           BDD.BDDInstances      ()
 import           BoFun                 (BoFun (isConst, setBit, variables))
 import           Data.Function.Memoize (Memoizable, memoFix)
 import qualified Data.Set              as S
@@ -75,5 +73,16 @@ piecewiseBoth f = BothPW pw lookupTable
 
     pw = minPWs $ map (\(poly, _) -> piecewiseFromPoly poly) boths
 
-genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) => Int -> [BothPW a]
-genAllBoths n = map (piecewiseBoth . bddAsc) $ allBDDFuns n
+-------------------------------------------------------------------------
+
+funToAlg :: (BoFun f i, Algor a) => f -> a
+funToAlg = funToAlg' 0
+
+-- If the function is not const, picks an arbitrary variable and recursively calls
+-- itself for the branches.
+-- Useful when converting from one function type to another.
+funToAlg' :: (BoFun f i, Algor a) => Int -> f -> a
+funToAlg' n f = case isConst f of
+  Just val -> res val
+  Nothing -> let i = head (variables f) in
+    pic n (funToAlg' (n + 1) (setBit (i, False) f)) (funToAlg' (n + 1) (setBit (i, True) f))

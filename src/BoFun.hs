@@ -7,7 +7,8 @@ module BoFun (
   outgoing,
   reachable,
   eval,
-  Constable(mkConst)
+  Constable(mkConst),
+  shrinkFun
 ) where
 
 import qualified Data.Set as Set
@@ -42,3 +43,10 @@ eval f vals = case isConst f of
 
 class Constable f where
   mkConst :: Bool -> f g
+
+shrinkFun :: BoFun f i => f -> [f]
+shrinkFun f = case vars of
+  []    -> []
+  vars' -> [setBit (v, val) f | v <- vars', val <- [False, True]]
+  where
+    vars = variables f

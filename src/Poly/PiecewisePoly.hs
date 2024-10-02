@@ -6,6 +6,14 @@
 {-# LANGUAGE InstanceSigs           #-}
 {-# LANGUAGE MultiWayIf             #-}
 {-# LANGUAGE RankNTypes             #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# OPTIONS_GHC -Wno-unused-local-binds #-}
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
+{-# OPTIONS_GHC -Wno-unused-do-bind #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-missing-export-lists #-}
 module Poly.PiecewisePoly where
 
 import           Control.Applicative  (Applicative (..))
@@ -351,8 +359,7 @@ Precondition: p == q or diffRadical generates the same radical as p - q.
   - v_0 /= v_1,
   - on the left/right of the intersection: if v_{0/1} then p < q else p > q.
 -}
-comparePoly :: (Show a, Ring a, Ord a) =>
-    Square (Poly a) -> Poly a -> Maybe (Either Bool (Square Bool))
+comparePoly :: (Ring a, Ord a) =>Square (Poly a) -> Poly a -> Maybe (Either Bool (Square Bool))
 comparePoly (p, q) diffRadical = case descartesUnitInterval True diffRadical of
   Nothing  ->  Just $ Left True
   Just 0   ->  Just $ Left smaller_0

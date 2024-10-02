@@ -4,7 +4,8 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg         (genAllBoths)
+import           Algorithm.Algor          (allAlgors)
+import           Algorithm.GenAlg         (piecewiseBoth)
 import           Algorithm.GenAlgPW       (computeMin)
 import           BDD                      (BDDFun, flipInputs)
 import           Control.DeepSeq          (force)
@@ -21,8 +22,9 @@ import           Poly.PolynomialExtra     (mirrorP)
 import           Poly.Utils               (minDegree)
 import           Prelude                  hiding ((*), (+))
 import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
-import           Subclasses.Comparisons   (mainBench, mainBenchMaj)
+import           Subclasses.Comparisons   (mainBenchMaj)
 import qualified Subclasses.General       as Gen
+import           Subclasses.General       (GenFun, mapBDD)
 import           Subclasses.Id            ()
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
 
@@ -31,8 +33,8 @@ main = print $ mirrorP (1 % 2) (P [1 :: Rational, 1])
 
 main9 :: IO ()
 main9 = do
-  bf <- generate arbitrary :: IO BDDFun
-  let bf' = flipInputs bf
+  bf <- generate arbitrary :: IO GenFun
+  let bf' = mapBDD flipInputs bf
   desmosPrintPW $ computeMin bf
   desmosPrintPW $ computeMin bf'
 
@@ -65,3 +67,9 @@ findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
 
 toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
+
+genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) =>Int -> [BothPW a]
+genAllBoths n = map piecewiseBoth funs
+  where
+    funs :: [GenFun]
+    funs = Set.toList (allAlgors n)

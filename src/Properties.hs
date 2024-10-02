@@ -5,8 +5,10 @@ module Properties (
   propNormalizedEval,
   propFlipCorrect,
   propFlipOutput,
-  propFlipAllInputs
+  propFlipAllInputs,
+  propCorrectComplexity
 ) where
+import           Algorithm.GenAlg         (genAlgThinMemoPoly)
 import           Algorithm.GenAlgPW       (computeMin)
 import           BDD                      (BDDFun, flipInputs, normalizeBDD)
 import           BDD.BDDInstances         ()
@@ -16,7 +18,10 @@ import           Data.DecisionDiagram.BDD (evaluate, false, notB, support, true,
 import qualified Data.IntSet              as IS
 import           Data.Maybe               (fromJust)
 import           Data.Ratio               ((%))
-import           Poly.PiecewisePoly       (propIsMirrorPW)
+import qualified Data.Set                 as Set
+import           Poly.PiecewisePoly       (minPWs, pieces, piecewiseFromPoly,
+                                           propIsMirrorPW)
+import           Subclasses.General       (GenFun, mapBDD, notG)
 import           Test.QuickCheck          (Arbitrary (arbitrary), Property,
                                            choose, elements, oneof, resize,
                                            sized, vector, vectorOf, (=/=),
@@ -25,10 +30,10 @@ import           Test.QuickCheck.Gen      (Gen)
 
 -- Currently becomes very slow with more than 5 bits, so the arbitrary instance
 -- for BDD funs is limited to max 5 bits.
-propComplexityNot :: BDDFun -> Property
+propComplexityNot :: GenFun -> Property
 propComplexityNot f = computeMin f === computeMin f'
   where
-    f' = notB f
+    f' = notG f
 
 -- Represents non-variable-normalized BDDs, only to be used with QuickCheck.
 newtype BDDFun' = BDDFun' BDDFun
@@ -97,12 +102,17 @@ propFlipCorrect (BDDAndInput (BDDFun' bdd) input) = eval' bdd =/= eval' (notB bd
   where
     eval' f = evalBDDFun f input
 
-propFlipOutput :: BDDFun -> Property
-propFlipOutput bdd = computeMin bdd === computeMin (notB bdd)
+propFlipOutput :: GenFun -> Property
+propFlipOutput gf = computeMin gf === computeMin (notG gf)
 
-propFlipAllInputs :: BDDFun -> Property
-propFlipAllInputs bdd = propIsMirrorPW (1 % 2)
-  (computeMin bdd)
-  (computeMin (flipInputs bdd))
+propFlipAllInputs :: GenFun -> Property
+propFlipAllInputs gf = propIsMirrorPW (1 % 2)
+  (computeMin gf)
+  (computeMin (mapBDD flipInputs gf))
 
+-------------------- computeMin ----------------------------------
 
+propCorrectComplexity :: GenFun -> Property
+propCorrectComplexity gf =
+  pieces (computeMin gf) ===
+  pieces (minPWs $ map piecewiseFromPoly $ Set.toList $ genAlgThinMemoPoly gf)

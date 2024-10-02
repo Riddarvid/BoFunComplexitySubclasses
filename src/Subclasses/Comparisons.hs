@@ -12,8 +12,6 @@ module Subclasses.Comparisons (
   mainBench
 ) where
 import           Algorithm.GenAlgPW    (computeMin)
-import           BDD                   (bddAsc)
-import           BDD.BDDInstances      ()
 import           BoFun                 (BoFun, eval)
 import           Control.DeepSeq       (force)
 import           Control.Exception     (evaluate)
@@ -85,7 +83,7 @@ propMajEqual (Input vals) = conjoin
     majThreshold = Thresh.majFun n
     resSymm = eval majSymm
       (map (\v -> ((0, ()), v)) vals)
-    resGen = eval (bddAsc majGeneral)
+    resGen = eval majGeneral
       (map (\v -> (0, v)) vals)
     resThresh = eval majThreshold
       (map (\v -> ((0, ()), v)) vals)

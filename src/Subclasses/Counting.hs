@@ -2,21 +2,26 @@ module Subclasses.Counting (
   numberOfIteratedThresholdFuns,
   allIteratedThresholdFuns
 ) where
+import           Algorithm.GenAlg     (funToAlg)
 import           Control.Monad.Free   (Free (Free, Pure))
-import qualified Data.HashSet         as HS
 import qualified Data.MultiSet        as MultiSet
+import qualified Data.Set             as Set
 import           DSLsofMath.Algebra   (Additive ((+)))
 import           Prelude              hiding ((*), (+))
+import           Subclasses.General   (GenFun)
 import           Subclasses.Id        ()
 import           Subclasses.Iterated  (Iterated)
 import           Subclasses.Threshold (Threshold (Threshold),
                                        ThresholdFun (ThresholdFun),
-                                       iteratedThresholdFunConst, toBDD)
+                                       iteratedThresholdFunConst)
 
 -- Ensures that only unique functions are counted by converting them to BDDs
 -- and inserting them into a set.
 numberOfIteratedThresholdFuns :: Integer -> Int
-numberOfIteratedThresholdFuns = HS.size . HS.fromList . map toBDD . allIteratedThresholdFuns
+numberOfIteratedThresholdFuns n = Set.size $ Set.fromList funs
+  where
+    funs :: [GenFun]
+    funs = map funToAlg $ allIteratedThresholdFuns n
 
 -- This code generates all the iterated threshold functions of a given arity,
 -- but there is no guarantee that the functions are unique.

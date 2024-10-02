@@ -1,44 +1,38 @@
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE InstanceSigs           #-}
 {-# LANGUAGE MultiWayIf             #-}
 {-# LANGUAGE TemplateHaskell        #-}
 {-# LANGUAGE UndecidableInstances   #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Replace case with maybe" #-}
-{-# LANGUAGE InstanceSigs           #-}
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
 module Subclasses.Threshold (
   Threshold(Threshold),
   ThresholdFun(ThresholdFun),
   majFun,
   iteratedFun,
   iteratedMajFun,
-  iteratedThresholdFunConst,
-  toBDD
+  iteratedThresholdFunConst
 ) where
 
-import           Control.Arrow            ((>>>))
-import           Control.Monad.Free       (Free (..))
-import           Data.Function            ((&))
-import           Data.Function.Memoize    (Memoizable (..), deriveMemoizable,
-                                           deriveMemoize)
-import           Data.Functor.Classes     (Eq1 (..), Eq2 (..), Ord1 (..),
-                                           Ord2 (..), Show1 (..),
-                                           showsBinaryWith)
-import qualified Data.MultiSet            as MultiSet
-import           Prelude                  hiding (negate, sum, (+), (-))
+import           Control.Arrow         ((>>>))
+import           Control.Monad.Free    (Free (..))
+import           Data.Function         ((&))
+import           Data.Function.Memoize (Memoizable (..), deriveMemoizable)
+import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
+                                        Ord2 (..), Show1 (..), showsBinaryWith)
+import qualified Data.MultiSet         as MultiSet
+import           Prelude               hiding (negate, sum, (+), (-))
 
-import           DSLsofMath.Algebra       (AddGroup (..), Additive (..), sum,
-                                           (-))
+import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
-import           BDD                      (BDDFun, pick)
-import           BoFun                    (BoFun (..), Constable (mkConst))
-import           Data.DecisionDiagram.BDD (ItemOrder, false, true, var)
-import           Debug.Trace              (traceShow)
-import           Subclasses.Iterated      (Iterated, Iterated')
-import           Test.Feat                (deriveEnumerable)
-import           Utils                    (Square, boolToInt, chooseMany,
-                                           duplicate, lookupBool, naturals,
-                                           squareToList, tabulateBool)
+import           BoFun                 (BoFun (..), Constable (mkConst))
+import           Subclasses.Iterated   (Iterated, Iterated')
+import           Utils                 (Square, boolToInt, chooseMany,
+                                        duplicate, lookupBool, naturals,
+                                        squareToList, tabulateBool)
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
@@ -133,7 +127,7 @@ thresholdFunConst :: Bool -> ThresholdFun f
 thresholdFunConst val = ThresholdFun (thresholdConst val) MultiSet.empty
 
 -- | Normalizes threshold functions equivalent to a constant function.
-thresholdFunNormalize :: (Eq f, BoFun f i) => ThresholdFun f -> ThresholdFun f
+thresholdFunNormalize :: ThresholdFun f -> ThresholdFun f
 thresholdFunNormalize u = case thresholdIsConst (threshold u) of
   Just val -> thresholdFunConst val
   Nothing  -> u
@@ -228,7 +222,7 @@ iteratedFun (t : ts) = Free $ thresholdFunReplicate t $ iteratedFun ts
 -- | Reachable excluding constant functions.
 numReachable' :: [Threshold] -> Integer
 numReachable' [] = 1
-numReachable' (t@(Threshold v) : ts) = sum $ do
+numReachable' ((Threshold v) : ts) = sum $ do
   let n = numReachable' ts
   let vs = squareToList v
   i <- take (sum vs) naturals
@@ -280,13 +274,4 @@ For example:
 * t_4 = 97916848002123806402045274379974531999764335775612939415896877758995991565.
 -}
 
-toBDD :: Iterated ThresholdFun -> BDDFun
-toBDD = toBDD' 1
 
-toBDD' :: Int -> Iterated ThresholdFun -> BDDFun
-toBDD' n (Pure ()) = var n
-toBDD' n f@(Free g) = case isConst f of
-  Just False -> false
-  Just True  -> true
-  Nothing    -> let i = head (variables f) in
-    pick n (toBDD' (n + 1) (setBit (i, False) f)) (toBDD' (n + 1) (setBit (i, True) f))

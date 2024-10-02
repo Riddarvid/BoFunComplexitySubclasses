@@ -8,7 +8,6 @@ module Filters (
 ) where
 import           Algebraic          (Algebraic (Algebraic), fromPWAlgebraic,
                                      toAlgebraic)
-import           BDD.BDDInstances   ()
 import           Control.Arrow      ((>>>))
 import           DSLsofMath.Algebra (AddGroup (negate), Additive (zero, (+)),
                                      MulGroup ((/)), Multiplicative, two)

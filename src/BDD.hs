@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 module BDD (
   BDDFun,
   pick,
@@ -6,12 +7,14 @@ module BDD (
   allBDDFuns,
   bddFromOutput,
   normalizeBDD,
-  flipInputs
+  flipInputs,
+  isConstBDD
 ) where
-import           Data.DecisionDiagram.BDD (AscOrder, BDD, DescOrder, ItemOrder,
-                                           Sig (SBranch, SLeaf), false,
-                                           fromGraph, ite, notB, substSet,
-                                           support, toGraph, true, var)
+import           Data.DecisionDiagram.BDD (AscOrder, BDD (Leaf), DescOrder,
+                                           ItemOrder, Sig (SBranch, SLeaf),
+                                           false, fromGraph, ite, notB,
+                                           substSet, support, toGraph, true,
+                                           var)
 import           Data.IntMap              (IntMap)
 import qualified Data.IntMap              as IM
 import qualified Data.IntSet              as IS
@@ -26,6 +29,10 @@ bddAsc = id
 
 bddDesc :: BDD DescOrder -> BDD DescOrder
 bddDesc = id
+
+isConstBDD :: BDD o -> Maybe Bool
+isConstBDD (Leaf b) = Just b
+isConstBDD _        = Nothing
 
 -- Generating all BDDFuns
 
