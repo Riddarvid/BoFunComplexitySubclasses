@@ -6,7 +6,6 @@ module BoFun (
   viewConst,
   outgoing,
   reachable,
-  eval,
   Constable(mkConst),
   shrinkFun
 ) where
@@ -33,13 +32,6 @@ outgoing u = do
 -- Recursively generates the set of all sub-BoFuns of f.
 reachable :: (Ord f, BoFun f i) => f -> Set.Set f
 reachable = dfs outgoing
-
-eval :: BoFun f i => f -> [(i, Bool)] -> Maybe Bool
-eval f vals = case isConst f of
-  Just res -> Just res
-  Nothing -> case vals of
-    []       -> Nothing
-    (x : xs) -> eval (setBit x f) xs
 
 class Constable f where
   mkConst :: Bool -> f g

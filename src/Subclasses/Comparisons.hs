@@ -12,7 +12,7 @@ module Subclasses.Comparisons (
   mainBench
 ) where
 import           Algorithm.GenAlgPW    (computeMin)
-import           BoFun                 (BoFun, eval)
+import           BoFun                 (BoFun)
 import           Control.DeepSeq       (force)
 import           Control.Exception     (evaluate)
 import           Control.Monad         (forM)
@@ -22,6 +22,7 @@ import           Data.Function.Memoize (Memoizable)
 import           Data.Time             (NominalDiffTime, diffUTCTime,
                                         getCurrentTime)
 import qualified Subclasses.General    as Gen
+import           Subclasses.General    (eval, toGenFun)
 import           Subclasses.Id         ()
 import qualified Subclasses.Symmetric  as Symm
 import qualified Subclasses.Threshold  as Thresh
@@ -78,15 +79,12 @@ propMajEqual (Input vals) = conjoin
   ]
   where
     n = length vals
-    majSymm = Symm.majFun n
     majGeneral = Gen.majFun n
-    majThreshold = Thresh.majFun n
-    resSymm = eval majSymm
-      (map (\v -> ((0, ()), v)) vals)
-    resGen = eval majGeneral
-      (map (\v -> (0, v)) vals)
-    resThresh = eval majThreshold
-      (map (\v -> ((0, ()), v)) vals)
+    majSymm = toGenFun $ Symm.majFun n
+    majThreshold = toGenFun $ Thresh.majFun n
+    resSymm = eval majSymm vals
+    resGen = eval majGeneral vals
+    resThresh = eval majThreshold vals
 
 propSameComplexity :: Property
 propSameComplexity = conjoin

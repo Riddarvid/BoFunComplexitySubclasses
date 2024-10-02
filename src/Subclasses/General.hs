@@ -14,7 +14,8 @@ module Subclasses.General (
   allGenFuns,
   majFun,
   iteratedMajFun,
-  iteratedFun
+  iteratedFun,
+  eval
 ) where
 import           Algorithm.Algor           (Algor (..), allAlgors)
 import           Algorithm.GenAlg          (funToAlg)
@@ -157,3 +158,14 @@ iteratedMajFun bits = GenFun . iteratedMajFun' bits
 
 iteratedFun :: Int -> Int -> BDDFun -> GenFun
 iteratedFun bits levels = GenFun . iteratedFun' bits levels
+
+----------------- Eval for GenFuns -------------------------
+
+eval :: GenFun -> [Bool] -> Maybe Bool
+eval gf input = case isConst gf of
+  Just val -> Just val
+  Nothing -> case variables gf of
+    [] -> error "Function is not const but has no variables"
+    (v : _) -> if length input >= v
+      then Nothing
+      else eval (setBit (v, input !! v) gf) input
