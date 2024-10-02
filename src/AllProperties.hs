@@ -28,11 +28,11 @@ data Check = forall p. Testable p => Check p Args
 
 allProps :: [Check]
 allProps = [
-  Check propRationalSign stdArgs,
+  Check propRationalSign stdArgs{maxSize = 5},
   Check propComplexityNot stdArgs{maxSize = 5},
   Check propNormalizedEqual stdArgs,
   Check propNormalizedEval stdArgs,
-  Check propMajEqual stdArgs,
+  Check propMajEqual stdArgs{maxSize = 5},
   Check propSameComplexity stdArgs,
   Check propFlipCorrect stdArgs,
   Check propFlipOutput stdArgs{maxSize = 5},

@@ -10,7 +10,7 @@ import           DSLsofMath.Algebra        (Additive (zero, (+)),
 import           DSLsofMath.PSDS           (Poly (P), xP)
 import           Poly.PolyCmp              (OrdField, cmpPoly)
 import           Prelude                   hiding ((*), (+), (-))
-import           Test.QuickCheck           (Arbitrary (arbitrary), resize)
+import           Test.QuickCheck           (Arbitrary (arbitrary))
 import           Test.QuickCheck.Arbitrary (Arbitrary (shrink))
 import           Test.QuickCheck.Gen       (Gen)
 import           Thin                      (Thin (cmp))
@@ -37,6 +37,6 @@ pickPoly' p0 p1 = one + (one - xP)*p0 + xP*p1
 
 instance Arbitrary a => Arbitrary (Poly a) where
   arbitrary :: Gen (Poly a)
-  arbitrary = P <$> resize 10 arbitrary
+  arbitrary = P <$> arbitrary
   shrink :: Poly a -> [Poly a]
   shrink (P xs) = map P $ shrink xs

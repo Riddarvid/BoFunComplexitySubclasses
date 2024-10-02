@@ -33,6 +33,8 @@ instance Algor DecTree where
   pic = Pick
 
 -- Iterates pic until all the "variables" have been used.
+-- TODO-NEW: Figure out if this should be limited to just GenFuns since it doesn't
+-- really make sense for all Algors.
 allAlgors :: (Algor a, Ord a) => Int -> Set a
 allAlgors n
   | n == 0 = Set.fromList [res False, res True]

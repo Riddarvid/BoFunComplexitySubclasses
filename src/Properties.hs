@@ -23,9 +23,8 @@ import           Poly.PiecewisePoly       (minPWs, pieces, piecewiseFromPoly,
                                            propIsMirrorPW)
 import           Subclasses.General       (GenFun, mapBDD, notG)
 import           Test.QuickCheck          (Arbitrary (arbitrary), Property,
-                                           choose, elements, oneof, resize,
-                                           sized, vector, vectorOf, (=/=),
-                                           (===))
+                                           choose, elements, oneof, sized,
+                                           vector, vectorOf, (=/=), (===))
 import           Test.QuickCheck.Gen      (Gen)
 
 -- Currently becomes very slow with more than 5 bits, so the arbitrary instance
@@ -41,15 +40,16 @@ newtype BDDFun' = BDDFun' BDDFun
 
 instance Arbitrary BDDFun' where
   arbitrary :: Gen BDDFun'
-  arbitrary = resize 10 $ sized genBDDFun'
+  arbitrary = sized genBDDFun'
 
 genBDDFun' :: Int -> Gen BDDFun'
 genBDDFun' n = do
-  n' <- choose (1, n)
+  n' <- choose (0, n)
   genBDDFun'' n'
 
 -- This should be able to create all functions as we have access to AND, OR, and NOT (true xor)
 genBDDFun'' :: Int -> Gen BDDFun'
+genBDDFun'' 0 = elements [BDDFun' false, BDDFun' true]
 genBDDFun'' n = do
   vars <- vectorOf n genVarOrConst
   ops <- vectorOf (n - 1) genOp
@@ -79,7 +79,7 @@ data BDDAndInput = BDDAndInput BDDFun' [Bool]
 
 instance Arbitrary BDDAndInput where
   arbitrary :: Gen BDDAndInput
-  arbitrary = resize 10 $ sized $ \n -> do
+  arbitrary = sized $ \n -> do
     bdd <- genBDDFun'' n
     input <- vector n
     return $ BDDAndInput bdd input

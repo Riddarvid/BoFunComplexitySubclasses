@@ -26,8 +26,8 @@ import           Subclasses.Id         ()
 import qualified Subclasses.Symmetric  as Symm
 import qualified Subclasses.Threshold  as Thresh
 import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
-                                        Property, chooseInt, conjoin, resize,
-                                        sized, vector, (===))
+                                        Property, chooseInt, conjoin, sized,
+                                        vector, (===))
 
 data BoFunType = forall f i. (BoFun f i, Memoizable f) => BoFunType f
 
@@ -55,7 +55,7 @@ newtype MajInput = Input [Bool]
 
 instance Arbitrary MajInput where
   arbitrary :: Gen MajInput
-  arbitrary = resize 10 $ sized $ \n -> do
+  arbitrary = sized $ \n -> do
     n' <- chooseInt (1, n)
     let n'' = if even n' then n' + 1 else n'
     Input <$> vector n''
