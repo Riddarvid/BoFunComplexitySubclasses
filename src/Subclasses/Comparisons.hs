@@ -1,9 +1,9 @@
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE InstanceSigs              #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
 {-# HLINT ignore "Use list comprehension" #-}
-{-# LANGUAGE ExistentialQuantification #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 module Subclasses.Comparisons (
   propMajEqual,
   propSameComplexity,
@@ -80,8 +80,8 @@ propMajEqual (Input vals) = conjoin
   where
     n = length vals
     majGeneral = Gen.majFun n
-    majSymm = toGenFun $ Symm.majFun n
-    majThreshold = toGenFun $ Thresh.majFun n
+    majSymm = toGenFun n $ Symm.majFun n
+    majThreshold = toGenFun n $ Thresh.majFun n
     resSymm = eval majSymm vals
     resGen = eval majGeneral vals
     resThresh = eval majThreshold vals

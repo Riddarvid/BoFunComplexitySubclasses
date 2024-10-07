@@ -6,21 +6,23 @@
 module Subclasses.General (
   GenFun(GenFun),
   liftBDD,
-  mapBDD,
   falseG,
   trueG,
   notG,
+  normalizeGenFun,
   toGenFun,
   allGenFuns,
   majFun,
   iteratedMajFun,
   iteratedFun,
-  eval
+  eval,
+  flipInputs,
+  generateGenFun
 ) where
-import           Algorithm.Algor           (Algor (..), allAlgors)
-import           Algorithm.GenAlg          (funToAlg)
+import           Algorithm.Algor           (Algor (..))
 import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
                                             normalizeBDD, pick)
+import qualified BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
 import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
@@ -30,100 +32,128 @@ import           Data.Function.Memoize     (deriveMemoizable)
 import qualified Data.IntMap               as IM
 import qualified Data.IntSet               as IS
 import           Data.Set                  (Set)
+import qualified Data.Set                  as Set
 import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
                                             vector)
 import           Test.QuickCheck.Arbitrary (Arbitrary (..), shrink)
 
--- The internal BDD should only ever contain the variables 0..n-1
-newtype GenFun = GenFun (BDD AscOrder)
+-- The internal BDD should only ever be dependent on variables in [1..n]
+data GenFun = GenFun (BDD AscOrder) Int
   deriving(Eq, Ord, Show)
 
 $(deriveMemoizable ''GenFun)
 
+-- We normalize the function in setBit, since the normalized function will have the same
+-- complexity as the non-normalized one. However, this is only intended for complexity
+-- calculations, for a more expected behaviour, simply use restrictGenFun.
 instance BoFun GenFun Int where
   isConst :: GenFun -> Maybe Bool
   isConst = liftBDD isConstBDD
   variables :: GenFun -> [Int]
   variables = IS.toList . liftBDD support
   setBit :: (Int, Bool) -> GenFun -> GenFun
-  setBit (i, v) = mapBDD (normalizeBDD . restrict i v)
+  setBit (i, v) = normalizeGenFun . restrictGenFun i v
 
+restrictGenFun :: Int -> Bool -> GenFun -> GenFun
+restrictGenFun i v (GenFun bdd n) = GenFun (restrict i v bdd) (n - 1)
+
+{-
 instance Algor GenFun where
   res :: Bool -> GenFun
   res False = falseG
   res True  = trueG
   pic :: Int -> GenFun -> GenFun -> GenFun
-  pic n (GenFun gf1) (GenFun gf2) = GenFun $ pic n gf1 gf2
+  pic n (GenFun gf1 n1) (GenFun gf2 n2) = GenFun (pic n gf1 gf2)
+-}
 
 normalizeGenFun :: GenFun -> GenFun
-normalizeGenFun = mapBDD normalizeBDD
+normalizeGenFun (GenFun bdd _) = GenFun bdd' n'
+  where
+    bdd' = normalizeBDD bdd
+    n' = IS.size $ support bdd
 
 ------------- QuickCheck ---------------------------
 
+-- Instance for not necessarily normalized GenFuns
 instance Arbitrary GenFun where
   arbitrary :: Gen GenFun
-  arbitrary = sized genFun
+  arbitrary = sized $ \n -> do
+    n' <- chooseInt (0, n)
+    generateGenFun n'
 
   shrink :: GenFun -> [GenFun]
-  shrink gf
-    | gf /= gf' = shrink gf'
-    where
-      gf' = normalizeGenFun gf
   shrink gf = case gf of
-    (GenFun (Leaf v)) -> if v then [falseG] else []
-    _                 -> shrinkFun gf
+    (GenFun (Leaf _) 0) -> []
+    (GenFun (Leaf _) n) -> [GenFun (Leaf v') n' | n' <- [0 .. n - 1], v' <- [False, True]]
+    _                   -> shrinkFun gf
 
 -- Generator for a General function with at most n variables.
-genFun :: Int -> Gen GenFun
-genFun n' = do
-  n <- chooseInt (0, n')
+generateGenFun :: Int -> Gen GenFun
+generateGenFun n = do
   output <- vector (2^n)
-  return $ GenFun $ bddFromOutput n output
-
------------------ Generating all general functions -----------------
-
-allGenFuns :: Int -> Set GenFun
-allGenFuns = allAlgors
+  return $ GenFun (bddFromOutput n output) n
 
 ----------------- Boolean operators --------------------------------
 
+{-
 mapBDD :: (BDDFun -> BDDFun) -> (GenFun -> GenFun)
 mapBDD f  = GenFun . liftBDD f
+-}
 
 liftBDD :: (BDDFun -> a) -> (GenFun -> a)
-liftBDD f (GenFun gf) = f gf
+liftBDD f (GenFun gf _) = f gf
 
-falseG :: GenFun
+falseG :: Int -> GenFun
 falseG = GenFun false
 
-trueG :: GenFun
+trueG :: Int -> GenFun
 trueG = GenFun true
 
 notG :: GenFun -> GenFun
-notG = mapBDD notB
+notG (GenFun bdd n) = GenFun (notB bdd) n
 
 ----------------- Conversions ---------------------------------------
 
-toGenFun :: (BoFun f i) => f -> GenFun
-toGenFun = funToAlg
+toGenFun :: (BoFun f i) => Int -> f -> GenFun
+toGenFun = toGenFun' 1
+
+toGenFun' :: (BoFun f i) => Int -> Int -> f -> GenFun
+toGenFun' varN arity f = case isConst f of
+  Just False -> falseG arity
+  Just True  -> trueG arity
+  Nothing -> GenFun (pic varN subBDDF subBDDT) arity
+    where
+      i = head $ variables f
+      (GenFun subBDDF _) = toGenFun' (varN + 1) (arity - 1) $ setBit (i, False) f
+      (GenFun subBDDT _) = toGenFun' (varN + 1) (arity - 1) $ setBit (i, True) f
+
+allGenFuns :: Int -> Set GenFun
+allGenFuns n
+  | n == 0 = Set.fromList [falseG 0, trueG 0]
+  | otherwise = Set.fromList [GenFun (pic n a1 a2) n | a1 <- subBDDs, a2 <- subBDDs]
+  where
+    n' = n - 1
+    subFuns = Set.toList $ allGenFuns n'
+    subBDDs = map (\(GenFun bdd _) -> bdd) subFuns
 
 ----------------- Examples -----------------------------------------
 
+-- n is the number of bits of the functions
 majFun' :: Int -> BDDFun
-majFun' n = thresholdBDD threshold 0 n
+majFun' n = thresholdBDD threshold 1 n
   where
     threshold = (n `div` 2) + 1
 
 thresholdBDD :: Int -> Int -> Int -> BDDFun
 thresholdBDD 0 _ _ = true
 thresholdBDD threshold i n
-  | i >= n = false
+  | i > n = false
   | otherwise = pick i
     (thresholdBDD threshold (i + 1) n)
     (thresholdBDD (threshold - 1) (i + 1) n)
 
 iteratedFun' :: Int -> Int -> BDDFun -> BDDFun
-iteratedFun' bits levels = iteratedFun'' bits levels 0
+iteratedFun' bits levels = iteratedFun'' bits levels 1
 
 iteratedFun'' :: Int -> Int -> Int -> BDDFun -> BDDFun
 iteratedFun'' bits _levels _varN f = go (_levels - 1) _varN
@@ -138,34 +168,35 @@ iteratedFun'' bits _levels _varN f = go (_levels - 1) _varN
         subFuns = map (go (levels - 1)) $ take bits factors
 
 substituteBase :: BDDFun -> Int -> Int -> BDDFun
-substituteBase f bits varN = substSet (IM.fromList $ zip [0 .. bits - 1] vars) f
+substituteBase f bits varN = substSet (IM.fromList $ zip [1 .. bits] vars) f
   where
     vars = map var [varN ..]
 
 substituteSubFuns :: BDDFun -> [BDDFun] -> BDDFun
-substituteSubFuns f subFuns = substSet (IM.fromList $ zip [0 ..] subFuns) f
-
-iteratedMajFun' :: Int -> Int -> BDDFun
-iteratedMajFun' bits levels = iteratedFun' bits levels (majFun' bits)
+substituteSubFuns f subFuns = substSet (IM.fromList $ zip [1 ..] subFuns) f
 
 --------------- Exported ----------------------------
 
 majFun :: Int -> GenFun
-majFun = GenFun . majFun'
+majFun n = GenFun (majFun' n) n
 
 iteratedMajFun :: Int -> Int -> GenFun
-iteratedMajFun bits = GenFun . iteratedMajFun' bits
+iteratedMajFun bits levels = iteratedFun levels (majFun bits)
 
-iteratedFun :: Int -> Int -> BDDFun -> GenFun
-iteratedFun bits levels = GenFun . iteratedFun' bits levels
+iteratedFun :: Int -> GenFun -> GenFun
+iteratedFun levels (GenFun bdd bits) = GenFun (iteratedFun' bits levels bdd) n
+  where
+    n = bits ^ levels
 
 ----------------- Eval for GenFuns -------------------------
 
+-- Might be better to use an IntMap instead of a list of bools.
 eval :: GenFun -> [Bool] -> Maybe Bool
-eval gf input = case isConst gf of
-  Just val -> Just val
-  Nothing -> case variables gf of
-    [] -> error "Function is not const but has no variables"
-    (v : _) -> if length input >= v
-      then Nothing
-      else eval (setBit (v, input !! v) gf) input
+eval gf@(GenFun bdd _) input = isConst $
+  foldl (\gf' (varN, v) -> restrictGenFun varN v gf') gf input'
+  where
+    input' = filter (\(i, _) -> IS.member i supporting) $ zip [1..] input
+    supporting = support bdd
+
+flipInputs :: GenFun -> GenFun
+flipInputs (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n

@@ -44,13 +44,13 @@ boolToBDD True  = true
 boolToBDD False = false
 
 bddFromOutput :: ItemOrder o => Int -> [Bool] -> BDD o
-bddFromOutput bits = bddFromOutput' bits 0
+bddFromOutput bits = bddFromOutput' bits 1
 
 bddFromOutput' :: ItemOrder o => Int -> Int -> [Bool] -> BDD o
-bddFromOutput' 0 varN out = boolToBDD (out !! varN)
+bddFromOutput' 0 varN out = boolToBDD (out !! (varN - 1))
 bddFromOutput' bits varN out = pick bits
-  (bddFromOutput' (bits - 1) (2 * varN + 1) out)
   (bddFromOutput' (bits - 1) (2 * varN) out)
+  (bddFromOutput' (bits - 1) (2 * varN - 1) out)
 
 outputPermutations :: Int -> [[Bool]]
 outputPermutations n = permutations (2^n)
@@ -88,7 +88,7 @@ normalizeBDD :: BDD AscOrder -> BDD AscOrder
 normalizeBDD bdd = fromGraph (g', n)
   where
     vars = support bdd
-    orderMapping = IM.fromAscList $ zip (IS.toAscList vars) [0 ..]
+    orderMapping = IM.fromAscList $ zip (IS.toAscList vars) [1 ..]
     (g, n) = toGraph bdd
     g' = IM.map (mapOrder orderMapping) g
 

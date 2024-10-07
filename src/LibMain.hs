@@ -4,10 +4,9 @@
 module LibMain (
   main
 ) where
-import           Algorithm.Algor          (allAlgors)
 import           Algorithm.GenAlg         (piecewiseBoth)
 import           Algorithm.GenAlgPW       (computeMin)
-import           BDD                      (BDDFun, flipInputs)
+import           BDD                      (BDDFun)
 import           Control.DeepSeq          (force)
 import           Control.Exception        (evaluate)
 import           Control.Monad            (void)
@@ -24,7 +23,8 @@ import           Prelude                  hiding ((*), (+))
 import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
 import           Subclasses.Comparisons   (mainBenchMaj)
 import qualified Subclasses.General       as Gen
-import           Subclasses.General       (GenFun, mapBDD)
+import           Subclasses.General       (GenFun (GenFun), allGenFuns,
+                                           flipInputs)
 import           Subclasses.Id            ()
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
 
@@ -33,10 +33,10 @@ main = print $ mirrorP (1 % 2) (P [1 :: Rational, 1])
 
 main9 :: IO ()
 main9 = do
-  bf <- generate arbitrary :: IO GenFun
-  let bf' = mapBDD flipInputs bf
-  desmosPrintPW $ computeMin bf
-  desmosPrintPW $ computeMin bf'
+  gf <- generate arbitrary :: IO GenFun
+  let gf' = flipInputs gf
+  desmosPrintPW $ computeMin gf
+  desmosPrintPW $ computeMin gf'
 
 tOR :: BDDFun
 tOR = var 0 .||. var 1
@@ -72,4 +72,10 @@ genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) =>Int -> [BothPW a]
 genAllBoths n = map piecewiseBoth funs
   where
     funs :: [GenFun]
-    funs = Set.toList (allAlgors n)
+    funs = Set.toList $ allGenFuns n
+
+--------------- test ------------------------
+
+testGF :: GenFun
+testGF = GenFun (notB (var 2)) 2
+

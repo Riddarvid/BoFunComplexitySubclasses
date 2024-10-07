@@ -3,8 +3,7 @@ module AllProperties (
   propRationalSign,
 
   propComplexityNot,
-  propNormalizedEqual,
-  propNormalizedEval,
+  propNormalizedCorrectVars,
 
   propMajEqual,
   propSameComplexity,
@@ -18,8 +17,9 @@ import           Filters                (propRationalSign)
 import           Properties             (propComplexityNot,
                                          propCorrectComplexity,
                                          propFlipAllInputs, propFlipCorrect,
-                                         propFlipOutput, propNormalizedEqual,
-                                         propNormalizedEval)
+                                         propFlipOutput,
+                                         propNormalizedComplexity,
+                                         propNormalizedCorrectVars)
 import           Subclasses.Comparisons (propMajEqual, propSameComplexity)
 import           Test.QuickCheck        (Args (maxSize), Testable,
                                          quickCheckWith, stdArgs)
@@ -30,11 +30,11 @@ allProps :: [Check]
 allProps = [
   Check propRationalSign stdArgs{maxSize = 5},
   Check propComplexityNot stdArgs{maxSize = 5},
-  Check propNormalizedEqual stdArgs,
-  Check propNormalizedEval stdArgs,
+  Check propNormalizedCorrectVars stdArgs{maxSize = 10},
+  Check propNormalizedComplexity stdArgs{maxSize = 5},
   Check propMajEqual stdArgs{maxSize = 5},
   Check propSameComplexity stdArgs,
-  Check propFlipCorrect stdArgs,
+  Check propFlipCorrect stdArgs{maxSize = 10},
   Check propFlipOutput stdArgs{maxSize = 5},
   Check propFlipAllInputs stdArgs{maxSize = 5},
   Check propCorrectComplexity stdArgs{maxSize = 5}

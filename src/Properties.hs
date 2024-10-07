@@ -1,31 +1,27 @@
 {-# LANGUAGE InstanceSigs #-}
 module Properties (
   propComplexityNot,
-  propNormalizedEqual,
-  propNormalizedEval,
+  propNormalizedCorrectVars,
+  propNormalizedComplexity,
   propFlipCorrect,
   propFlipOutput,
   propFlipAllInputs,
   propCorrectComplexity
 ) where
-import           Algorithm.GenAlg         (genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW       (computeMin)
-import           BDD                      (BDDFun, flipInputs, normalizeBDD)
-import           BDD.BDDInstances         ()
-import           Data.DecisionDiagram.BDD (evaluate, false, notB, support, true,
-                                           var, xor, (.&&.), (.<=>.), (.=>.),
-                                           (.||.))
-import qualified Data.IntSet              as IS
-import           Data.Maybe               (fromJust)
-import           Data.Ratio               ((%))
-import qualified Data.Set                 as Set
-import           Poly.PiecewisePoly       (minPWs, pieces, piecewiseFromPoly,
-                                           propIsMirrorPW)
-import           Subclasses.General       (GenFun, mapBDD, notG)
-import           Test.QuickCheck          (Arbitrary (arbitrary), Property,
-                                           choose, elements, oneof, sized,
-                                           vector, vectorOf, (=/=), (===))
-import           Test.QuickCheck.Gen      (Gen)
+import           Algorithm.GenAlg    (genAlgThinMemoPoly)
+import           Algorithm.GenAlgPW  (computeMin)
+import           BDD.BDDInstances    ()
+import           BoFun               (BoFun (variables))
+import           Data.List           (sort)
+import           Data.Ratio          ((%))
+import qualified Data.Set            as Set
+import           Poly.PiecewisePoly  (minPWs, pieces, piecewiseFromPoly,
+                                      propIsMirrorPW)
+import           Subclasses.General  (GenFun (GenFun), eval, flipInputs,
+                                      generateGenFun, normalizeGenFun, notG)
+import           Test.QuickCheck     (Arbitrary (arbitrary), Property, sized,
+                                      vector, (=/=), (===))
+import           Test.QuickCheck.Gen (Gen)
 
 -- Currently becomes very slow with more than 5 bits, so the arbitrary instance
 -- for BDD funs is limited to max 5 bits.
@@ -34,73 +30,31 @@ propComplexityNot f = computeMin f === computeMin f'
   where
     f' = notG f
 
--- Represents non-variable-normalized BDDs, only to be used with QuickCheck.
-newtype BDDFun' = BDDFun' BDDFun
-  deriving(Eq, Show)
-
-instance Arbitrary BDDFun' where
-  arbitrary :: Gen BDDFun'
-  arbitrary = sized genBDDFun'
-
-genBDDFun' :: Int -> Gen BDDFun'
-genBDDFun' n = do
-  n' <- choose (0, n)
-  genBDDFun'' n'
-
--- This should be able to create all functions as we have access to AND, OR, and NOT (true xor)
-genBDDFun'' :: Int -> Gen BDDFun'
-genBDDFun'' 0 = elements [BDDFun' false, BDDFun' true]
-genBDDFun'' n = do
-  vars <- vectorOf n genVarOrConst
-  ops <- vectorOf (n - 1) genOp
-  return $ BDDFun' $ combine vars ops
-
-genVarOrConst :: Gen BDDFun
-genVarOrConst = oneof [var <$> arbitrary, return false, return true]
-
-genOp :: Gen (BDDFun -> BDDFun -> BDDFun)
-genOp = elements [(.&&.), (.||.), xor, (.=>.), (.<=>.)]
-
-combine :: [a] -> [a -> a -> a] -> a
-combine [] _                = undefined
-combine [v] []              = v
-combine (v : vs) (op : ops) = v `op` combine vs ops
-combine _ _                 = error "Illegal combination of vars and ops"
-
 -- Checks that the variable set is correct after normalization.
-propNormalizedEqual :: BDDFun' -> Property
-propNormalizedEqual (BDDFun' bdd) = vars === [0 .. n - 1]
+propNormalizedCorrectVars :: GenFun -> Property
+propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
   where
-    vars = IS.toAscList $ support $ normalizeBDD bdd
-    n = IS.size $ support bdd
+    gf'@(GenFun _ arity) = normalizeGenFun gf
+    vars = sort $ variables gf'
+    n = length $ variables gf
 
-data BDDAndInput = BDDAndInput BDDFun' [Bool]
+propNormalizedComplexity :: GenFun -> Property
+propNormalizedComplexity gf = computeMin gf === computeMin (normalizeGenFun gf)
+
+data GenFunAndInput = GenFunAndInput GenFun [Bool]
   deriving(Show)
 
-instance Arbitrary BDDAndInput where
-  arbitrary :: Gen BDDAndInput
+instance Arbitrary GenFunAndInput where
+  arbitrary :: Gen GenFunAndInput
   arbitrary = sized $ \n -> do
-    bdd <- genBDDFun'' n
+    gf <- generateGenFun n
     input <- vector n
-    return $ BDDAndInput bdd input
-
-evalBDDFun :: BDDFun -> [Bool] -> Bool
-evalBDDFun bdd vals = evaluate evalF bdd
-  where
-    vars = IS.toAscList $ support bdd
-    evalF i = fromJust $ lookup i $ zip vars vals
-
-propNormalizedEval :: BDDAndInput -> Property
-propNormalizedEval (BDDAndInput (BDDFun' bdd) input) = eval' bdd === eval' (normalizeBDD bdd)
-  where
-    eval' f = evalBDDFun f input
+    return $ GenFunAndInput gf input
 
 ----------------- Complexity properties --------------------------------
 
-propFlipCorrect :: BDDAndInput -> Property
-propFlipCorrect (BDDAndInput (BDDFun' bdd) input) = eval' bdd =/= eval' (notB bdd)
-  where
-    eval' f = evalBDDFun f input
+propFlipCorrect :: GenFunAndInput -> Property
+propFlipCorrect (GenFunAndInput gf input) = eval gf input =/= eval (notG gf) input
 
 propFlipOutput :: GenFun -> Property
 propFlipOutput gf = computeMin gf === computeMin (notG gf)
@@ -108,7 +62,7 @@ propFlipOutput gf = computeMin gf === computeMin (notG gf)
 propFlipAllInputs :: GenFun -> Property
 propFlipAllInputs gf = propIsMirrorPW (1 % 2)
   (computeMin gf)
-  (computeMin (mapBDD flipInputs gf))
+  (computeMin (flipInputs gf))
 
 -------------------- computeMin ----------------------------------
 
