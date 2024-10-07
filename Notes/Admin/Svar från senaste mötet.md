@@ -1,0 +1,8 @@
+- Nyttja att D(f) == D(! . f) genom att skapa en datastruktur som är BDD + bool som talar om om det är den flippade varianten eller ej.
+	- Skulle kunna basera den kanoniska formen på ordningen av outputbitar eller liknande.
+- Lägg till int för arity av GenFun
+	- Normalisera endast när vi räknar på komplexitet.
+- För korrekthet:
+	- Översätt från GenFun till t.ex. Symmetric och se om egenskaper fortfarande håller.
+		- Vore bra om vi kunde utgå direkt från BDD-strukturen istället för att behöva evaluera alla inputs.
+- Skriv ned direkt när vi har researchat något.
