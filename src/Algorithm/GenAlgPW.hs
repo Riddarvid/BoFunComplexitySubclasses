@@ -14,7 +14,7 @@ import           DSLsofMath.Algebra    (Additive (..),
 import           Poly.PiecewisePoly    (PiecewisePoly, minPWs)
 import           Prelude               hiding ((*), (+), (-))
 
-computeMinStep :: (BoFun f i) =>Endo (f -> PiecewisePoly Rational)
+computeMinStep :: (BoFun f i) => Endo (f -> PiecewisePoly Rational)
 computeMinStep = Endo $ \recCall fun -> if isJust (isConst fun)
   then zero -- If the function is constant, then it takes 0 steps to calculate it.
   else one + minPWs $ do -- Else, we need one more step to evaluate the next bit, plus some more
@@ -25,6 +25,5 @@ computeMinStep = Endo $ \recCall fun -> if isJust (isConst fun)
         return $ factor * recCall (setBit (i, value) fun)
     return $ a + b
 
-computeMin :: (BoFun f i, Memoizable f) =>f -> PiecewisePoly Rational
+computeMin :: (BoFun f i, Memoizable f) => f -> PiecewisePoly Rational
 computeMin = fix $ appEndo computeMinStep >>> memoize
-

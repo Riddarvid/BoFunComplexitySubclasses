@@ -7,15 +7,15 @@
 module Subclasses.Comparisons (
   propMajEqual,
   propSameComplexity,
-  measureComplexityTime,
   mainBenchMaj,
-  mainBench
+  mainBench,
+  measureComplexityTime
 ) where
 import           Algorithm.GenAlgPW    (computeMin)
 import           BoFun                 (BoFun)
 import           Control.DeepSeq       (force)
 import           Control.Exception     (evaluate)
-import           Control.Monad         (forM)
+import           Control.Monad         (forM, void)
 import           Criterion             (Benchmark, bench, bgroup, nf)
 import           Criterion.Main        (defaultMain)
 import           Data.Function.Memoize (Memoizable)
@@ -33,7 +33,7 @@ import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
 data BoFunType = forall f i. (BoFun f i, Memoizable f) => BoFunType f
 
 mainBenchMaj :: Int -> IO [NominalDiffTime]
-mainBenchMaj = measureComplexityTime . majFuns
+mainBenchMaj = measureComplexityTimes . majFuns
 
 majFuns :: Int -> [BoFunType]
 majFuns n = [
@@ -43,10 +43,13 @@ majFuns n = [
   BoFunType $ Gen.majFun n
   ]
 
-measureComplexityTime :: [BoFunType] -> IO [NominalDiffTime]
-measureComplexityTime funs = forM funs $ \(BoFunType f) -> do
+measureComplexityTimes :: [BoFunType] -> IO [NominalDiffTime]
+measureComplexityTimes funs = forM funs $ \(BoFunType f) -> measureComplexityTime f
+
+measureComplexityTime :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
+measureComplexityTime f = do
   start <- getCurrentTime
-  _ <- evaluate $ force $ computeMin f
+  void $ evaluate $ force $ computeMin f
   end <- getCurrentTime
   return (diffUTCTime end start)
 

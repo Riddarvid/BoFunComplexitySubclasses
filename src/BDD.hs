@@ -84,8 +84,8 @@ flipInputs bdd = substSet mapping bdd
 -- nodes in the graph, which shouldn't change by simply changing the indeces.
 
 -- TODO-NEW: We could check if the BDD is already normalized first.
-normalizeBDD :: BDD AscOrder -> BDD AscOrder
-normalizeBDD bdd = fromGraph (g', n)
+normalizeBDD :: BDD AscOrder -> (BDD AscOrder, Int)
+normalizeBDD bdd = (fromGraph (g', n), IS.size vars)
   where
     vars = support bdd
     orderMapping = IM.fromAscList $ zip (IS.toAscList vars) [1 ..]

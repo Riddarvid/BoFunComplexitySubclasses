@@ -1,13 +1,3 @@
 
 - Vad vi har gjort:
-	- Börjat skriva rapport
-		- Vad är ditt intryck av den övergripande strukturen?
-		- Hur djupt bör vi gå in i teorin? Exempelvis om binary decision diagrams.
-		- Hur djupt bör vi gå in på saker från er rapport?
-	- Brytit ut BDDs till en newtype
-	- Skrivit bättre quickcheck properties
-	- Hittat egenskapen om spegling av komplexiteten när man speglar alla inputbitar
-		- Att flippa 1 inputbit borde ha en helt annan effekt, det borde flippa endast några subträd, vilket kan påverka komplexiteten på mer komplicerade sätt.
-	- Researchat ZDDs men inte omsatt det i praktiken än.
-	- Vi har skrivit en funktion som översätter från BoFu till GenFun (wrapper runt BDD).
-- Hur bör vi prioritera vår tid framåt? Behövs fler resultat/fler function classes eller borde vi lägga fokus på rapporten nu?
+- Hur görs memoizationsteget? Varför måste det ligga utanför hela beräkningen?

@@ -21,7 +21,7 @@ import           Poly.PolynomialExtra     (mirrorP)
 import           Poly.Utils               (minDegree)
 import           Prelude                  hiding ((*), (+))
 import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
-import           Subclasses.Comparisons   (mainBenchMaj)
+import           Subclasses.Comparisons   (mainBenchMaj, measureComplexityTime)
 import qualified Subclasses.General       as Gen
 import           Subclasses.General       (GenFun (GenFun), allGenFuns,
                                            flipInputs)
@@ -29,7 +29,7 @@ import           Subclasses.Id            ()
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
 
 main :: IO ()
-main = print $ mirrorP (1 % 2) (P [1 :: Rational, 1])
+main = measureComplexityTime (Gen.iteratedMajFun 3 2) >>= print
 
 main9 :: IO ()
 main9 = do

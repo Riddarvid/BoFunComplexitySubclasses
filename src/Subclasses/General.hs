@@ -25,9 +25,9 @@ import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
 import qualified BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
-                                            restrict, substSet, support, true,
-                                            var)
+import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), Graph, Sig,
+                                            evaluate, false, notB, restrict,
+                                            substSet, support, true, var)
 import           Data.Function.Memoize     (deriveMemoizable)
 import qualified Data.IntMap               as IM
 import qualified Data.IntSet               as IS
@@ -52,7 +52,16 @@ instance BoFun GenFun Int where
   variables :: GenFun -> [Int]
   variables = IS.toList . liftBDD support
   setBit :: (Int, Bool) -> GenFun -> GenFun
-  setBit (i, v) = normalizeGenFun . restrictGenFun i v
+  setBit = uncurry setBitNormCanonical
+
+setBit' :: Int -> Bool -> GenFun -> GenFun
+setBit' = restrictGenFun
+
+setBitNorm :: Int -> Bool -> GenFun -> GenFun
+setBitNorm i v = normalizeGenFun . setBit' i v
+
+setBitNormCanonical :: Int -> Bool -> GenFun -> GenFun
+setBitNormCanonical i v = toCanonicForm . setBitNorm i v
 
 restrictGenFun :: Int -> Bool -> GenFun -> GenFun
 restrictGenFun i v (GenFun bdd n) = GenFun (restrict i v bdd) (n - 1)
@@ -69,8 +78,18 @@ instance Algor GenFun where
 normalizeGenFun :: GenFun -> GenFun
 normalizeGenFun (GenFun bdd _) = GenFun bdd' n'
   where
-    bdd' = normalizeBDD bdd
-    n' = IS.size $ support bdd
+    (bdd', n') = normalizeBDD bdd
+
+-- We have chosen to call a BDD canonical if its leftmost path reaches 0.
+-- This is equivalent with the output for an input consistiong only of 0s being 0.
+-- Other definitions might be better.
+toCanonicForm :: GenFun -> GenFun
+toCanonicForm gf@(GenFun bdd n)
+  | inCanonicForm bdd = gf
+  | otherwise = GenFun (notB bdd) n
+
+inCanonicForm :: BDD AscOrder -> Bool
+inCanonicForm = not . evaluate (const False)
 
 ------------- QuickCheck ---------------------------
 
