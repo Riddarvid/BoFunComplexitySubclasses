@@ -18,6 +18,7 @@ import           Data.DecisionDiagram.BDD (AscOrder, BDD (Leaf), DescOrder,
 import           Data.IntMap              (IntMap)
 import qualified Data.IntMap              as IM
 import qualified Data.IntSet              as IS
+import           Utils                    (outputPermutations)
 
 type BDDFun = BDD AscOrder
 
@@ -51,16 +52,6 @@ bddFromOutput' 0 varN out = boolToBDD (out !! (varN - 1))
 bddFromOutput' bits varN out = pick bits
   (bddFromOutput' (bits - 1) (2 * varN) out)
   (bddFromOutput' (bits - 1) (2 * varN - 1) out)
-
-outputPermutations :: Int -> [[Bool]]
-outputPermutations n = permutations (2^n)
-
-permutations :: Int -> [[Bool]]
-permutations 0 = [[]]
-permutations n = do
-  v <- [False, True]
-  vs <- permutations (n - 1)
-  return (v : vs)
 
 flipInputs :: BDDFun -> BDDFun
 flipInputs bdd = substSet mapping bdd

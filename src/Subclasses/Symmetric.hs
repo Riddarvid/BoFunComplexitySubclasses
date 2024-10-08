@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Subclasses.Symmetric (
-  BasicSymmetric,
+  BasicSymmetric(BasicSymmetric),
   mkBasicSymmetric,
   Symmetric,
   symmResultvector,
@@ -30,12 +30,21 @@ import qualified Data.MultiSet         as MultiSet
 import           Data.Sequence         (Seq (Empty, (:<|), (:|>)))
 import qualified Data.Sequence         as Seq
 import           Subclasses.Iterated   (Iterated)
+import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt, sized,
+                                        vector)
+import           Test.QuickCheck.Gen   (Gen)
 import           Utils                 (naturals)
 
 --------- BasicSymmetric -----------------------------
 
 newtype BasicSymmetric = BasicSymmetric [Bool]
-  deriving Show
+  deriving (Show, Eq)
+
+instance Arbitrary BasicSymmetric where
+  arbitrary :: Gen BasicSymmetric
+  arbitrary = sized $ \n -> do
+    n' <- (+1) <$> chooseInt(0, n)
+    BasicSymmetric <$> vector n'
 
 instance BoFun BasicSymmetric () where
   isConst :: BasicSymmetric -> Maybe Bool

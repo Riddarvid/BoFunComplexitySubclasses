@@ -15,6 +15,8 @@ module AllProperties (
 ) where
 import           Filters                (propRationalSign)
 import           Properties             (propComplexityNot,
+                                         propConversionIteratedThreshold,
+                                         propConversionSymm,
                                          propCorrectComplexity,
                                          propFlipAllInputs, propFlipCorrect,
                                          propFlipOutput,
@@ -37,7 +39,9 @@ allProps = [
   Check propFlipCorrect stdArgs{maxSize = 10},
   Check propFlipOutput stdArgs{maxSize = 5},
   Check propFlipAllInputs stdArgs{maxSize = 5},
-  Check propCorrectComplexity stdArgs{maxSize = 5}
+  Check propCorrectComplexity stdArgs{maxSize = 5},
+  Check propConversionSymm stdArgs{maxSize = 10},
+  Check propConversionIteratedThreshold stdArgs{maxSize = 7}
   ]
 
 testAll :: IO ()

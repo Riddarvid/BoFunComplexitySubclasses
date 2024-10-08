@@ -25,9 +25,9 @@ import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
 import qualified BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), Graph, Sig,
-                                            evaluate, false, notB, restrict,
-                                            substSet, support, true, var)
+import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
+                                            notB, restrict, substSet, support,
+                                            true, var)
 import           Data.Function.Memoize     (deriveMemoizable)
 import qualified Data.IntMap               as IM
 import qualified Data.IntSet               as IS

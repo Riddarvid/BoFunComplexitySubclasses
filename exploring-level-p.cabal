@@ -59,6 +59,7 @@ library
       Subclasses.Symmetric
       Subclasses.Threshold
       Thin
+      Translations
       Utils
   other-modules:
       Paths_exploring_level_p

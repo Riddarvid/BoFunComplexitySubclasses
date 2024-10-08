@@ -14,7 +14,10 @@ module Subclasses.Threshold (
   majFun,
   iteratedFun,
   iteratedMajFun,
-  iteratedThresholdFunConst
+  iteratedThresholdFunConst,
+  arityIteratedThreshold,
+  Partition,
+  partitions
 ) where
 
 import           Control.Arrow         ((>>>))
@@ -29,7 +32,11 @@ import           Prelude               hiding (negate, sum, (+), (-))
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
+import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
+import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
+                                        elements, sized)
+import           Test.QuickCheck.Gen   (Gen)
 import           Utils                 (Square, boolToInt, chooseMany,
                                         duplicate, lookupBool, naturals,
                                         squareToList, tabulateBool)
@@ -274,4 +281,51 @@ For example:
 * t_4 = 97916848002123806402045274379974531999764335775612939415896877758995991565.
 -}
 
+arityIteratedThreshold :: Iterated ThresholdFun -> Int
+arityIteratedThreshold = length . variables
 
+instance Arbitrary (Iterated ThresholdFun) where
+  arbitrary :: Gen (Iterated ThresholdFun)
+  arbitrary = sized $ \n -> do
+    n' <- chooseInt (0, n)
+    generateIteratedThresholdFun n'
+
+generateIteratedThresholdFun :: Int -> Gen (Iterated ThresholdFun)
+generateIteratedThresholdFun 0 = elements
+  [Free (thresholdFunConst False), Free (thresholdFunConst True)]
+generateIteratedThresholdFun 1 = return $ Pure ()
+generateIteratedThresholdFun n = do
+  (subFuns, nSubFuns) <- generateSubFuns n
+  threshold' <- generateThreshold nSubFuns
+  return $ Free $ ThresholdFun threshold' subFuns
+
+-- TODO-NEW support thresholds with 0
+generateThreshold :: Int -> Gen Threshold
+generateThreshold n = do
+  nt <- chooseInt (1, n)
+  let nf = n + 1 - nt
+  return $ Threshold (nt, nf)
+
+generateSubFuns :: Int -> Gen (MultiSet (Free ThresholdFun ()), Int)
+generateSubFuns n = do
+  partition <- elements $ partitions n
+  subFuns <- mapM generateIteratedThresholdFun partition
+  return $ (MultiSet.fromList subFuns, length subFuns)
+
+type Partition = [Int]
+
+-- The reason that we're dropping the last one is that
+-- f == ThresholdFun (1,1) [f]. We are not creating a new function by simply wrapping it
+-- in a ThresholdFun.
+partitions :: Int -> [Partition]
+partitions n = case partitions' 1 n of
+  [] -> []
+  xs -> init xs
+
+-- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
+-- The first element in the partition must be >= highest.
+partitions' :: Int -> Int -> [Partition]
+partitions' highest n
+  | n == 0 = [[]]
+  | highest > n = []
+  | otherwise = concatMap (\m -> map (m :) $ partitions' m (n - m)) [highest .. n]

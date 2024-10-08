@@ -22,14 +22,18 @@ import           Poly.Utils               (minDegree)
 import           Prelude                  hiding ((*), (+))
 import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
 import           Subclasses.Comparisons   (mainBenchMaj, measureComplexityTime)
+import           Subclasses.Counting      (allIteratedThresholdFuns,
+                                           allIteratedThresholdFunsMemo)
 import qualified Subclasses.General       as Gen
 import           Subclasses.General       (GenFun (GenFun), allGenFuns,
-                                           flipInputs)
+                                           flipInputs, toGenFun)
 import           Subclasses.Id            ()
+import           Subclasses.Symmetric     (BasicSymmetric (BasicSymmetric))
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
+import           Translations             (genToBasicSymmetricNaive)
 
 main :: IO ()
-main = measureComplexityTime (Gen.iteratedMajFun 3 2) >>= print
+main = print $ length $ allIteratedThresholdFunsMemo 11
 
 main9 :: IO ()
 main9 = do

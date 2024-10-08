@@ -30,3 +30,7 @@ Spegling
 
 Tänk på det som att det setBit av en 3-bitars funktion ska returnera inte är en ny 3-bitars funktion med en bit fixerad, utan faktiskt en 2-bitars funktion. 
 	- setBit ska inte användas för att sätta en bit i en specifik funktion, utan för att röra sig till en ny ekvivalensklass av funktioner.
+
+## Threshold funs
+
+All basic threshold funs are iterated threshold funs, but not the other way around.

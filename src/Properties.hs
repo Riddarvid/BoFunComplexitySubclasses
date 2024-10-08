@@ -6,22 +6,31 @@ module Properties (
   propFlipCorrect,
   propFlipOutput,
   propFlipAllInputs,
-  propCorrectComplexity
+  propCorrectComplexity,
+  propConversionSymm,
+  propConversionIteratedThreshold
 ) where
-import           Algorithm.GenAlg    (genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW  (computeMin)
-import           BDD.BDDInstances    ()
-import           BoFun               (BoFun (variables))
-import           Data.List           (sort)
-import           Data.Ratio          ((%))
-import qualified Data.Set            as Set
-import           Poly.PiecewisePoly  (minPWs, pieces, piecewiseFromPoly,
-                                      propIsMirrorPW)
-import           Subclasses.General  (GenFun (GenFun), eval, flipInputs,
-                                      generateGenFun, normalizeGenFun, notG)
-import           Test.QuickCheck     (Arbitrary (arbitrary), Property, sized,
-                                      vector, (=/=), (===))
-import           Test.QuickCheck.Gen (Gen)
+import           Algorithm.GenAlg     (genAlgThinMemoPoly)
+import           Algorithm.GenAlgPW   (computeMin)
+import           BDD.BDDInstances     ()
+import           BoFun                (BoFun (variables))
+import           Data.List            (sort)
+import           Data.Ratio           ((%))
+import qualified Data.Set             as Set
+import           Poly.PiecewisePoly   (minPWs, pieces, piecewiseFromPoly,
+                                       propIsMirrorPW)
+import           Subclasses.General   (GenFun (GenFun), eval, flipInputs,
+                                       generateGenFun, normalizeGenFun, notG,
+                                       toGenFun)
+import           Subclasses.Iterated  (Iterated)
+import           Subclasses.Symmetric (BasicSymmetric (BasicSymmetric))
+import           Subclasses.Threshold (ThresholdFun, arityIteratedThreshold)
+import           Test.QuickCheck      (Arbitrary (arbitrary), Property,
+                                       Testable (property), sized, vector,
+                                       (=/=), (===))
+import           Test.QuickCheck.Gen  (Gen)
+import           Translations         (genToBasicSymmetricNaive,
+                                       genToIteratedThresholdFun)
 
 -- Currently becomes very slow with more than 5 bits, so the arbitrary instance
 -- for BDD funs is limited to max 5 bits.
@@ -70,3 +79,15 @@ propCorrectComplexity :: GenFun -> Property
 propCorrectComplexity gf =
   pieces (computeMin gf) ===
   pieces (minPWs $ map piecewiseFromPoly $ Set.toList $ genAlgThinMemoPoly gf)
+
+------------------- conversions ----------------------------
+
+propConversionSymm :: BasicSymmetric -> Property
+propConversionSymm f@(BasicSymmetric rv) = Just f === genToBasicSymmetricNaive (toGenFun arity f)
+  where
+    arity = length rv - 1
+
+propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
+propConversionIteratedThreshold f = property $ f `elem` genToIteratedThresholdFun (toGenFun arity f)
+  where
+    arity = arityIteratedThreshold f

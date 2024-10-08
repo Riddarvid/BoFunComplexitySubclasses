@@ -96,6 +96,18 @@ boolToMaybe v x = if v then Just x else Nothing
 unify :: (Eq a) => (a, a) -> Maybe a
 unify (x, y) = boolToMaybe (x == y) x
 
+outputPermutations :: Int -> [[Bool]]
+outputPermutations n = permutations (2^n)
+
+permutations :: Int -> [[Bool]]
+permutations 0 = [[]]
+permutations n
+  | n < 0 = error "n must be non-negative"
+permutations n = do
+  v <- [False, True]
+  vs <- permutations (n - 1)
+  return (v : vs)
+
 
 -- Graph reachability.
 
