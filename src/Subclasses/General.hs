@@ -36,6 +36,7 @@ import qualified Data.Set                  as Set
 import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
                                             vector)
 import           Test.QuickCheck.Arbitrary (Arbitrary (..), shrink)
+import           Utils                     (listToVarAssignment)
 
 -- The internal BDD should only ever be dependent on variables in [1..n]
 data GenFun = GenFun (BDD AscOrder) Int
@@ -52,16 +53,9 @@ instance BoFun GenFun Int where
   variables :: GenFun -> [Int]
   variables = IS.toList . liftBDD support
   setBit :: (Int, Bool) -> GenFun -> GenFun
-  setBit = uncurry setBitNormCanonical
-
-setBit' :: Int -> Bool -> GenFun -> GenFun
-setBit' = restrictGenFun
-
-setBitNorm :: Int -> Bool -> GenFun -> GenFun
-setBitNorm i v = normalizeGenFun . setBit' i v
-
-setBitNormCanonical :: Int -> Bool -> GenFun -> GenFun
-setBitNormCanonical i v = toCanonicForm . setBitNorm i v
+  setBit = uncurry restrictGenFun
+  normalize :: GenFun -> GenFun
+  normalize = toCanonicForm . normalizeGenFun
 
 restrictGenFun :: Int -> Bool -> GenFun -> GenFun
 restrictGenFun i v (GenFun bdd n) = GenFun (restrict i v bdd) (n - 1)
@@ -110,7 +104,8 @@ instance Arbitrary GenFun where
 generateGenFun :: Int -> Gen GenFun
 generateGenFun n = do
   output <- vector (2^n)
-  return $ GenFun (bddFromOutput n output) n
+  let varAssignment = listToVarAssignment output
+  return $ GenFun (bddFromOutput n varAssignment) n
 
 ----------------- Boolean operators --------------------------------
 

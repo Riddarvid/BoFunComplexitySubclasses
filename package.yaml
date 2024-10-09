@@ -32,6 +32,8 @@ dependencies:
   - testing-feat >= 1.1.1.1
   - time >= 1.2.12
   - unordered-containers >= 0.2.19.1
+  - statistics >= 0.16.2.1
+  - vector
 
 ghc-options:
   - -Wall

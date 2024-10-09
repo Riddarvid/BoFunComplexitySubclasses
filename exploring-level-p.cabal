@@ -79,9 +79,11 @@ library
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
     , time >=1.2.12
     , unordered-containers >=0.2.19.1
+    , vector
   default-language: Haskell2010
 
 executable exploring-level-p-exe
@@ -105,9 +107,11 @@ executable exploring-level-p-exe
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
     , time >=1.2.12
     , unordered-containers >=0.2.19.1
+    , vector
   default-language: Haskell2010
 
 test-suite exploring-level-p-test
@@ -132,7 +136,9 @@ test-suite exploring-level-p-test
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
     , time >=1.2.12
     , unordered-containers >=0.2.19.1
+    , vector
   default-language: Haskell2010

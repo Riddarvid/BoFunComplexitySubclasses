@@ -16,7 +16,11 @@ import           Utils    (dfs)
 class BoFun f i | f -> i where
   isConst   :: f -> Maybe Bool
   variables :: f -> [i]
+  setBitAndNormalize :: (i, Bool) -> f -> f
+  setBitAndNormalize v = normalize . setBit v
   setBit    :: (i, Bool) -> f -> f
+  normalize :: f -> f
+  normalize = id
 
 viewConst :: BoFun f i => f -> Either Bool f
 viewConst f = maybe (Right f) Left (isConst f)

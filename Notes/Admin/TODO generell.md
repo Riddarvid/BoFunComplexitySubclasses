@@ -5,6 +5,7 @@
 	- Kan verifiera våra resultat med the dictionary of integer sequences.
 	- Är det skillnad på 2-bits funktionen x0 && x1 och 3-bits funktionen x0 && x1?
 - Se om vi kan nyttja spegling vid inverterade inputs på något sätt.
+- Effektivare conversions
 
 ## TODO Arvid:
 

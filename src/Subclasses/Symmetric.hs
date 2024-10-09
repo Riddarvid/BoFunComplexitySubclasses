@@ -81,7 +81,7 @@ type Range = (Int, Int)
 data Symmetric f = Symmetric {
   symmResultvector :: Seq (Range, Bool),
   symmSubFuns      :: MultiSet f
-}
+} deriving (Show)
 
 instance Memoizable a => Memoizable (Seq a) where
   memoize :: (Seq a -> v) -> Seq a -> v

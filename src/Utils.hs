@@ -9,6 +9,8 @@ import           Control.Monad.State   (MonadState (..), execState)
 import           Data.Function.Memoize (Memoizable (..))
 import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
                                         Ord2 (..), Show1 (..), Show2 (..))
+import           Data.IntMap           (IntMap)
+import qualified Data.IntMap           as IM
 import qualified Data.MultiSet         as MultiSet
 import qualified Data.Set              as Set
 
@@ -121,3 +123,6 @@ dfs' outgoing = h where
 
 dfs :: (Ord a) => (a -> [a]) -> a -> Set.Set a
 dfs outgoing start = execState (dfs' outgoing start) Set.empty
+
+listToVarAssignment :: [Bool] -> IntMap Bool
+listToVarAssignment xs = IM.fromAscList $ zip [1 ..] xs

@@ -18,7 +18,8 @@ import           Data.DecisionDiagram.BDD (AscOrder, BDD (Leaf), DescOrder,
 import           Data.IntMap              (IntMap)
 import qualified Data.IntMap              as IM
 import qualified Data.IntSet              as IS
-import           Utils                    (outputPermutations)
+import           Utils                    (listToVarAssignment,
+                                           outputPermutations)
 
 type BDDFun = BDD AscOrder
 
@@ -38,17 +39,17 @@ isConstBDD _        = Nothing
 -- Generating all BDDFuns
 
 allBDDFuns :: ItemOrder o => Int -> [BDD o]
-allBDDFuns n = map (bddFromOutput n) $ outputPermutations n
+allBDDFuns n = map (bddFromOutput n . listToVarAssignment) $ outputPermutations n
 
 boolToBDD :: Bool -> BDD o
 boolToBDD True  = true
 boolToBDD False = false
 
-bddFromOutput :: ItemOrder o => Int -> [Bool] -> BDD o
+bddFromOutput :: ItemOrder o => Int -> IntMap Bool -> BDD o
 bddFromOutput bits = bddFromOutput' bits 1
 
-bddFromOutput' :: ItemOrder o => Int -> Int -> [Bool] -> BDD o
-bddFromOutput' 0 varN out = boolToBDD (out !! (varN - 1))
+bddFromOutput' :: ItemOrder o => Int -> Int -> IntMap Bool -> BDD o
+bddFromOutput' 0 varN out = boolToBDD (out IM.! varN)
 bddFromOutput' bits varN out = pick bits
   (bddFromOutput' (bits - 1) (2 * varN) out)
   (bddFromOutput' (bits - 1) (2 * varN - 1) out)

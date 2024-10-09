@@ -22,7 +22,7 @@ computeMinStep = Endo $ \recCall fun -> if isJust (isConst fun)
     let
       [a, b] = do
         (value, factor) <- [(False, one - mempty), (True, mempty)] -- represents choosing 0 or 1
-        return $ factor * recCall (setBit (i, value) fun)
+        return $ factor * recCall (setBitAndNormalize (i, value) fun)
     return $ a + b
 
 computeMin :: (BoFun f i, Memoizable f) => f -> PiecewisePoly Rational

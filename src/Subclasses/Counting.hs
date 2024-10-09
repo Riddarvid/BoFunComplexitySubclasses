@@ -1,20 +1,32 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Subclasses.Counting (
   numberOfIteratedThresholdFuns,
   allIteratedThresholdFuns,
-  allIteratedThresholdFunsMemo
+  allIteratedThresholdFunsMemo,
+  averageBDDNodesITF
 ) where
-import           Control.Monad.Free    (Free (Free, Pure))
-import           Data.Function.Memoize (Memoizable (memoize))
-import qualified Data.MultiSet         as MultiSet
-import qualified Data.Set              as Set
-import           DSLsofMath.Algebra    (Additive ((+)))
-import           Prelude               hiding ((*), (+))
-import           Subclasses.General    (GenFun, toGenFun)
-import           Subclasses.Id         ()
-import           Subclasses.Iterated   (Iterated)
-import           Subclasses.Threshold  (Partition, Threshold (Threshold),
-                                        ThresholdFun (ThresholdFun),
-                                        iteratedThresholdFunConst, partitions)
+import           BoFun                    (BoFun)
+import           Control.Monad            (replicateM)
+import           Control.Monad.Free       (Free (Free, Pure))
+import           Data.DecisionDiagram.BDD (numNodes)
+import           Data.Function.Memoize    (Memoizable (memoize))
+import qualified Data.MultiSet            as MultiSet
+import qualified Data.Set                 as Set
+import           Data.Vector.Generic      (fromList)
+import           Data.Vector.Primitive    (Vector (Vector))
+import           DSLsofMath.Algebra       (Additive ((+)))
+import           Prelude                  hiding ((*), (+))
+import           Statistics.Sample        (meanVariance, range)
+import           Subclasses.General       (GenFun, liftBDD, toGenFun)
+import           Subclasses.Id            ()
+import           Subclasses.Iterated      (Iterated)
+import           Subclasses.Threshold     (Partition, Threshold (Threshold),
+                                           ThresholdFun (ThresholdFun),
+                                           iteratedThresholdFunConst,
+                                           partitions)
+import           Test.QuickCheck          (Arbitrary (arbitrary), generate,
+                                           resize)
 
 -- Ensures that only unique functions are counted by converting them to BDDs
 -- and inserting them into a set.
@@ -51,4 +63,20 @@ allIteratedThresholdFuns'' p = do
   return $ Free $ ThresholdFun threshold' subFuns'
   where
     n = length p
+
+-------------------- Counting BDD nodes --------------------------
+
+averageBDDNodesITF :: forall proxy a i. (Arbitrary a, BoFun a i) =>
+  proxy a -> Int -> Int -> IO (Double, Double, Double)
+averageBDDNodesITF _ n bits = do
+  samples <- replicateM n $ generate (resize bits arbitrary) :: IO [a]
+  let samples' = map (toGenFun bits) samples
+  let nodeCounts = map (fromIntegral . nodeCount) samples'
+  let nodeCountVector = fromList nodeCounts :: Vector Double
+  let range' = range nodeCountVector
+  let (mean, variance) = meanVariance nodeCountVector
+  return (mean, variance, range')
+
+nodeCount :: GenFun -> Int
+nodeCount = liftBDD numNodes
 

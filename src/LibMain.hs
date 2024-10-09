@@ -11,6 +11,8 @@ import           Control.DeepSeq          (force)
 import           Control.Exception        (evaluate)
 import           Control.Monad            (void)
 import           Data.DecisionDiagram.BDD (notB, var, (.&&.), (.||.))
+
+import           Data.Data                (Proxy (Proxy))
 import           Data.Ratio               ((%))
 import qualified Data.Set                 as Set
 import           DSLsofMath.Algebra       (AddGroup, MulGroup)
@@ -23,17 +25,20 @@ import           Prelude                  hiding ((*), (+))
 import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
 import           Subclasses.Comparisons   (mainBenchMaj, measureComplexityTime)
 import           Subclasses.Counting      (allIteratedThresholdFuns,
-                                           allIteratedThresholdFunsMemo)
+                                           allIteratedThresholdFunsMemo,
+                                           averageBDDNodesITF)
 import qualified Subclasses.General       as Gen
 import           Subclasses.General       (GenFun (GenFun), allGenFuns,
                                            flipInputs, toGenFun)
 import           Subclasses.Id            ()
+import           Subclasses.Iterated      (Iterated)
 import           Subclasses.Symmetric     (BasicSymmetric (BasicSymmetric))
+import           Subclasses.Threshold     (ThresholdFun (ThresholdFun))
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
 import           Translations             (genToBasicSymmetricNaive)
 
 main :: IO ()
-main = print $ length $ allIteratedThresholdFunsMemo 11
+main = averageBDDNodesITF (Proxy :: Proxy (Iterated ThresholdFun)) 300 10 >>= print
 
 main9 :: IO ()
 main9 = do
@@ -43,10 +48,10 @@ main9 = do
   desmosPrintPW $ computeMin gf'
 
 tOR :: BDDFun
-tOR = var 0 .||. var 1
+tOR = var 1 .||. var 2
 
 tNAND :: BDDFun
-tNAND = notB (var 0 .&&. var 1)
+tNAND = notB (var 1 .&&. var 2)
 
 main6 :: IO ()
 main6 = do

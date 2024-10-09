@@ -6,3 +6,9 @@
 	- Vi definierade canonical form som den funktion som ger 0 då alla inputs är 0.
 - Conversions, mellan symm och gen, samt mellan thresh och gen. Vi skrev en för BasicSymmetric, ganska ineffektiv. Vi skrev även en för Iterated ThresholdFun som baseras på att generera upp alla ITFs och se om en GenFun är ekvivalent med någon av dem.
 - QuickCheck
+
+## 9/10 2024
+
+- Funktionalitet för att räkna ut average nodantal i BDDn som motsvarar en funktion.
+- Functionality for measuring various statistical properties of the number of nodes in BDDs.
+- Separated the normalization step of BoFuns
