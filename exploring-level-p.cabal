@@ -76,6 +76,7 @@ library
     , decision-diagrams >=0.2.0.0
     , deepseq >=1.4.8.0
     , free >=5.1.10
+    , hashable
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
@@ -104,6 +105,7 @@ executable exploring-level-p-exe
     , deepseq >=1.4.8.0
     , exploring-level-p
     , free >=5.1.10
+    , hashable
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
@@ -133,6 +135,7 @@ test-suite exploring-level-p-test
     , deepseq >=1.4.8.0
     , exploring-level-p
     , free >=5.1.10
+    , hashable
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3

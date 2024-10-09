@@ -310,7 +310,7 @@ generateSubFuns :: Int -> Gen (MultiSet (Free ThresholdFun ()), Int)
 generateSubFuns n = do
   partition <- elements $ partitions n
   subFuns <- mapM generateIteratedThresholdFun partition
-  return $ (MultiSet.fromList subFuns, length subFuns)
+  return (MultiSet.fromList subFuns, length subFuns)
 
 type Partition = [Int]
 

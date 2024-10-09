@@ -26,10 +26,6 @@ instance Memoizable (BDD o) where
 memoizeBF :: (BDD o -> a) -> (BDD o -> a)
 memoizeBF f = memoize (f . inSig) . outSig
 
-instance Ord (BDD o) where
-  compare :: BDD o -> BDD o -> Ordering
-  compare = comparing outSig
-
 instance Algor BDDFun where
   res :: Bool -> BDDFun
   res False = false

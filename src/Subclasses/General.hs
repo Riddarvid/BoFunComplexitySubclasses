@@ -1,8 +1,10 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use list comprehension" #-}
+{-# LANGUAGE DeriveGeneric         #-}
 module Subclasses.General (
   GenFun(GenFun),
   liftBDD,
@@ -25,14 +27,17 @@ import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
 import qualified BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
-                                            notB, restrict, substSet, support,
-                                            true, var)
+import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), Sig (..),
+                                            evaluate, false, notB, outSig,
+                                            restrict, substSet, support, true,
+                                            var)
 import           Data.Function.Memoize     (deriveMemoizable)
+import           Data.Hashable             (Hashable)
 import qualified Data.IntMap               as IM
 import qualified Data.IntSet               as IS
 import           Data.Set                  (Set)
 import qualified Data.Set                  as Set
+import           GHC.Generics              (Generic)
 import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
                                             vector)
 import           Test.QuickCheck.Arbitrary (Arbitrary (..), shrink)
@@ -40,7 +45,21 @@ import           Utils                     (listToVarAssignment)
 
 -- The internal BDD should only ever be dependent on variables in [1..n]
 data GenFun = GenFun (BDD AscOrder) Int
-  deriving(Eq, Ord, Show)
+  deriving(Eq, Show, Generic)
+
+instance Hashable GenFun
+
+instance Ord GenFun where
+  compare :: GenFun -> GenFun -> Ordering
+  compare gf1 gf2 = case (toBoolOrInt gf1, toBoolOrInt gf2) of
+    (Left v1, Left v2)   -> compare v1 v2
+    (Right x1, Right x2) -> compare x1 x2
+    (Left _, Right _)    -> LT
+    (Right _, Left _)    -> GT
+    where
+      toBoolOrInt (GenFun bdd _) = case outSig bdd of
+        SLeaf v       -> Left v
+        SBranch x _ _ -> Right x
 
 $(deriveMemoizable ''GenFun)
 

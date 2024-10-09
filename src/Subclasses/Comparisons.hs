@@ -9,9 +9,10 @@ module Subclasses.Comparisons (
   propSameComplexity,
   mainBenchMaj,
   mainBench,
-  measureComplexityTime
+  measureComplexityTime,
+  measureComplexityTime'
 ) where
-import           Algorithm.GenAlgPW    (computeMin)
+import           Algorithm.GenAlgPW    (computeMin, computeMin')
 import           BoFun                 (BoFun)
 import           Control.DeepSeq       (force)
 import           Control.Exception     (evaluate)
@@ -19,6 +20,7 @@ import           Control.Monad         (forM, void)
 import           Criterion             (Benchmark, bench, bgroup, nf)
 import           Criterion.Main        (defaultMain)
 import           Data.Function.Memoize (Memoizable)
+import           Data.Hashable         (Hashable)
 import           Data.Time             (NominalDiffTime, diffUTCTime,
                                         getCurrentTime)
 import qualified Subclasses.General    as Gen
@@ -50,6 +52,13 @@ measureComplexityTime :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
 measureComplexityTime f = do
   start <- getCurrentTime
   void $ evaluate $ force $ computeMin f
+  end <- getCurrentTime
+  return (diffUTCTime end start)
+
+measureComplexityTime' :: (BoFun f i, Ord f) => f -> IO NominalDiffTime
+measureComplexityTime' f = do
+  start <- getCurrentTime
+  void $ evaluate $ force $ computeMin' f
   end <- getCurrentTime
   return (diffUTCTime end start)
 

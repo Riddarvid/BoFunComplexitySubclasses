@@ -8,10 +8,11 @@ module Properties (
   propFlipAllInputs,
   propCorrectComplexity,
   propConversionSymm,
-  propConversionIteratedThreshold
+  propConversionIteratedThreshold,
+  propComputeMin'Correct
 ) where
 import           Algorithm.GenAlg     (genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW   (computeMin)
+import           Algorithm.GenAlgPW   (computeMin, computeMin')
 import           BDD.BDDInstances     ()
 import           BoFun                (BoFun (variables))
 import           Data.List            (sort)
@@ -91,3 +92,6 @@ propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
 propConversionIteratedThreshold f = property $ f `elem` genToIteratedThresholdFun (toGenFun arity f)
   where
     arity = arityIteratedThreshold f
+
+propComputeMin'Correct :: GenFun -> Property
+propComputeMin'Correct gf = computeMin gf === computeMin' gf

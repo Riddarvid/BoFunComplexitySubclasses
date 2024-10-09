@@ -5,7 +5,7 @@ module LibMain (
   main
 ) where
 import           Algorithm.GenAlg         (piecewiseBoth)
-import           Algorithm.GenAlgPW       (computeMin)
+import           Algorithm.GenAlgPW       (computeMin, computeMin')
 import           BDD                      (BDDFun)
 import           Control.DeepSeq          (force)
 import           Control.Exception        (evaluate)
@@ -23,7 +23,8 @@ import           Poly.PolynomialExtra     (mirrorP)
 import           Poly.Utils               (minDegree)
 import           Prelude                  hiding ((*), (+))
 import           PrettyPrinting           (desmosPrintPW, desmosShowPW)
-import           Subclasses.Comparisons   (mainBenchMaj, measureComplexityTime)
+import           Subclasses.Comparisons   (mainBenchMaj, measureComplexityTime,
+                                           measureComplexityTime')
 import           Subclasses.Counting      (allIteratedThresholdFuns,
                                            allIteratedThresholdFunsMemo,
                                            averageBDDNodesITF)
@@ -33,12 +34,16 @@ import           Subclasses.General       (GenFun (GenFun), allGenFuns,
 import           Subclasses.Id            ()
 import           Subclasses.Iterated      (Iterated)
 import           Subclasses.Symmetric     (BasicSymmetric (BasicSymmetric))
+import qualified Subclasses.Threshold     as Thresh
 import           Subclasses.Threshold     (ThresholdFun (ThresholdFun))
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate)
 import           Translations             (genToBasicSymmetricNaive)
 
 main :: IO ()
-main = averageBDDNodesITF (Proxy :: Proxy (Iterated ThresholdFun)) 300 10 >>= print
+main = void $ evaluate $ force $ computeMin $ Thresh.iteratedMajFun 3 3
+
+main10 :: IO ()
+main10 = measureComplexityTime' (Gen.iteratedMajFun 3 2) >>= print
 
 main9 :: IO ()
 main9 = do

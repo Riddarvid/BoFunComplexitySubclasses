@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/TODO för veckan.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/TODO för veckan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/TODO för veckan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/Log.md"
+                "file": "Admin/TODO för veckan.md"
               }
             }
           }
@@ -148,11 +148,13 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
+    "Admin/Frågor till nästa möte.md",
     "Admin/TODO för veckan.md",
+    "Overall efficiency/Ideas for memoizing BDDs.md",
+    "Overall efficiency",
     "Admin/TODO generell.md",
     "Admin/Log.md",
     "Other/Observations and proofs.md",
-    "Admin/Frågor till nästa möte.md",
     "Admin/Svar från senaste mötet.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.svg",
     "Comparisons/gen-maj9/Notes.md",
@@ -188,8 +190,6 @@
     "Exploration of classes/Observation about PPs.md",
     "Other/Cleanup.md",
     "Algebraic numbers/evalpoly.md",
-    "Algebraic numbers/Algoritm för att avgöra tecken för polynom av algebraiskt tal.md",
-    "Algebraic numbers/evalpoly.org",
     "Images/Pasted image 20240906154104.png"
   ]
 }

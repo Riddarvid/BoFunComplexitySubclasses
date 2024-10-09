@@ -14,7 +14,7 @@ import           Data.Function.Memoize    (Memoizable (memoize))
 import qualified Data.MultiSet            as MultiSet
 import qualified Data.Set                 as Set
 import           Data.Vector.Generic      (fromList)
-import           Data.Vector.Primitive    (Vector (Vector))
+import           Data.Vector.Primitive    (Vector)
 import           DSLsofMath.Algebra       (Additive ((+)))
 import           Prelude                  hiding ((*), (+))
 import           Statistics.Sample        (meanVariance, range)
