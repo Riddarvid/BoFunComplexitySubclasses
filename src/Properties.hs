@@ -20,7 +20,7 @@ import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
 import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
                                               propIsMirrorPW)
-import           Subclasses.General          (GenFun, eval, flipInputs,
+import           Subclasses.General          (GenFun, eval, flipInputsGenFun,
                                               generateGenFun, notG, toGenFun)
 import           Subclasses.Iterated         (Iterated)
 import           Subclasses.NormalizedGenFun (mkNGF, ngfArity)
@@ -74,7 +74,7 @@ propFlipOutput gf = computeMin gf === computeMin (notG gf)
 propFlipAllInputs :: GenFun -> Property
 propFlipAllInputs gf = propIsMirrorPW (1 % 2)
   (computeMin gf)
-  (computeMin (flipInputs gf))
+  (computeMin (flipInputsGenFun gf))
 
 -------------------- computeMin ----------------------------------
 

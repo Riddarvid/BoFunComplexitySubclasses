@@ -16,9 +16,10 @@ import           Data.HashMap.Lazy     (HashMap)
 import qualified Data.HashMap.Lazy     as HM
 import           Data.Maybe            (isJust)
 import           Data.Monoid           (Endo (Endo, appEndo))
+import           Data.Ratio            ((%))
 import           DSLsofMath.Algebra    (Additive (..),
                                         Multiplicative (one, (*)), (-))
-import           Poly.PiecewisePoly    (PiecewisePoly, minPWs)
+import           Poly.PiecewisePoly    (PiecewisePoly, minPWs, mirrorPW)
 import           Prelude               hiding ((*), (+), (-))
 
 computeMinStep :: (BoFun f i) => Endo (f -> PiecewisePoly Rational)
@@ -50,6 +51,15 @@ lookupList f compMap = do
 
 insertList :: Hashable a => a -> b -> HashMap a [(a, b)] -> HashMap a [(a, b)]
 insertList f v = HM.insertWith (++) f [(f, v)]
+
+-- Saved in case we want to explore mirrored complexities further.
+{-insertListMirror :: (Hashable f, BoFun f i) =>
+  f -> Complexity -> HashMap f [(f, Complexity)] -> HashMap f [(f, Complexity)]
+insertListMirror f c = insertList f' c' . insertList f c
+  where
+    f' = flipInputs f
+    c' = mirrorPW (1 % 2) c-}
+
 
 computeMin' :: (BoFun f i, Hashable f) => f -> Complexity
 computeMin' f = evalState (computeMin'' f) HM.empty

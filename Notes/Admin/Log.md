@@ -18,3 +18,9 @@
 ## 10/10 2024
 
 - Skapade en ny typ NormalizedGenFun som wrappar GenFun. Tanken är att instanser av denna typ alltid ska vara normaliserade. Detta lät oss också skriva en mycket mer effektiv variables, som helt enkelt blir \[1 .. n].
+- Har testat att (var 1 .&&. var 2) och (var 2 .&&. var 3) blir equal enligt == efter normalisering. Detta är mycket lovande.
+- Lade till en Hashable-instans för Iterated.
+- Explicit memoization av BDDs. Detta gav stora förbättringar.
+- Vi har gjort massa mätningar, finns i Runtime table
+- Vi har kommit fram till att normalisering fortfarande ger en stor (x10) tidsvinst även med den nya memoizationen av BDDs.
+- Testade att lägga in support för att memoiza speglad komplexitet vid inverterad input. Detta gav dock ingen större effekt.

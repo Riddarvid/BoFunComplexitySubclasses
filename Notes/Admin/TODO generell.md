@@ -6,6 +6,7 @@
 	- Är det skillnad på 2-bits funktionen x0 && x1 och 3-bits funktionen x0 && x1?
 - Se om vi kan nyttja spegling vid inverterade inputs på något sätt.
 - Effektivare conversions
+- Just nu tar polynomberäkningar upp allt större del av tiden. Har känns det som att vi kan vinna mycket. Memoization?
 
 ## TODO Arvid:
 

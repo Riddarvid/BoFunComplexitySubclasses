@@ -17,8 +17,9 @@ module Subclasses.General (
   iteratedMajFun,
   iteratedFun,
   eval,
-  flipInputs,
-  generateGenFun
+  generateGenFun,
+  toCanonicForm,
+  flipInputsGenFun
 ) where
 import           Algorithm.Algor           (Algor (..))
 import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
@@ -26,9 +27,9 @@ import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
 import qualified BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
-                                            restrict, substSet, support, true,
-                                            var)
+import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
+                                            notB, restrict, substSet, support,
+                                            true, var)
 import           Data.Function.Memoize     (deriveMemoizable)
 import           Data.Hashable             (Hashable)
 import qualified Data.IntMap               as IM
@@ -182,5 +183,18 @@ eval gf@(GenFun bdd _) input = isConst $
     input' = filter (\(i, _) -> IS.member i supporting) $ zip [1..] input
     supporting = support bdd
 
-flipInputs :: GenFun -> GenFun
-flipInputs (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n
+flipInputsGenFun :: GenFun -> GenFun
+flipInputsGenFun (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n
+
+---------------------------------------------------------
+
+-- We have chosen to call a BDD canonical if its leftmost path reaches 0.
+-- This is equivalent with the output for an input consistiong only of 0s being 0.
+-- Other definitions might be better.
+toCanonicForm :: GenFun -> GenFun
+toCanonicForm gf@(GenFun bdd n)
+  | inCanonicForm bdd = gf
+  | otherwise = GenFun (notB bdd) n
+
+inCanonicForm :: BDD AscOrder -> Bool
+inCanonicForm = not . evaluate (const False)

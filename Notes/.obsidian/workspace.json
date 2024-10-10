@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/TODO för veckan.md",
                 "mode": "source",
                 "source": false
               }
@@ -25,14 +25,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Comparisons/Runtime table.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -159,17 +158,18 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "2510835c99853151",
+  "active": "7068f64a26768379",
   "lastOpenFiles": [
+    "Report/Things to put in the paper.md",
     "Admin/Log.md",
     "Admin/TODO för veckan.md",
+    "Admin/Frågor till nästa möte.md",
     "Comparisons/Runtime table.md",
+    "Admin/TODO generell.md",
     "Comparisons/Notes.md",
     "Other/Observations and proofs.md",
-    "Admin/Frågor till nästa möte.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",
     "Overall efficiency",
-    "Admin/TODO generell.md",
     "Admin/Svar från senaste mötet.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.svg",
     "Comparisons/gen-maj9/Notes.md",
@@ -200,7 +200,6 @@
     "Comparisons",
     "Exploration of classes/ThresholdFuns.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj?.md",
-    "Report/Things to put in the paper.md",
     "Exploration of classes/Observation about PPs.md",
     "Other/Cleanup.md",
     "Images/Pasted image 20240906154104.png"

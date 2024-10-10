@@ -4,53 +4,52 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg            (piecewiseBoth)
-import           Algorithm.GenAlgPW          (computeMin, computeMin')
-import           BDD                         (BDDFun)
+import           Algorithm.GenAlg            (genAlgThinMemo, piecewiseBoth)
+import           Algorithm.GenAlgPW          (computeMin)
+import           BDD                         (BDDFun, normalizeBDD)
 import           Control.DeepSeq             (force)
 import           Control.Exception           (evaluate)
 import           Control.Monad               (void)
-import           Data.DecisionDiagram.BDD    (notB, var, (.&&.), (.||.))
+import           Data.DecisionDiagram.BDD    (AscOrder, BDD, notB, var, (.&&.),
+                                              (.||.))
 
-import           Data.Data                   (Proxy (Proxy))
-import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
 import           DSLsofMath.Algebra          (AddGroup, MulGroup)
-import           DSLsofMath.PSDS             (Poly (P))
 import           Filters                     (degreePred, maximaPred)
 import           Poly.PiecewisePoly          (BothPW (BothPW), PiecewisePoly)
-import           Poly.PolynomialExtra        (mirrorP)
 import           Poly.Utils                  (minDegree)
 import           Prelude                     hiding ((*), (+))
 import           PrettyPrinting              (desmosPrintPW, desmosShowPW)
 import           Subclasses.Comparisons      (mainBenchMaj,
                                               measureComplexityTime,
-                                              measureComplexityTime')
-import           Subclasses.Counting         (allIteratedThresholdFuns,
-                                              allIteratedThresholdFunsMemo,
-                                              averageBDDNodesITF)
+                                              measureComplexityTime',
+                                              measureComplexityTime'')
 import qualified Subclasses.General          as Gen
 import           Subclasses.General          (GenFun (GenFun), allGenFuns,
-                                              flipInputs, toGenFun)
+                                              flipInputsGenFun)
 import           Subclasses.Id               ()
-import           Subclasses.Iterated         (Iterated)
 import           Subclasses.NormalizedGenFun (mkNGF)
-import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
+import qualified Subclasses.Symmetric        as Symm
 import qualified Subclasses.Threshold        as Thresh
-import           Subclasses.Threshold        (ThresholdFun (ThresholdFun))
 import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
-import           Translations                (genToBasicSymmetricNaive)
 
 main :: IO ()
-main = void $ evaluate $ force $ computeMin' (mkNGF $ Gen.iteratedMajFun 3 2)
+main = main10
+
+main11 :: IO ()
+main11 = print (and12 == and23, and12 == and23')
+  where
+    and12 = var 1 .&&. var 2 :: BDD AscOrder
+    and23 = var 3 .&&. var 2 :: BDD AscOrder
+    (and23', _) = normalizeBDD and23
 
 main10 :: IO ()
-main10 = measureComplexityTime' (Gen.iteratedMajFun 3 2) >>= print
+main10 = measureComplexityTime' (mkNGF $ Gen.iteratedMajFun 3 2) >>= print
 
 main9 :: IO ()
 main9 = do
   gf <- generate arbitrary :: IO GenFun
-  let gf' = flipInputs gf
+  let gf' = flipInputsGenFun gf
   desmosPrintPW $ computeMin gf
   desmosPrintPW $ computeMin gf'
 

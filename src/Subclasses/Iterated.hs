@@ -13,10 +13,14 @@ import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Monad.Free    (Free (..))
 import           Data.Function         ((&))
 import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
+import           Data.Functor.Classes  (Eq1)
+import           Data.Hashable         (Hashable)
 
 type Iterated' g f = Free g f
 
 type Iterated g = Iterated' g ()
+
+instance (Eq1 g, Hashable (g (Iterated g))) => Hashable (Iterated g)
 
 instance (BoFun (g (Iterated g)) (i, [i]),
           Constable g) =>

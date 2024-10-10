@@ -10,8 +10,10 @@ module Subclasses.Comparisons (
   mainBenchMaj,
   mainBench,
   measureComplexityTime,
-  measureComplexityTime'
+  measureComplexityTime',
+  measureComplexityTime''
 ) where
+import           Algorithm.GenAlg      (genAlgThinMemo)
 import           Algorithm.GenAlgPW    (computeMin, computeMin')
 import           BoFun                 (BoFun)
 import           Control.DeepSeq       (force)
@@ -21,8 +23,10 @@ import           Criterion             (Benchmark, bench, bgroup, nf)
 import           Criterion.Main        (defaultMain)
 import           Data.Function.Memoize (Memoizable)
 import           Data.Hashable         (Hashable)
+import           Data.Set              (Set)
 import           Data.Time             (NominalDiffTime, diffUTCTime,
                                         getCurrentTime)
+import           DSLsofMath.PSDS       (Poly)
 import qualified Subclasses.General    as Gen
 import           Subclasses.General    (eval, toGenFun)
 import           Subclasses.Id         ()
@@ -59,6 +63,13 @@ measureComplexityTime' :: (BoFun f i, Hashable f) => f -> IO NominalDiffTime
 measureComplexityTime' f = do
   start <- getCurrentTime
   void $ evaluate $ force $ computeMin' f
+  end <- getCurrentTime
+  return (diffUTCTime end start)
+
+measureComplexityTime'' :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
+measureComplexityTime'' f = do
+  start <- getCurrentTime
+  void $ evaluate $ force (genAlgThinMemo f :: Set (Poly Rational))
   end <- getCurrentTime
   return (diffUTCTime end start)
 

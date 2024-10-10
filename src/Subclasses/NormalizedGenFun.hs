@@ -10,12 +10,12 @@ module Subclasses.NormalizedGenFun (
 ) where
 import           BDD                      (normalizeBDD)
 import           BoFun                    (BoFun (..))
-import           Data.DecisionDiagram.BDD (AscOrder, BDD, evaluate, notB)
+import           Data.DecisionDiagram.BDD (AscOrder, BDD)
 import           Data.Function.Memoize    (deriveMemoizable)
 import           Data.Hashable            (Hashable)
 import           Data.Ord                 (comparing)
 import           GHC.Generics             (Generic)
-import           Subclasses.General       (GenFun (GenFun))
+import           Subclasses.General       (GenFun (GenFun), toCanonicForm)
 
 newtype NormalizedGenFun = NormalizedGenFun GenFun
   deriving (Generic)
@@ -62,16 +62,3 @@ normalizeGenFun :: GenFun -> GenFun
 normalizeGenFun (GenFun bdd _) = GenFun bdd' n'
   where
     (bdd', n') = normalizeBDD bdd
-
-------------------- Inverting output -----------------------------
-
--- We have chosen to call a BDD canonical if its leftmost path reaches 0.
--- This is equivalent with the output for an input consistiong only of 0s being 0.
--- Other definitions might be better.
-toCanonicForm :: GenFun -> GenFun
-toCanonicForm gf@(GenFun bdd n)
-  | inCanonicForm bdd = gf
-  | otherwise = GenFun (notB bdd) n
-
-inCanonicForm :: BDD AscOrder -> Bool
-inCanonicForm = not . evaluate (const False)
