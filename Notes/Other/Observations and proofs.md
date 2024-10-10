@@ -34,3 +34,7 @@ Tänk på det som att det setBit av en 3-bitars funktion ska returnera inte är 
 ## Threshold funs
 
 All basic threshold funs are iterated threshold funs, but not the other way around.
+
+## Comparison of BDDs
+
+We're still unsure about whether the equality test for BDDs is correct. We have not yet encountered an error using quickcheck.

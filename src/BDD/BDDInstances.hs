@@ -19,6 +19,10 @@ import           Data.Ord                 (comparing)
 
 $(deriveMemoizable ''Sig)
 
+instance Ord (BDD o) where
+  compare :: BDD o -> BDD o -> Ordering
+  compare = comparing outSig
+
 instance Memoizable (BDD o) where
   memoize :: (BDD o -> v) -> BDD o -> v
   memoize = memoizeBF

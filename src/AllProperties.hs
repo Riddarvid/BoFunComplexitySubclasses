@@ -46,7 +46,7 @@ allProps = [
   Check propCorrectComplexity stdArgs'{maxSize = 5},
   Check propConversionSymm stdArgs'{maxSize = 10},
   Check propConversionIteratedThreshold stdArgs'{maxSize = 7},
-  Check propComputeMin'Correct stdArgs'{maxSize = 5}
+  Check propComputeMin'Correct stdArgs'{maxSize = 5, maxSuccess = 1000}
   ]
 
 testAll :: IO ()

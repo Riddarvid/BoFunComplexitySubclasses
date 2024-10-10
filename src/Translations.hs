@@ -1,17 +1,19 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant evaluate" #-}
 module Translations (
   genToBasicSymmetricNaive,
   genToIteratedThresholdFun
 ) where
-import           Data.DecisionDiagram.BDD (AscOrder, BDD, evaluate)
-import           Data.IntMap              (IntMap)
-import qualified Data.IntMap              as IM
-import           Subclasses.Counting      (allIteratedThresholdFunsMemo)
-import           Subclasses.General       (GenFun (GenFun), normalizeGenFun,
-                                           toGenFun)
-import           Subclasses.Iterated      (Iterated)
-import           Subclasses.Symmetric     (BasicSymmetric (BasicSymmetric))
-import           Subclasses.Threshold     (ThresholdFun)
-import           Utils                    (permutations)
+import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
+import           Data.IntMap                 (IntMap)
+import qualified Data.IntMap                 as IM
+import           Subclasses.Counting         (allIteratedThresholdFunsMemo)
+import           Subclasses.General          (GenFun (GenFun), toGenFun)
+import           Subclasses.Iterated         (Iterated)
+import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
+import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
+import           Subclasses.Threshold        (ThresholdFun)
+import           Utils                       (permutations)
 
 genToBasicSymmetricNaive :: GenFun -> Maybe BasicSymmetric
 genToBasicSymmetricNaive (GenFun bdd n) = do
@@ -47,10 +49,11 @@ toResult bdd inputs
 ------------ Iterated Threshold funs -----------------------
 
 genToIteratedThresholdFun :: GenFun -> [Iterated ThresholdFun]
-genToIteratedThresholdFun gf = filter (areEquivalent gf') $ allIteratedThresholdFunsMemo n
+genToIteratedThresholdFun gf =
+  filter (areEquivalent gf') $ allIteratedThresholdFunsMemo (ngfArity gf')
   where
-    gf'@(GenFun _ n) = normalizeGenFun gf
+    gf' = mkNGF gf
 
 -- gf must be normalized
-areEquivalent :: GenFun -> Iterated ThresholdFun -> Bool
-areEquivalent gf@(GenFun _ n) f = toGenFun n f == gf
+areEquivalent :: NormalizedGenFun -> Iterated ThresholdFun -> Bool
+areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf

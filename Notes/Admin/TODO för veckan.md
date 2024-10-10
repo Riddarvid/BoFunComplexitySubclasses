@@ -1,7 +1,6 @@
  - Hitta effektivare memoization av BDDs, kanske genom en struktur som möjliggör mer sharing?
- - Vi vet att med normaliserade BDDs är variablerna alltid 1..n. Vi borde utnyttja detta för att slippa den mer krävande support-funktionen.
- - Vi borde undersöka vinsten av normalisering nu när vi har mycket effektivare memoization.
- - Just nu använder vi HashMap i computeMin'. Detta är inte bra då vi potentiellt skulle kunna få kollisioner. Vi vet att varje BDD har en rotnod med ett unikt int-värde för varje unik BDD. Det bästa hade varit om vi hade en Ord-instans baserad på detta.
+ - **Vi borde undersöka vinsten av normalisering nu när vi har mycket effektivare memoization. Det skulle kunna vara så att användningen av nodID gör att vi slipper detta helt.**
+ - Lägg till spegling vid invertering av inputs. Detta borde vara mycket lättare nu när vi har kontroll över memo-strukturen.
 ## Homework
 
 - Se om man kan dra paralleller till entropi (Shannon) eller Huffman coding

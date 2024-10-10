@@ -55,6 +55,7 @@ library
       Subclasses.Id
       Subclasses.Iterated
       Subclasses.Monotone
+      Subclasses.NormalizedGenFun
       Subclasses.One
       Subclasses.Symmetric
       Subclasses.Threshold

@@ -55,7 +55,7 @@ measureComplexityTime f = do
   end <- getCurrentTime
   return (diffUTCTime end start)
 
-measureComplexityTime' :: (BoFun f i, Ord f) => f -> IO NominalDiffTime
+measureComplexityTime' :: (BoFun f i, Hashable f) => f -> IO NominalDiffTime
 measureComplexityTime' f = do
   start <- getCurrentTime
   void $ evaluate $ force $ computeMin' f

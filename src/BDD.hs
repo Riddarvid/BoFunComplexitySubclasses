@@ -77,12 +77,14 @@ flipInputs bdd = substSet mapping bdd
 
 -- TODO-NEW: We could check if the BDD is already normalized first.
 normalizeBDD :: BDD AscOrder -> (BDD AscOrder, Int)
-normalizeBDD bdd = (fromGraph (g', n), IS.size vars)
+normalizeBDD bdd = (bdd', IS.size vars')
   where
     vars = support bdd
     orderMapping = IM.fromAscList $ zip (IS.toAscList vars) [1 ..]
     (g, n) = toGraph bdd
     g' = IM.map (mapOrder orderMapping) g
+    bdd' = fromGraph (g', n)
+    vars' = support bdd'
 
 mapOrder :: IntMap Int -> Sig Int -> Sig Int
 mapOrder _ s@(SLeaf _)              = s

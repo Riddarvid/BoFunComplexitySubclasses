@@ -11,7 +11,6 @@ module Subclasses.General (
   falseG,
   trueG,
   notG,
-  normalizeGenFun,
   toGenFun,
   allGenFuns,
   majFun,
@@ -23,12 +22,11 @@ module Subclasses.General (
 ) where
 import           Algorithm.Algor           (Algor (..))
 import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
-                                            normalizeBDD, pick)
+                                            pick)
 import qualified BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), Sig (..),
-                                            evaluate, false, notB, outSig,
+import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
                                             restrict, substSet, support, true,
                                             var)
 import           Data.Function.Memoize     (deriveMemoizable)
@@ -45,27 +43,12 @@ import           Utils                     (listToVarAssignment)
 
 -- The internal BDD should only ever be dependent on variables in [1..n]
 data GenFun = GenFun (BDD AscOrder) Int
-  deriving(Eq, Show, Generic)
+  deriving(Eq, Ord, Show, Generic)
 
 instance Hashable GenFun
 
-instance Ord GenFun where
-  compare :: GenFun -> GenFun -> Ordering
-  compare gf1 gf2 = case (toBoolOrInt gf1, toBoolOrInt gf2) of
-    (Left v1, Left v2)   -> compare v1 v2
-    (Right x1, Right x2) -> compare x1 x2
-    (Left _, Right _)    -> LT
-    (Right _, Left _)    -> GT
-    where
-      toBoolOrInt (GenFun bdd _) = case outSig bdd of
-        SLeaf v       -> Left v
-        SBranch x _ _ -> Right x
-
 $(deriveMemoizable ''GenFun)
 
--- We normalize the function in setBit, since the normalized function will have the same
--- complexity as the non-normalized one. However, this is only intended for complexity
--- calculations, for a more expected behaviour, simply use restrictGenFun.
 instance BoFun GenFun Int where
   isConst :: GenFun -> Maybe Bool
   isConst = liftBDD isConstBDD
@@ -73,36 +56,9 @@ instance BoFun GenFun Int where
   variables = IS.toList . liftBDD support
   setBit :: (Int, Bool) -> GenFun -> GenFun
   setBit = uncurry restrictGenFun
-  normalize :: GenFun -> GenFun
-  normalize = toCanonicForm . normalizeGenFun
 
 restrictGenFun :: Int -> Bool -> GenFun -> GenFun
 restrictGenFun i v (GenFun bdd n) = GenFun (restrict i v bdd) (n - 1)
-
-{-
-instance Algor GenFun where
-  res :: Bool -> GenFun
-  res False = falseG
-  res True  = trueG
-  pic :: Int -> GenFun -> GenFun -> GenFun
-  pic n (GenFun gf1 n1) (GenFun gf2 n2) = GenFun (pic n gf1 gf2)
--}
-
-normalizeGenFun :: GenFun -> GenFun
-normalizeGenFun (GenFun bdd _) = GenFun bdd' n'
-  where
-    (bdd', n') = normalizeBDD bdd
-
--- We have chosen to call a BDD canonical if its leftmost path reaches 0.
--- This is equivalent with the output for an input consistiong only of 0s being 0.
--- Other definitions might be better.
-toCanonicForm :: GenFun -> GenFun
-toCanonicForm gf@(GenFun bdd n)
-  | inCanonicForm bdd = gf
-  | otherwise = GenFun (notB bdd) n
-
-inCanonicForm :: BDD AscOrder -> Bool
-inCanonicForm = not . evaluate (const False)
 
 ------------- QuickCheck ---------------------------
 
@@ -127,11 +83,6 @@ generateGenFun n = do
   return $ GenFun (bddFromOutput n varAssignment) n
 
 ----------------- Boolean operators --------------------------------
-
-{-
-mapBDD :: (BDDFun -> BDDFun) -> (GenFun -> GenFun)
-mapBDD f  = GenFun . liftBDD f
--}
 
 liftBDD :: (BDDFun -> a) -> (GenFun -> a)
 liftBDD f (GenFun gf _) = f gf

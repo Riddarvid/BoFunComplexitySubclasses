@@ -1,4 +1,6 @@
+## Earlier
 
+- Made symmetric more efficient by using sequences and ranges instead of a simple list
 ## 8/10 2024
 
 - Kollade på D(f) == D(! . f). Det gav inte jättestor vinst.
@@ -12,3 +14,7 @@
 - Funktionalitet för att räkna ut average nodantal i BDDn som motsvarar en funktion.
 - Functionality for measuring various statistical properties of the number of nodes in BDDs.
 - Separated the normalization step of BoFuns
+
+## 10/10 2024
+
+- Skapade en ny typ NormalizedGenFun som wrappar GenFun. Tanken är att instanser av denna typ alltid ska vara normaliserade. Detta lät oss också skriva en mycket mer effektiv variables, som helt enkelt blir \[1 .. n].

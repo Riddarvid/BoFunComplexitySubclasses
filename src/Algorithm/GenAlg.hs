@@ -9,7 +9,7 @@ module Algorithm.GenAlg (
   funToAlg
 ) where
 import           Algorithm.Algor       (Algor (pic), DecTree, res)
-import           BoFun                 (BoFun (isConst, setBit, setBitAndNormalize, variables))
+import           BoFun                 (BoFun (isConst, setBit, setBit, variables))
 import           Data.Function.Memoize (Memoizable, memoFix)
 import qualified Data.Set              as S
 import           DSLsofMath.Algebra    (AddGroup, MulGroup)
@@ -49,8 +49,8 @@ genAlgStep _ fun
 genAlgStep genAlg' fun =
   S.fromList $ do
     (n, i) <- zip [1 ..] $ variables fun
-    p0 <- S.toList (genAlg' (setBitAndNormalize (i, False) fun))
-    p1 <- S.toList (genAlg' (setBitAndNormalize (i, True) fun))
+    p0 <- S.toList (genAlg' (setBit (i, False) fun))
+    p1 <- S.toList (genAlg' (setBit (i, True) fun))
     return $ pic n p0 p1
 
 genAlgStepThin ::
