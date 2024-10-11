@@ -2,18 +2,17 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use list comprehension" #-}
 module Testing.Properties (
-  propComplexityNot,
   propNormalizedCorrectVars,
   propNormalizedComplexity,
-  propFlipCorrect,
-  propFlipOutput,
-  propFlipAllInputs,
-  propCorrectComplexity,
+  propFlipOutputCorrect,
+  propFlipOutputComplexity,
+  propFlipInputComplexity,
+  propComputeMinCorrect,
   propConversionSymm,
   propConversionIteratedThreshold,
   propComputeMin'Correct,
-  propMajEqual,
-  propSameComplexity,
+  propRepsCorrect,
+  propRepsComplexity,
   propRationalSign
 ) where
 import           Algebraic                   (signAtAlgebraic, signAtDyadic,
@@ -46,42 +45,7 @@ import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
                                               (=/=), (===))
 import           Test.QuickCheck.Gen         (Gen)
 
------------------ Inverted input/output ---------------------------
-
--- The complexity of a function should not change if we invert the output
-propComplexityNot :: GenFun -> Property
-propComplexityNot f = computeMin f === computeMin f'
-  where
-    f' = notG f
-
--- ! . f should not give the same result as f
-propFlipCorrect :: GenFunAndInput -> Property
-propFlipCorrect (GenFunAndInput gf input) = eval gf input =/= eval (notG gf) input
-
--- The complexity should not change when inverting the output
-propFlipOutput :: GenFun -> Property
-propFlipOutput gf = computeMin gf === computeMin (notG gf)
-
--- The complexity should be mirrored in x=1/2 when inverting the inputs
-propFlipAllInputs :: GenFun -> Property
-propFlipAllInputs gf = propIsMirrorPW (1 % 2)
-  (computeMin gf)
-  (computeMin (flipInputsGenFun gf))
-
-
--- After normalizing a GenFun, it should have the variables [1 .. n], where
--- n is the number of variables in the original GenFun.
-propNormalizedCorrectVars :: GenFun -> Property
-propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
-  where
-    ngf = mkNGF gf
-    vars = sort $ variables ngf
-    arity = ngfArity ngf
-    n = length $ variables gf
-
--- Normalization should not affect the complexity of a GenFun
-propNormalizedComplexity :: GenFun -> Property
-propNormalizedComplexity gf = computeMin gf === computeMin (mkNGF gf)
+----------------- Types --------------------------------------
 
 -- Type representing an n-bit GenFun and an n-bit input
 data GenFunAndInput = GenFunAndInput GenFun [Bool]
@@ -93,37 +57,6 @@ instance Arbitrary GenFunAndInput where
     gf <- generateGenFun n
     input <- vector n
     return $ GenFunAndInput gf input
-
------------------ Complexity properties --------------------------------
-
-
-
--------------------- computeMin ----------------------------------
-
--- computeMin and genAlg should yield equivalent PWs for the same function
-propCorrectComplexity :: GenFun -> Property
-propCorrectComplexity gf =
-  pieces (computeMin gf) ===
-  pieces (minPWs $ map piecewiseFromPoly $ Set.toList $ genAlgThinMemoPoly gf)
-
-------------------- conversions ----------------------------
-
--- Converting from BasicSymm to GenFun and back again should yield the original function
-propConversionSymm :: BasicSymmetric -> Property
-propConversionSymm f@(BasicSymmetric rv) = Just f === genToBasicSymmetricNaive (toGenFun arity f)
-  where
-    arity = length rv - 1
-
--- Converting from Iterated ThresholdFun to GenFun and back again should yield a set
--- of possible representations which includes the original function
-propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
-propConversionIteratedThreshold f = property $ f `elem` genToIteratedThresholdFun (toGenFun arity f)
-  where
-    arity = arityIteratedThreshold f
-
--- computeMin and computeMin' should yield the same result for the same function
-propComputeMin'Correct :: GenFun -> Property
-propComputeMin'Correct gf = computeMin gf === computeMin' gf
 
 -- Type representing the input to a majority function. Should always have odd length.
 newtype MajInput = Input [Bool]
@@ -146,10 +79,72 @@ instance Arbitrary MajInput where
 
       shorter = if length vals > 1 then [Input (drop 2 vals)] else []
 
+----------------- Inverted input/output ---------------------------
+
+-- ! . f should not give the same result as f
+propFlipOutputCorrect :: GenFunAndInput -> Property
+propFlipOutputCorrect (GenFunAndInput gf input) = eval gf input =/= eval (notG gf) input
+
+-- The complexity should not change when inverting the output
+propFlipOutputComplexity :: GenFun -> Property
+propFlipOutputComplexity gf = computeMin gf === computeMin (notG gf)
+
+-- The complexity should be mirrored in x=1/2 when inverting the inputs
+propFlipInputComplexity :: GenFun -> Property
+propFlipInputComplexity gf = propIsMirrorPW (1 % 2)
+  (computeMin gf)
+  (computeMin (flipInputsGenFun gf))
+
+------------------- Normalization ------------------------------------
+
+-- After normalizing a GenFun, it should have the variables [1 .. n], where
+-- n is the number of variables in the original GenFun.
+propNormalizedCorrectVars :: GenFun -> Property
+propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
+  where
+    ngf = mkNGF gf
+    vars = sort $ variables ngf
+    arity = ngfArity ngf
+    n = length $ variables gf
+
+-- Normalization should not affect the complexity of a GenFun
+propNormalizedComplexity :: GenFun -> Property
+propNormalizedComplexity gf = computeMin gf === computeMin (mkNGF gf)
+
+-------------------- Algorithms ----------------------------------
+-- Properties comparing the correctness of the complexity algorithms
+
+-- computeMin and genAlg should yield equivalent PWs for the same function
+propComputeMinCorrect :: GenFun -> Property
+propComputeMinCorrect gf =
+  pieces (computeMin gf) ===
+  pieces (minPWs $ map piecewiseFromPoly $ Set.toList $ genAlgThinMemoPoly gf)
+
+-- computeMin and computeMin' should yield the same result for the same function
+propComputeMin'Correct :: GenFun -> Property
+propComputeMin'Correct gf = computeMin gf === computeMin' gf
+
+------------------- Conversions ----------------------------
+
+-- Converting from BasicSymm to GenFun and back again should yield the original function
+propConversionSymm :: BasicSymmetric -> Property
+propConversionSymm f@(BasicSymmetric rv) = Just f === genToBasicSymmetricNaive (toGenFun arity f)
+  where
+    arity = length rv - 1
+
+-- Converting from Iterated ThresholdFun to GenFun and back again should yield a set
+-- of possible representations which includes the original function
+propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
+propConversionIteratedThreshold f = property $ f `elem` genToIteratedThresholdFun (toGenFun arity f)
+  where
+    arity = arityIteratedThreshold f
+
+----------------------- Representations ---------------------------------------
+
 -- The Gen, Symm, and Thresh representations of a flat majority function should
 -- all yield the same result for the same input.
-propMajEqual :: MajInput -> Property
-propMajEqual (Input vals) = conjoin
+propRepsCorrect :: MajInput -> Property
+propRepsCorrect (Input vals) = conjoin
   [
     resSymm === resGen,
     resThresh === resGen
@@ -165,8 +160,8 @@ propMajEqual (Input vals) = conjoin
 
 -- Static test that ensures that the Gen, Symm, and Thresh representations of
 -- maj 3 2 yield the same complexity.
-propSameComplexity :: Property
-propSameComplexity = conjoin
+propRepsComplexity :: Property
+propRepsComplexity = conjoin
   [
     symm === gen,
     thresh === gen
@@ -175,6 +170,8 @@ propSameComplexity = conjoin
     gen = computeMin $ Gen.iteratedMajFun 3 2
     symm = computeMin $ Symm.iteratedMajFun 3 2
     thresh = computeMin $ Thresh.iteratedMajFun 3 2
+
+------------------ Algebraic numbers --------------------------------
 
 -- The sign of a polynomial at a rational point should not depend on whether r is
 -- expressed as a rational number or as an algebraic number.
