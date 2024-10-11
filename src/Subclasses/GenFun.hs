@@ -5,7 +5,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use list comprehension" #-}
 {-# LANGUAGE DeriveGeneric         #-}
-module Subclasses.General (
+module Subclasses.GenFun (
   GenFun(GenFun),
   liftBDD,
   falseG,
@@ -22,9 +22,9 @@ module Subclasses.General (
   flipInputsGenFun
 ) where
 import           Algorithm.Algor           (Algor (..))
-import           BDD                       (BDDFun, bddFromOutput, isConstBDD,
+import           BDD.BDD                   (BDDFun, bddFromOutput, isConstBDD,
                                             pick)
-import qualified BDD
+import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
 import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,

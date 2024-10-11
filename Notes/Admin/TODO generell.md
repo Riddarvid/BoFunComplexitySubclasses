@@ -7,6 +7,10 @@
 - Se om vi kan nyttja spegling vid inverterade inputs på något sätt.
 - Effektivare conversions
 - Just nu tar polynomberäkningar upp allt större del av tiden. Har känns det som att vi kan vinna mycket. Memoization?
+- Eventuellt fler funktionsklasser
+	- Even
+	- Odd
+	- Monotone
 
 ## TODO Arvid:
 

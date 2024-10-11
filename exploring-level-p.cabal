@@ -28,39 +28,36 @@ library
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
-      AllProperties
       Archived.Algebraic
       Archived.MatrixBridge
-      BDD
+      BDD.BDD
       BDD.BDDInstances
       BoFun
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS
-      Filters
+      Exploration.Comparisons
+      Exploration.Counting
+      Exploration.Filters
+      Exploration.Translations
       LibMain
-      MemoizeTests
       Poly.PiecewisePoly
       Poly.PolyCmp
       Poly.PolyInstances
       Poly.PolynomialExtra
       Poly.Utils
-      PrettyPrinting
-      Properties
-      Subclasses.Comparisons
-      Subclasses.Counting
-      Subclasses.Even
       Subclasses.Gates
-      Subclasses.General
+      Subclasses.GenFun
       Subclasses.Id
       Subclasses.Iterated
-      Subclasses.Monotone
       Subclasses.NormalizedGenFun
       Subclasses.One
       Subclasses.Symmetric
       Subclasses.Threshold
+      Testing.AllProperties
+      Testing.PrettyPrinting
+      Testing.Properties
       Thin
-      Translations
       Utils
   other-modules:
       Paths_exploring_level_p

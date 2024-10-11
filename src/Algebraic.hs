@@ -5,19 +5,22 @@ module Algebraic (
   Algebraic(Algebraic),
   fromPWAlgebraic,
   toAlgebraic,
-  shrinkIntervalStep
+  shrinkIntervalStep,
+  signAtAlgebraic,
+  signAtDyadic
 ) where
 import           Control.Monad      (replicateM)
 import           Data.List          (nub, sort)
 import           Data.Ratio         ((%))
 import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
                                      MulGroup ((/)), Multiplicative (..),
-                                     product, (-))
-import           DSLsofMath.PSDS    (Poly (P))
+                                     product, two, (-))
+import           DSLsofMath.PSDS    (Poly (P), evalP, gcdP)
 import           Poly.Utils         (numRootsInInterval, removeDoubleRoots)
 import           Prelude            hiding (negate, product, sum, (*), (+), (-),
                                      (/))
 import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, chooseInt)
+import           Utils              (Sign (..))
 
 data Algebraic = Algebraic (Poly Rational) (Rational, Rational)
   deriving (Show)
@@ -84,3 +87,46 @@ shrinkIntervalStep (Algebraic p (low, high))
     rootsLeft = numRootsInInterval p (low, mid)
     rootsRight = numRootsInInterval p (mid, high)
     nRoots = rootsLeft + rootsRight
+
+---------------- Sign checking -----------------------------
+
+signAtAlgebraic :: Algebraic -> Poly Rational -> Sign
+signAtAlgebraic n q
+  | shareRoot n q = Zero
+  | otherwise = signAtAlgebraic' (normalizeLimits n) q
+
+shareRoot :: Algebraic -> Poly Rational -> Bool
+shareRoot (Algebraic p int) q = numRootsInInterval r int > 0
+  where
+    r = gcdP p q
+
+normalizeLimits :: Algebraic -> Algebraic
+normalizeLimits n@(Algebraic p (l, h))
+  | evalP p l < 0 = n
+  | otherwise = Algebraic (negate p) (l, h)
+
+-- Assumes that p and q do not share a root in the interval and that p(l) < 0 and p(h) > 0
+signAtAlgebraic' :: Algebraic -> Poly Rational -> Sign
+signAtAlgebraic' n@(Algebraic _ int) q
+  | numRootsInInterval q int == 0 = signAtDyadic (intMid int) q
+  | otherwise = signAtAlgebraic' (shrinkIntervalPoly' n) q
+
+signAtDyadic :: (Ord a, AddGroup a, Multiplicative a) => a -> Poly a -> Sign
+signAtDyadic x p = case compare res zero of
+  LT -> Neg
+  EQ -> Zero
+  GT -> Pos
+  where
+    res = evalP p x
+
+-- Only works if p(l) < 0 and p(h) > 0
+-- In other cases, use shrinkIntervalStep for general algebraic numbers.
+shrinkIntervalPoly' :: Algebraic -> Algebraic
+shrinkIntervalPoly' (Algebraic p int@(l, h)) = case signAtDyadic mid p of
+  Neg -> Algebraic p (mid, h)
+  _   -> Algebraic p (l, mid)
+  where
+    mid = intMid int
+
+intMid :: (Additive a, MulGroup a) => (a, a) -> a
+intMid (l, h) = (l + h) / two

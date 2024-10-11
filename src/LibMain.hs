@@ -6,7 +6,7 @@ module LibMain (
 ) where
 import           Algorithm.GenAlg            (genAlgThinMemo, piecewiseBoth)
 import           Algorithm.GenAlgPW          (computeMin)
-import           BDD                         (BDDFun, normalizeBDD)
+import           BDD.BDD                     (BDDFun, normalizeBDD)
 import           Control.DeepSeq             (force)
 import           Control.Exception           (evaluate)
 import           Control.Monad               (void)
@@ -15,23 +15,23 @@ import           Data.DecisionDiagram.BDD    (AscOrder, BDD, notB, var, (.&&.),
 
 import qualified Data.Set                    as Set
 import           DSLsofMath.Algebra          (AddGroup, MulGroup)
-import           Filters                     (degreePred, maximaPred)
-import           Poly.PiecewisePoly          (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils                  (minDegree)
-import           Prelude                     hiding ((*), (+))
-import           PrettyPrinting              (desmosPrintPW, desmosShowPW)
-import           Subclasses.Comparisons      (mainBenchMaj,
+import           Exploration.Comparisons     (mainBenchMaj,
                                               measureComplexityTime,
                                               measureComplexityTime',
                                               measureComplexityTime'')
-import qualified Subclasses.General          as Gen
-import           Subclasses.General          (GenFun (GenFun), allGenFuns,
+import           Exploration.Filters         (degreePred, maximaPred)
+import           Poly.PiecewisePoly          (BothPW (BothPW), PiecewisePoly)
+import           Poly.Utils                  (minDegree)
+import           Prelude                     hiding ((*), (+))
+import qualified Subclasses.GenFun           as Gen
+import           Subclasses.GenFun           (GenFun (GenFun), allGenFuns,
                                               flipInputsGenFun)
 import           Subclasses.Id               ()
 import           Subclasses.NormalizedGenFun (mkNGF)
 import qualified Subclasses.Symmetric        as Symm
 import qualified Subclasses.Threshold        as Thresh
 import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
+import           Testing.PrettyPrinting      (desmosPrintPW, desmosShowPW)
 
 main :: IO ()
 main = main10

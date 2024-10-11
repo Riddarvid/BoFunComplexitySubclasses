@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Subclasses.Counting (
+module Exploration.Counting (
   numberOfIteratedThresholdFuns,
   allIteratedThresholdFuns,
   allIteratedThresholdFunsMemo,
@@ -18,15 +18,17 @@ import           Data.Vector.Primitive    (Vector)
 import           DSLsofMath.Algebra       (Additive ((+)))
 import           Prelude                  hiding ((*), (+))
 import           Statistics.Sample        (meanVariance, range)
-import           Subclasses.General       (GenFun, liftBDD, toGenFun)
+import           Subclasses.GenFun        (GenFun, liftBDD, toGenFun)
 import           Subclasses.Id            ()
 import           Subclasses.Iterated      (Iterated)
-import           Subclasses.Threshold     (Partition, Threshold (Threshold),
+import           Subclasses.Threshold     (Threshold (Threshold),
                                            ThresholdFun (ThresholdFun),
-                                           iteratedThresholdFunConst,
-                                           partitions)
+                                           iteratedThresholdFunConst)
 import           Test.QuickCheck          (Arbitrary (arbitrary), generate,
                                            resize)
+import           Utils                    (Partition, partitions)
+
+----------------- Iterated threshold functions ---------------------------
 
 -- Ensures that only unique functions are counted by converting them to BDDs
 -- and inserting them into a set.
@@ -55,7 +57,7 @@ allIteratedThresholdFuns n = allIteratedThresholdFuns' n
 allIteratedThresholdFuns' :: Int -> [Iterated ThresholdFun]
 allIteratedThresholdFuns' n = concatMap allIteratedThresholdFuns'' $ partitions n
 
-allIteratedThresholdFuns'' :: Partition -> [Iterated ThresholdFun]
+allIteratedThresholdFuns'' :: Partition Int -> [Iterated ThresholdFun]
 allIteratedThresholdFuns'' p = do
   threshold' <- [Threshold (n', n - n' + 1) | n' <- [1 .. n]]
   subFuns <- mapM allIteratedThresholdFunsMemo p
@@ -65,6 +67,7 @@ allIteratedThresholdFuns'' p = do
     n = length p
 
 -------------------- Counting BDD nodes --------------------------
+-- ITF stands for Iterated Threshold Function
 
 averageBDDNodesITF :: forall proxy a i. (Arbitrary a, BoFun a i) =>
   proxy a -> Int -> Int -> IO (Double, Double, Double)

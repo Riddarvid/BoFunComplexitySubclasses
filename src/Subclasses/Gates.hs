@@ -6,7 +6,12 @@
 {-# HLINT ignore "Use tuple-section" #-}
 {-# LANGUAGE TemplateHaskell       #-}
 module Subclasses.Gates (
-  test
+  BasicGate(..),
+  Gate,
+  var,
+  notG,
+  andG,
+  orG
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Monad.Free    (Free (Free, Pure))
@@ -100,21 +105,6 @@ instance Constable Gate where
 
 idHelp :: Iterated Gate -> Gate (Iterated Gate)
 idHelp = Not . Free . Not
-
-test :: Iterated Gate
-test = andG (orG var (notG var)) (notG var)
-{-
-000 1
-001 0
-010 0
-011 0
-100 1
-101 0
-110 1
-111 0
--- TODO-NEW check the evaluation orders and see if they make sense
--}
-
 
 andG :: Iterated Gate -> Iterated Gate -> Iterated Gate
 andG g1 g2 = Free $ And g1 g2

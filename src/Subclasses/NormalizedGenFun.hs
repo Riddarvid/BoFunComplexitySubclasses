@@ -8,14 +8,14 @@ module Subclasses.NormalizedGenFun (
   ngfBDD,
   ngfArity
 ) where
-import           BDD                      (normalizeBDD)
+import           BDD.BDD                  (normalizeBDD)
 import           BoFun                    (BoFun (..))
 import           Data.DecisionDiagram.BDD (AscOrder, BDD)
 import           Data.Function.Memoize    (deriveMemoizable)
 import           Data.Hashable            (Hashable)
 import           Data.Ord                 (comparing)
 import           GHC.Generics             (Generic)
-import           Subclasses.General       (GenFun (GenFun), toCanonicForm)
+import           Subclasses.GenFun        (GenFun (GenFun), toCanonicForm)
 
 newtype NormalizedGenFun = NormalizedGenFun GenFun
   deriving (Generic)

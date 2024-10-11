@@ -2,13 +2,14 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
 module Subclasses.One (
-  One
+  One,
+  mkOne
 ) where
 import           BoFun                 (BoFun (..))
 import           Data.Function.Memoize (deriveMemoizable)
 
--- Work in progress
-
+-- Type representing the class of function where exactly one input gives the output 1.
+-- The list represents the bit pattern corresponding to this input.
 -- For an n-bit function, the list of bools has n elements.
 -- One [] represent a constant function with the value True
 -- OFalse represents a constant function with the value False
@@ -36,4 +37,5 @@ instance BoFun One Int where
       deleteAt n (x : xs) = x : deleteAt (n - 1) xs
   setBit _ OFalse = OFalse
 
--- TODO-NEW mkOne
+mkOne :: [Bool] -> One
+mkOne = One

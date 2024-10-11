@@ -1,4 +1,5 @@
 - Cleanup
+	- Kolla på var props ligger
 - Kolla på att effektivisera PW-beräkningar.
 ## Homework
 

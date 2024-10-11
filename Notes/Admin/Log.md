@@ -1,6 +1,8 @@
 ## Earlier
 
 - Made symmetric more efficient by using sequences and ranges instead of a simple list
+- Implemented iterated gates
+- Algebraic numbers
 ## 8/10 2024
 
 - Kollade på D(f) == D(! . f). Det gav inte jättestor vinst.

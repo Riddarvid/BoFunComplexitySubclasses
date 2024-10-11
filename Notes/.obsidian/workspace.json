@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Log.md",
                 "mode": "source",
                 "source": false
               }
@@ -97,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Log.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Log.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/TODO för veckan.md"
+                "file": "Admin/Log.md"
               }
             }
           }
@@ -160,12 +160,12 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
-    "Report/Things to put in the paper.md",
-    "Admin/Log.md",
     "Admin/TODO för veckan.md",
+    "Admin/TODO generell.md",
+    "Admin/Log.md",
+    "Report/Things to put in the paper.md",
     "Admin/Frågor till nästa möte.md",
     "Comparisons/Runtime table.md",
-    "Admin/TODO generell.md",
     "Comparisons/Notes.md",
     "Other/Observations and proofs.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",

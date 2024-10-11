@@ -1,12 +1,9 @@
 {-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE InstanceSigs              #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
 {-# HLINT ignore "Use list comprehension" #-}
-module Subclasses.Comparisons (
-  propMajEqual,
-  propSameComplexity,
+module Exploration.Comparisons (
   mainBenchMaj,
   mainBench,
   measureComplexityTime,
@@ -27,16 +24,41 @@ import           Data.Set              (Set)
 import           Data.Time             (NominalDiffTime, diffUTCTime,
                                         getCurrentTime)
 import           DSLsofMath.PSDS       (Poly)
-import qualified Subclasses.General    as Gen
-import           Subclasses.General    (eval, toGenFun)
+import qualified Subclasses.GenFun     as Gen
 import           Subclasses.Id         ()
 import qualified Subclasses.Symmetric  as Symm
 import qualified Subclasses.Threshold  as Thresh
-import           Test.QuickCheck       (Arbitrary (arbitrary, shrink), Gen,
-                                        Property, chooseInt, conjoin, sized,
-                                        vector, (===))
+
+-- Running a single evaluation of the complexity of a function and measuring the time it takes
 
 data BoFunType = forall f i. (BoFun f i, Memoizable f) => BoFunType f
+
+measureComplexityTimes :: [BoFunType] -> IO [NominalDiffTime]
+measureComplexityTimes funs = forM funs $ \(BoFunType f) -> measureComplexityTime f
+
+-- Usees computeMin
+measureComplexityTime :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
+measureComplexityTime f = do
+  start <- getCurrentTime
+  void $ evaluate $ force $ computeMin f
+  end <- getCurrentTime
+  return (diffUTCTime end start)
+
+-- Uses computeMin'
+measureComplexityTime' :: (BoFun f i, Hashable f) => f -> IO NominalDiffTime
+measureComplexityTime' f = do
+  start <- getCurrentTime
+  void $ evaluate $ force $ computeMin' f
+  end <- getCurrentTime
+  return (diffUTCTime end start)
+
+-- Uses genAlgMemoThin
+measureComplexityTime'' :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
+measureComplexityTime'' f = do
+  start <- getCurrentTime
+  void $ evaluate $ force (genAlgThinMemo f :: Set (Poly Rational))
+  end <- getCurrentTime
+  return (diffUTCTime end start)
 
 mainBenchMaj :: Int -> IO [NominalDiffTime]
 mainBenchMaj = measureComplexityTimes . majFuns
@@ -48,77 +70,6 @@ majFuns n = [
   BoFunType $ Thresh.majFun n,
   BoFunType $ Gen.majFun n
   ]
-
-measureComplexityTimes :: [BoFunType] -> IO [NominalDiffTime]
-measureComplexityTimes funs = forM funs $ \(BoFunType f) -> measureComplexityTime f
-
-measureComplexityTime :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
-measureComplexityTime f = do
-  start <- getCurrentTime
-  void $ evaluate $ force $ computeMin f
-  end <- getCurrentTime
-  return (diffUTCTime end start)
-
-measureComplexityTime' :: (BoFun f i, Hashable f) => f -> IO NominalDiffTime
-measureComplexityTime' f = do
-  start <- getCurrentTime
-  void $ evaluate $ force $ computeMin' f
-  end <- getCurrentTime
-  return (diffUTCTime end start)
-
-measureComplexityTime'' :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
-measureComplexityTime'' f = do
-  start <- getCurrentTime
-  void $ evaluate $ force (genAlgThinMemo f :: Set (Poly Rational))
-  end <- getCurrentTime
-  return (diffUTCTime end start)
-
--- Should always have odd length
-newtype MajInput = Input [Bool]
-  deriving (Show)
-
-instance Arbitrary MajInput where
-  arbitrary :: Gen MajInput
-  arbitrary = sized $ \n -> do
-    n' <- chooseInt (1, n)
-    let n'' = if even n' then n' + 1 else n'
-    Input <$> vector n''
-  shrink :: MajInput -> [MajInput]
-  shrink (Input [False]) = []
-  shrink (Input [True]) = [Input [False]]
-  shrink (Input vals) = [Input [False], Input [True]] ++ shorter ++ map Input (changeOneToFalse vals)
-    where
-      changeOneToFalse []           = []
-      changeOneToFalse (True : xs)  = (False : xs) : map (True :) (changeOneToFalse xs)
-      changeOneToFalse (False : xs) = map (False :) (changeOneToFalse xs)
-
-      shorter = if length vals > 1 then [Input (drop 2 vals)] else []
-
-propMajEqual :: MajInput -> Property
-propMajEqual (Input vals) = conjoin
-  [
-    resSymm === resGen,
-    resThresh === resGen
-  ]
-  where
-    n = length vals
-    majGeneral = Gen.majFun n
-    majSymm = toGenFun n $ Symm.majFun n
-    majThreshold = toGenFun n $ Thresh.majFun n
-    resSymm = eval majSymm vals
-    resGen = eval majGeneral vals
-    resThresh = eval majThreshold vals
-
-propSameComplexity :: Property
-propSameComplexity = conjoin
-  [
-    symm === gen,
-    thresh === gen
-  ]
-  where
-    gen = computeMin $ Gen.iteratedMajFun 3 2
-    symm = computeMin $ Symm.iteratedMajFun 3 2
-    thresh = computeMin $ Thresh.iteratedMajFun 3 2
 
 --------------- Criterion code, not currently used ------------------
 

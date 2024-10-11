@@ -15,9 +15,7 @@ module Subclasses.Threshold (
   iteratedFun,
   iteratedMajFun,
   iteratedThresholdFunConst,
-  arityIteratedThreshold,
-  Partition,
-  partitions
+  arityIteratedThreshold
 ) where
 
 import           Control.Arrow         ((>>>))
@@ -39,7 +37,7 @@ import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
 import           Test.QuickCheck.Gen   (Gen)
 import           Utils                 (Square, boolToInt, chooseMany,
                                         duplicate, lookupBool, naturals,
-                                        squareToList, tabulateBool)
+                                        partitions, squareToList, tabulateBool)
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
@@ -299,8 +297,8 @@ generateIteratedThresholdFun n = do
   threshold' <- generateThreshold nSubFuns
   return $ Free $ ThresholdFun threshold' subFuns
 
--- TODO-NEW support thresholds with 0
 generateThreshold :: Int -> Gen Threshold
+generateThreshold 0 = elements [thresholdConst False, thresholdConst True]
 generateThreshold n = do
   nt <- chooseInt (1, n)
   let nf = n + 1 - nt
@@ -312,20 +310,3 @@ generateSubFuns n = do
   subFuns <- mapM generateIteratedThresholdFun partition
   return (MultiSet.fromList subFuns, length subFuns)
 
-type Partition = [Int]
-
--- The reason that we're dropping the last one is that
--- f == ThresholdFun (1,1) [f]. We are not creating a new function by simply wrapping it
--- in a ThresholdFun.
-partitions :: Int -> [Partition]
-partitions n = case partitions' 1 n of
-  [] -> []
-  xs -> init xs
-
--- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
--- The first element in the partition must be >= highest.
-partitions' :: Int -> Int -> [Partition]
-partitions' highest n
-  | n == 0 = [[]]
-  | highest > n = []
-  | otherwise = concatMap (\m -> map (m :) $ partitions' m (n - m)) [highest .. n]

@@ -13,6 +13,9 @@ import           Data.IntMap           (IntMap)
 import qualified Data.IntMap           as IM
 import qualified Data.MultiSet         as MultiSet
 import qualified Data.Set              as Set
+import           DSLsofMath.Algebra    (AddGroup, Additive (zero),
+                                        Multiplicative (one))
+import qualified DSLsofMath.Algebra    as A
 
 -- Monoids.
 
@@ -98,18 +101,6 @@ boolToMaybe v x = if v then Just x else Nothing
 unify :: (Eq a) => (a, a) -> Maybe a
 unify (x, y) = boolToMaybe (x == y) x
 
-outputPermutations :: Int -> [[Bool]]
-outputPermutations n = permutations (2^n)
-
-permutations :: Int -> [[Bool]]
-permutations 0 = [[]]
-permutations n
-  | n < 0 = error "n must be non-negative"
-permutations n = do
-  v <- [False, True]
-  vs <- permutations (n - 1)
-  return (v : vs)
-
 
 -- Graph reachability.
 
@@ -124,5 +115,44 @@ dfs' outgoing = h where
 dfs :: (Ord a) => (a -> [a]) -> a -> Set.Set a
 dfs outgoing start = execState (dfs' outgoing start) Set.empty
 
+------------------------------------------------------------------------
+
+outputPermutations :: Int -> [[Bool]]
+outputPermutations n = permutations (2^n)
+
+permutations :: Int -> [[Bool]]
+permutations 0 = [[]]
+permutations n
+  | n < 0 = error "n must be non-negative"
+permutations n = do
+  v <- [False, True]
+  vs <- permutations (n - 1)
+  return (v : vs)
+
+type Partition a = [a]
+
+-- The reason that we're dropping the last one is that
+-- f == ThresholdFun (1,1) [f]. We are not creating a new function by simply wrapping it
+-- in a ThresholdFun.
+partitions :: (Ord a, Enum a, AddGroup a, Multiplicative a) => a -> [Partition a]
+partitions n = case partitions' one n of
+  [] -> []
+  xs -> init xs
+
+-- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
+-- The first element in the partition must be >= highest.
+partitions' :: (Ord a, Enum a, AddGroup a) =>a -> a -> [Partition a]
+partitions' highest n
+  | n == zero = [[]]
+  | highest > n = []
+  | otherwise = concatMap (\m -> map (m :) $ partitions' m (n A.- m)) [highest .. n]
+
+------------------------------------------------------------------------
+
 listToVarAssignment :: [Bool] -> IntMap Bool
 listToVarAssignment xs = IM.fromAscList $ zip [1 ..] xs
+
+--------------------------------------------------------------------
+
+data Sign = Neg | Zero | Pos
+  deriving (Eq, Show)

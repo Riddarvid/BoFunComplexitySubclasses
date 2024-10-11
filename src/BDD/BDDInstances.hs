@@ -9,7 +9,7 @@
 module BDD.BDDInstances () where
 
 import           Algorithm.Algor          (Algor (..))
-import           BDD                      (BDDFun, pick)
+import           BDD.BDD                  (BDDFun, pick)
 import           Data.DecisionDiagram.BDD (BDD, Sig, false, inSig, outSig, true)
 import           Data.Function.Memoize    (Memoizable (memoize),
                                            deriveMemoizable)

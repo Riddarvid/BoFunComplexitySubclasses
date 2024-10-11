@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
-module BDD (
+module BDD.BDD (
   BDDFun,
   pick,
   bddAsc,
@@ -20,6 +20,8 @@ import qualified Data.IntMap              as IM
 import qualified Data.IntSet              as IS
 import           Utils                    (listToVarAssignment,
                                            outputPermutations)
+
+-- TODO-NEW much of this can probably be cleaned up since we moved to GenFuns instead.
 
 type BDDFun = BDD AscOrder
 
