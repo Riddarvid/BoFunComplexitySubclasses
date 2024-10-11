@@ -13,7 +13,19 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Log.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "aff43b5d6f452921",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Admin/Frågor till nästa möte.md",
                 "mode": "source",
                 "source": false
               }
@@ -97,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Log.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +126,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Log.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +149,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/TODO för veckan.md"
+                "file": "Admin/Log.md"
               }
             }
           }
@@ -160,12 +172,14 @@
   },
   "active": "7068f64a26768379",
   "lastOpenFiles": [
+    "Admin/Frågor till nästa möte.md",
     "Admin/Log.md",
+    "Comparisons/Runtime table.md",
+    "Frågor till Christian.md",
+    "Other/Vår förståelse av PWs.md",
     "Admin/TODO för veckan.md",
     "Admin/TODO generell.md",
     "Report/Things to put in the paper.md",
-    "Admin/Frågor till nästa möte.md",
-    "Comparisons/Runtime table.md",
     "Comparisons/Notes.md",
     "Other/Observations and proofs.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",
@@ -179,7 +193,6 @@
     "Other/List of Known Bugs.md",
     "Images/D-flip-inputs.png",
     "Images/Pasted image 20240905093302.png",
-    "Untitled.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
     "Comparisons/Benchmarking.md",
     "Other/Memoize - Arvid.md",
@@ -201,7 +214,6 @@
     "Exploration of classes/ThresholdFuns.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj?.md",
     "Exploration of classes/Observation about PPs.md",
-    "Other/Cleanup.md",
     "Images/Pasted image 20240906154104.png"
   ]
 }

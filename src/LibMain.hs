@@ -5,7 +5,7 @@ module LibMain (
   main
 ) where
 import           Algorithm.GenAlg            (genAlgThinMemo, piecewiseBoth)
-import           Algorithm.GenAlgPW          (computeMin)
+import           Algorithm.GenAlgPW          (computeMin, computeMin')
 import           BDD.BDD                     (BDDFun, normalizeBDD)
 import           Control.DeepSeq             (force)
 import           Control.Exception           (evaluate)
@@ -34,7 +34,7 @@ import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
 import           Testing.PrettyPrinting      (desmosPrintPW, desmosShowPW)
 
 main :: IO ()
-main = main10
+main = main12
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')
@@ -42,6 +42,9 @@ main11 = print (and12 == and23, and12 == and23')
     and12 = var 1 .&&. var 2 :: BDD AscOrder
     and23 = var 3 .&&. var 2 :: BDD AscOrder
     (and23', _) = normalizeBDD and23
+
+main12 :: IO ()
+main12 = void $ evaluate $ force $ computeMin (Thresh.iteratedMajFun 3 2)
 
 main10 :: IO ()
 main10 = measureComplexityTime' (mkNGF $ Gen.iteratedMajFun 3 2) >>= print

@@ -26,3 +26,8 @@
 - Vi har gjort massa mätningar, finns i Runtime table
 - Vi har kommit fram till att normalisering fortfarande ger en stor (x10) tidsvinst även med den nya memoizationen av BDDs.
 - Testade att lägga in support för att memoiza speglad komplexitet vid inverterad input. Detta gav dock ingen större effekt.
+
+## 11/10
+
+- Cleanup
+- Förståelse av PiecewisePoly
