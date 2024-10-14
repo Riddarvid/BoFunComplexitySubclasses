@@ -78,6 +78,7 @@ library
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , size-based
     , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
     , time >=1.2.12
@@ -107,6 +108,7 @@ executable exploring-level-p-exe
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , size-based
     , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
     , time >=1.2.12
@@ -137,6 +139,7 @@ test-suite exploring-level-p-test
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , size-based
     , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
     , time >=1.2.12

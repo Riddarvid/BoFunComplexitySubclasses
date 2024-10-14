@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO generell.md",
                 "mode": "source",
                 "source": false
               }
@@ -37,13 +37,14 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Comparisons/Runtime table.md",
+                "file": "Admin/Log.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -170,21 +171,21 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "7068f64a26768379",
+  "active": "2510835c99853151",
   "lastOpenFiles": [
-    "Admin/Frågor till nästa möte.md",
-    "Admin/Log.md",
-    "Comparisons/Runtime table.md",
-    "Frågor till Christian.md",
-    "Other/Vår förståelse av PWs.md",
     "Admin/TODO för veckan.md",
     "Admin/TODO generell.md",
+    "Admin/Log.md",
+    "Comparisons/Runtime table.md",
+    "Admin/Frågor till nästa möte.md",
+    "Admin/Svar från senaste mötet.md",
+    "Frågor till Christian.md",
+    "Other/Vår förståelse av PWs.md",
     "Report/Things to put in the paper.md",
     "Comparisons/Notes.md",
     "Other/Observations and proofs.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",
     "Overall efficiency",
-    "Admin/Svar från senaste mötet.md",
     "Comparisons/gen-maj9/exploring-level-p-exe.svg",
     "Comparisons/gen-maj9/Notes.md",
     "Exploration of classes/Analysis of classes.md",

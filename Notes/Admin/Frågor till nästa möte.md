@@ -1,14 +1,2 @@
 
 - Vad vi har gjort:
-	- Skrivit en ny computeMin som nyttjar fast comparison av BDDs. Vi vet ännu inte exakt hur denna funkar, men har mailat maintainern av repot.
-	- Mätningar av de olika algoritmerna
-	- Testat att uttnyttja egenskaperna från inverterad output/inputs
-	- Konverteringar mellan olika klasser och GenFun
-	- Kollat på average nodantal i BDDs. För symmetriska funktioner verkar det ganska linjärt, men vi har inte kollat tillräckligt noga än
-	- Bröt ut sakerna som har med normalisering av GenFuns till en egen typ för bättre separation of concerns.
-- Hur görs memoizationsteget? Varför måste det ligga utanför hela beräkningen?
-	- Specifikt, kan du förklara koden i computeMin?
-- Vår förståelse av memoize är att man vill ta in ett värde, dekonstruera det till ett värde som är Memoizable, sedan vill man applicera en funktion som bygger upp originalvärdet och sedan applicerar funktionen f. Denna funktion blir då Memoizable pga. att inputvärdet är det. Är detta korrekt? Det blir i så fall begränsande i de fall där vi kan dekonstruera exempelvis en BDD till en unik int, men inte kan gå åt andra hållet.
-- Kan man få access till kraftigare datorer för att utföra mer krävande beräkningar?
-- Memoization av polynomberäkningar?
-- Hash consing for fast equals test? Hur funkar det?

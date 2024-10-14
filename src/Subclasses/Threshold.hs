@@ -30,11 +30,17 @@ import           Prelude               hiding (negate, sum, (+), (-))
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
+import           Control.Applicative   ((<|>))
+import           Control.Enumerable    (Shareable, Shared,
+                                        Sized (aconcat, fin, pay), c2,
+                                        deriveEnumerable, share)
 import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
+import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
                                         elements, sized)
 import           Test.QuickCheck.Gen   (Gen)
+import           Type.Reflection       (Typeable)
 import           Utils                 (Square, boolToInt, chooseMany,
                                         duplicate, lookupBool, naturals,
                                         partitions, squareToList, tabulateBool)
@@ -93,8 +99,6 @@ data ThresholdFun f = ThresholdFun {
   -- type, i.e. Symmetric or ThresholdFun etc. Doesn't this limit what we can express?
 } deriving (Show)
 
-
-
 -- Necessitated by misdesign of Haskell typeclasses.
 instance Eq1 ThresholdFun where
   liftEq eq' (ThresholdFun t us) (ThresholdFun t' us') =
@@ -111,6 +115,46 @@ instance Show1 ThresholdFun where
 
 -- TODO: instance Read1 ThresholdFun
 
+instance Enumerable (Iterated ThresholdFun) where
+  enumerate :: (Typeable f, Sized f) => Shared f (Iterated ThresholdFun)
+  enumerate = share enumerateITF
+
+enumerateITF :: Sized f => f (Iterated ThresholdFun)
+enumerateITF = go 0 where
+  go n = aconcat (map pure (allITFs n)) <|> pay (go (n + 1))
+
+-- Gives all possible representations of n-bit ITFs, except for the ones with
+-- 0-ary functions as their subfunctions, as this would lead to an infinite
+-- number of representations.
+-- TODO-NEW: See if we can circumvent this problem using FEAT
+allITFs :: Int -> [Iterated ThresholdFun]
+allITFs 0 =
+  [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
+allITFs 1 =
+  [iteratedThresholdFunConst False, iteratedThresholdFunConst True, Pure ()]
+allITFs n = do
+  (subFuns, nSubFuns) <- allSubFunCombinations n
+  threshold' <- allThresholds nSubFuns
+  return $ Free $ ThresholdFun threshold' subFuns
+
+-- Gives all the thresholds satisfying the following properties:
+-- 0 <= tn <= n + 1
+-- tn + tf = n + 1
+allThresholds :: Int -> [Threshold]
+allThresholds n = do
+  nt <- [0 .. n + 1]
+  let nf = n + 1 - nt
+  return $ Threshold (nt, nf)
+
+-- Generates all possible partitions of positive integers that add up to n.
+-- The member elements of these partions represent the arities of the subfunctions.
+-- For each arity, we then generate all possible subFunctions.
+allSubFunCombinations :: Int -> [(MultiSet (Free ThresholdFun ()), Int)]
+allSubFunCombinations n = do
+  partition <- partitions n
+  subFuns <- mapM allITFs partition
+  return (MultiSet.fromList subFuns, length subFuns)
+
 {-
 TODO:
 Figure out why this doesn't work.
@@ -123,6 +167,7 @@ The error message is:
 
 -- TODO: Special case of transport of a type class along an isomorphism.
 instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
+  memoize :: (ThresholdFun x -> v) -> ThresholdFun x -> v
   memoize f = m >>> memoize (n >>> f) where
     -- Back and forth.
     m (ThresholdFun t us) = (t, us)
@@ -288,19 +333,22 @@ instance Arbitrary (Iterated ThresholdFun) where
     n' <- chooseInt (0, n)
     generateIteratedThresholdFun n'
 
+-- Does not generate subfunctions with arity 0 as this would imply an infinite number of partitions.
+-- Subfunctions with arity zero are also equivalent to
+-- simply decreasing the threshold of the original function.
 generateIteratedThresholdFun :: Int -> Gen (Iterated ThresholdFun)
 generateIteratedThresholdFun 0 = elements
-  [Free (thresholdFunConst False), Free (thresholdFunConst True)]
-generateIteratedThresholdFun 1 = return $ Pure ()
+  [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
+generateIteratedThresholdFun 1 = elements
+  [iteratedThresholdFunConst False, iteratedThresholdFunConst True, Pure ()]
 generateIteratedThresholdFun n = do
   (subFuns, nSubFuns) <- generateSubFuns n
   threshold' <- generateThreshold nSubFuns
   return $ Free $ ThresholdFun threshold' subFuns
 
 generateThreshold :: Int -> Gen Threshold
-generateThreshold 0 = elements [thresholdConst False, thresholdConst True]
 generateThreshold n = do
-  nt <- chooseInt (1, n)
+  nt <- chooseInt (0, n + 1)
   let nf = n + 1 - nt
   return $ Threshold (nt, nf)
 

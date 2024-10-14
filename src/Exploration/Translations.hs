@@ -3,14 +3,15 @@
 module Exploration.Translations (
   genToBasicSymmetricNaive,
   genToIteratedThresholdFun,
-  funToAlg
+  funToAlg,
+  areEquivalent
 ) where
 import           Algorithm.Algor             (Algor (pic, res))
 import           BoFun                       (BoFun (isConst, setBit, variables))
 import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
 import           Data.IntMap                 (IntMap)
 import qualified Data.IntMap                 as IM
-import           Exploration.Counting        (allIteratedThresholdFunsMemo)
+import           Exploration.Counting        (allITFs)
 import           Subclasses.GenFun           (GenFun (GenFun), toGenFun)
 import           Subclasses.Iterated         (Iterated)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
@@ -55,7 +56,7 @@ toResult bdd inputs
 
 genToIteratedThresholdFun :: GenFun -> [Iterated ThresholdFun]
 genToIteratedThresholdFun gf =
-  filter (areEquivalent gf') $ allIteratedThresholdFunsMemo (ngfArity gf')
+  filter (areEquivalent gf') $ allITFs (ngfArity gf')
   where
     gf' = mkNGF gf
 

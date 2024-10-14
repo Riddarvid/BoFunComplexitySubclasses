@@ -1,17 +1,18 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Exploration.Counting (
-  numberOfIteratedThresholdFuns,
-  allIteratedThresholdFuns,
-  allIteratedThresholdFunsMemo,
-  averageBDDNodesITF
+  allITFs,
+  allEquivalentITFs,
+  numberOfEquivalentITFs,
+  averageBDDNodesITF,
 ) where
 import           BoFun                    (BoFun)
 import           Control.Monad            (replicateM)
 import           Control.Monad.Free       (Free (Free, Pure))
 import           Data.DecisionDiagram.BDD (numNodes)
-import           Data.Function.Memoize    (Memoizable (memoize))
+import           Data.MultiSet            (MultiSet)
 import qualified Data.MultiSet            as MultiSet
+import           Data.Set                 (Set)
 import qualified Data.Set                 as Set
 import           Data.Vector.Generic      (fromList)
 import           Data.Vector.Primitive    (Vector)
@@ -30,49 +31,54 @@ import           Utils                    (Partition, partitions)
 
 ----------------- Iterated threshold functions ---------------------------
 
--- Ensures that only unique functions are counted by converting them to BDDs
--- and inserting them into a set.
-numberOfIteratedThresholdFuns :: Int -> Int
-numberOfIteratedThresholdFuns n = Set.size $ Set.fromList funs
-  where
-    funs :: [GenFun]
-    funs = map (toGenFun n) $ allIteratedThresholdFuns n
+numberOfEquivalentITFs :: Int -> Int
+numberOfEquivalentITFs = Set.size . allEquivalentITFs
 
-allIteratedThresholdFunsMemo :: Int -> [Iterated ThresholdFun]
-allIteratedThresholdFunsMemo = memoize allIteratedThresholdFuns
+-- Gives the set of equivalance classes for n-bit ITFs, where each class is represented
+-- by the GenFun representation of the function.
+allEquivalentITFs :: Int -> Set GenFun
+allEquivalentITFs n = foldr (Set.insert . toGenFun n) Set.empty $ allITFs n
 
--- This code generates all the iterated threshold functions of a given arity,
--- but there is no guarantee that the functions are unique.
-allIteratedThresholdFuns :: Int -> [Iterated ThresholdFun]
--- 2 constant values exist
-allIteratedThresholdFuns 0 = [
-  iteratedThresholdFunConst False,
-  iteratedThresholdFunConst True]
--- The logic for n == 1 is that we cannot express the function "not" as an iterated threshold fun.
--- Therefore, we can only choose the id function. We can only choose a single threshold
--- as well, resulting in 1 * 1 = 1 iterated threshold functions with 1 bit.
-allIteratedThresholdFuns 1 = [Pure ()]
-allIteratedThresholdFuns n = allIteratedThresholdFuns' n
+-- Gives all possible representations of n-bit ITFs, except for the ones with
+-- 0-ary functions as their subfunctions, as this would lead to an infinite
+-- number of representations.
+-- TODO-NEW: See if we can circumvent this problem using FEAT
+allITFs :: Int -> [Iterated ThresholdFun]
+allITFs 0 =
+  [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
+allITFs 1 =
+  [iteratedThresholdFunConst False, iteratedThresholdFunConst True, Pure ()]
+allITFs n = do
+  (subFuns, nSubFuns) <- allSubFunCombinations n
+  threshold' <- allThresholds nSubFuns
+  return $ Free $ ThresholdFun threshold' subFuns
 
-allIteratedThresholdFuns' :: Int -> [Iterated ThresholdFun]
-allIteratedThresholdFuns' n = concatMap allIteratedThresholdFuns'' $ partitions n
+-- Gives all the thresholds satisfying the following properties:
+-- 0 <= tn <= n + 1
+-- tn + tf = n + 1
+allThresholds :: Int -> [Threshold]
+allThresholds n = do
+  nt <- [0 .. n + 1]
+  let nf = n + 1 - nt
+  return $ Threshold (nt, nf)
 
-allIteratedThresholdFuns'' :: Partition Int -> [Iterated ThresholdFun]
-allIteratedThresholdFuns'' p = do
-  threshold' <- [Threshold (n', n - n' + 1) | n' <- [1 .. n]]
-  subFuns <- mapM allIteratedThresholdFunsMemo p
-  let subFuns' = MultiSet.fromList subFuns
-  return $ Free $ ThresholdFun threshold' subFuns'
-  where
-    n = length p
+-- Generates all possible partitions of positive integers that add up to n.
+-- The member elements of these partions represent the arities of the subfunctions.
+-- For each arity, we then generate all possible subFunctions.
+allSubFunCombinations :: Int -> [(MultiSet (Free ThresholdFun ()), Int)]
+allSubFunCombinations n = do
+  partition <- partitions n
+  subFuns <- mapM allITFs partition
+  return (MultiSet.fromList subFuns, length subFuns)
 
 -------------------- Counting BDD nodes --------------------------
 -- ITF stands for Iterated Threshold Function
 
-averageBDDNodesITF :: forall proxy a i. (Arbitrary a, BoFun a i) =>
-  proxy a -> Int -> Int -> IO (Double, Double, Double)
+-- TODO-NEW: Dubbelkolla mot litteraturen
+averageBDDNodesITF :: forall proxy f i. (Arbitrary f, BoFun f i) =>
+  proxy f -> Int -> Int -> IO (Double, Double, Double)
 averageBDDNodesITF _ n bits = do
-  samples <- replicateM n $ generate (resize bits arbitrary) :: IO [a]
+  samples <- replicateM n $ generate (resize bits arbitrary) :: IO [f]
   let samples' = map (toGenFun bits) samples
   let nodeCounts = map (fromIntegral . nodeCount) samples'
   let nodeCountVector = fromList nodeCounts :: Vector Double

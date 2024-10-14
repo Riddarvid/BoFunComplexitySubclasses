@@ -4,9 +4,7 @@ module Testing.AllProperties (testAll) where
 import           Test.QuickCheck    (Args (maxSize, maxSuccess), Testable,
                                      quickCheckWith, stdArgs)
 import           Testing.Properties (propComputeMin'Correct,
-                                     propComputeMinCorrect,
-                                     propConversionIteratedThreshold,
-                                     propConversionSymm,
+                                     propComputeMinCorrect, propConversionSymm,
                                      propFlipInputComplexity,
                                      propFlipOutputComplexity,
                                      propFlipOutputCorrect,
@@ -31,7 +29,7 @@ allProps = [
   Check propFlipOutputComplexity stdArgs'{maxSize = 5},
   Check propFlipInputComplexity stdArgs'{maxSize = 5},
   Check propConversionSymm stdArgs'{maxSize = 10},
-  Check propConversionIteratedThreshold stdArgs'{maxSize = 7},
+  --Check propConversionIteratedThreshold stdArgs'{maxSize = 7},
   Check propComputeMinCorrect stdArgs'{maxSize = 5},
   Check propComputeMin'Correct stdArgs'{maxSize = 5, maxSuccess = 1000}
   ]

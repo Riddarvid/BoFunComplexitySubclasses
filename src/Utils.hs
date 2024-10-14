@@ -141,7 +141,7 @@ partitions n = case partitions' one n of
 
 -- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
 -- The first element in the partition must be >= highest.
-partitions' :: (Ord a, Enum a, AddGroup a) =>a -> a -> [Partition a]
+partitions' :: (Ord a, Enum a, AddGroup a) => a -> a -> [Partition a]
 partitions' highest n
   | n == zero = [[]]
   | highest > n = []

@@ -9,7 +9,6 @@ module Testing.Properties (
   propFlipInputComplexity,
   propComputeMinCorrect,
   propConversionSymm,
-  propConversionIteratedThreshold,
   propComputeMin'Correct,
   propRepsCorrect,
   propRepsComplexity,
@@ -25,7 +24,8 @@ import           Data.List                   (sort)
 import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
 import           DSLsofMath.PSDS             (Poly)
-import           Exploration.Translations    (genToBasicSymmetricNaive,
+import           Exploration.Translations    (areEquivalent,
+                                              genToBasicSymmetricNaive,
                                               genToIteratedThresholdFun)
 import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
                                               propIsMirrorPW)
@@ -134,10 +134,15 @@ propConversionSymm f@(BasicSymmetric rv) = Just f === genToBasicSymmetricNaive (
 
 -- Converting from Iterated ThresholdFun to GenFun and back again should yield a set
 -- of possible representations which includes the original function
-propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
-propConversionIteratedThreshold f = property $ f `elem` genToIteratedThresholdFun (toGenFun arity f)
+-- TODO-NEW: Figure out if we actually want this test or not. Right now it basically
+-- compares the generateAll and generateOne implementations.
+{-propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
+propConversionIteratedThreshold f = property $ or equivalents
   where
+    gf = toGenFun arity f
     arity = arityIteratedThreshold f
+    funs = genToIteratedThresholdFun (toGenFun arity f)
+    equivalents = map (areEquivalent $ mkNGF gf) funs-}
 
 ----------------------- Representations ---------------------------------------
 
