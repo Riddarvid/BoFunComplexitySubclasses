@@ -60,3 +60,5 @@
 - Separerat generering av alla ITFs från generering av enskilda ITFs.
 - Teori:
 	- Just nu går mycket tid i Polynomberäkningarna till funktionen comP, som används när vi vill zooma ett polynom. comP är generell, så vi tänker att vi skulle kunna vinna något genom att skriva en specialiserad version för just affina transformationer.
+	- Verkar som att vi kan använda Taylor expansion för shift, skalering är enkelt.
+- Just nu sitter vi fast på offset-beräkningen. Vi är inte riktigt med på hur Taylor expansion funkar eller om det ens skulle vara snabbare än det vi gör nu med comP.
