@@ -37,14 +37,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/Svar från senaste mötet.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -171,14 +170,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "2510835c99853151",
+  "active": "7068f64a26768379",
   "lastOpenFiles": [
+    "Admin/Svar från senaste mötet.md",
     "Admin/TODO för veckan.md",
     "Admin/TODO generell.md",
     "Admin/Log.md",
     "Comparisons/Runtime table.md",
     "Admin/Frågor till nästa möte.md",
-    "Admin/Svar från senaste mötet.md",
     "Frågor till Christian.md",
     "Other/Vår förståelse av PWs.md",
     "Report/Things to put in the paper.md",

@@ -52,3 +52,11 @@
 
 - Möte
 - Undersökt Feat-biblioteket
+
+## 15/10
+
+- Fortsatt att undersöka Feat
+	- Vårt första försök blev inte jättebra. Det är troligen för att vi säger att man måste generera alla 6-bitars funktioner för att kunna generera en enda 6-bitars funktion.
+- Separerat generering av alla ITFs från generering av enskilda ITFs.
+- Teori:
+	- Just nu går mycket tid i Polynomberäkningarna till funktionen comP, som används när vi vill zooma ett polynom. comP är generell, så vi tänker att vi skulle kunna vinna något genom att skriva en specialiserad version för just affina transformationer.

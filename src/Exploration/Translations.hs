@@ -2,7 +2,7 @@
 {-# HLINT ignore "Redundant evaluate" #-}
 module Exploration.Translations (
   genToBasicSymmetricNaive,
-  genToIteratedThresholdFun,
+  ngfToIteratedThresholdFun,
   funToAlg,
   areEquivalent
 ) where
@@ -11,12 +11,11 @@ import           BoFun                       (BoFun (isConst, setBit, variables)
 import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
 import           Data.IntMap                 (IntMap)
 import qualified Data.IntMap                 as IM
-import           Exploration.Counting        (allITFs)
 import           Subclasses.GenFun           (GenFun (GenFun), toGenFun)
 import           Subclasses.Iterated         (Iterated)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
 import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
-import           Subclasses.Threshold        (ThresholdFun)
+import           Subclasses.Threshold        (ThresholdFun, allNAryITFs)
 import           Utils                       (permutations)
 
 --------------- Basic symmetric ---------------------
@@ -54,13 +53,12 @@ toResult bdd inputs
 
 ------------ Iterated Threshold funs -----------------------
 
-genToIteratedThresholdFun :: GenFun -> [Iterated ThresholdFun]
-genToIteratedThresholdFun gf =
-  filter (areEquivalent gf') $ allITFs (ngfArity gf')
-  where
-    gf' = mkNGF gf
+-- Very inefficient, does not use the structure of the function, rather, it
+-- generates all possible functions and filters out the correct ones.
+ngfToIteratedThresholdFun :: NormalizedGenFun -> [Iterated ThresholdFun]
+ngfToIteratedThresholdFun gf =
+  filter (areEquivalent gf) $ allNAryITFs (ngfArity gf)
 
--- gf must be normalized
 areEquivalent :: NormalizedGenFun -> Iterated ThresholdFun -> Bool
 areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 

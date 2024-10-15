@@ -15,7 +15,8 @@ module Subclasses.Threshold (
   iteratedFun,
   iteratedMajFun,
   iteratedThresholdFunConst,
-  arityIteratedThreshold
+  arityIteratedThreshold,
+  allNAryITFs
 ) where
 
 import           Control.Arrow         ((>>>))
@@ -115,45 +116,13 @@ instance Show1 ThresholdFun where
 
 -- TODO: instance Read1 ThresholdFun
 
-instance Enumerable (Iterated ThresholdFun) where
+{-instance Enumerable (Iterated ThresholdFun) where
   enumerate :: (Typeable f, Sized f) => Shared f (Iterated ThresholdFun)
   enumerate = share enumerateITF
 
 enumerateITF :: Sized f => f (Iterated ThresholdFun)
 enumerateITF = go 0 where
-  go n = aconcat (map pure (allITFs n)) <|> pay (go (n + 1))
-
--- Gives all possible representations of n-bit ITFs, except for the ones with
--- 0-ary functions as their subfunctions, as this would lead to an infinite
--- number of representations.
--- TODO-NEW: See if we can circumvent this problem using FEAT
-allITFs :: Int -> [Iterated ThresholdFun]
-allITFs 0 =
-  [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
-allITFs 1 =
-  [iteratedThresholdFunConst False, iteratedThresholdFunConst True, Pure ()]
-allITFs n = do
-  (subFuns, nSubFuns) <- allSubFunCombinations n
-  threshold' <- allThresholds nSubFuns
-  return $ Free $ ThresholdFun threshold' subFuns
-
--- Gives all the thresholds satisfying the following properties:
--- 0 <= tn <= n + 1
--- tn + tf = n + 1
-allThresholds :: Int -> [Threshold]
-allThresholds n = do
-  nt <- [0 .. n + 1]
-  let nf = n + 1 - nt
-  return $ Threshold (nt, nf)
-
--- Generates all possible partitions of positive integers that add up to n.
--- The member elements of these partions represent the arities of the subfunctions.
--- For each arity, we then generate all possible subFunctions.
-allSubFunCombinations :: Int -> [(MultiSet (Free ThresholdFun ()), Int)]
-allSubFunCombinations n = do
-  partition <- partitions n
-  subFuns <- mapM allITFs partition
-  return (MultiSet.fromList subFuns, length subFuns)
+  go n = aconcat (map pure (allNaryITFs n)) <|> pay (go (n + 1))-}
 
 {-
 TODO:
@@ -356,5 +325,41 @@ generateSubFuns :: Int -> Gen (MultiSet (Free ThresholdFun ()), Int)
 generateSubFuns n = do
   partition <- elements $ partitions n
   subFuns <- mapM generateIteratedThresholdFun partition
+  return (MultiSet.fromList subFuns, length subFuns)
+
+--------------- Exhaustive generation ------------------------------
+
+-- Gives all possible representations of n-bit ITFs, except for the ones with
+-- 0-ary functions as their subfunctions, as this would lead to an infinite
+-- number of representations.
+-- TODO-NEW: See if we can circumvent this problem using FEAT
+allNAryITFs :: Int -> [Iterated ThresholdFun]
+allNAryITFs = (map nAryITFEnum' [0 ..] !!)
+  where
+    nAryITFEnum' 0 =
+      [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
+    nAryITFEnum' 1 =
+      [iteratedThresholdFunConst False, iteratedThresholdFunConst True, Pure ()]
+    nAryITFEnum' n = do
+      (subFuns, nSubFuns) <- allSubFunCombinations n
+      threshold' <- allThresholds nSubFuns
+      return $ Free $ ThresholdFun threshold' subFuns
+
+-- Gives all the thresholds satisfying the following properties:
+-- 0 <= tn <= n + 1
+-- tn + tf = n + 1
+allThresholds :: Int -> [Threshold]
+allThresholds n = do
+  nt <- [0 .. n + 1]
+  let nf = n + 1 - nt
+  return $ Threshold (nt, nf)
+
+-- Generates all possible partitions of positive integers that add up to n.
+-- The member elements of these partions represent the arities of the subfunctions.
+-- For each arity, we then generate all possible subFunctions.
+allSubFunCombinations :: Int -> [(MultiSet (Free ThresholdFun ()), Int)]
+allSubFunCombinations n = do
+  partition <- partitions n
+  subFuns <- mapM allNAryITFs partition
   return (MultiSet.fromList subFuns, length subFuns)
 

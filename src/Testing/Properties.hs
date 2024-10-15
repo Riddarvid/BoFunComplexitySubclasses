@@ -24,25 +24,20 @@ import           Data.List                   (sort)
 import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
 import           DSLsofMath.PSDS             (Poly)
-import           Exploration.Translations    (areEquivalent,
-                                              genToBasicSymmetricNaive,
-                                              genToIteratedThresholdFun)
+import           Exploration.Translations    (genToBasicSymmetricNaive)
 import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
                                               propIsMirrorPW)
 import qualified Subclasses.GenFun           as Gen
 import           Subclasses.GenFun           (GenFun, eval, flipInputsGenFun,
                                               generateGenFun, notG, toGenFun)
-import           Subclasses.Iterated         (Iterated)
+import           Subclasses.Id               ()
 import           Subclasses.NormalizedGenFun (mkNGF, ngfArity)
 import qualified Subclasses.Symmetric        as Symm
 import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
 import qualified Subclasses.Threshold        as Thresh
-import           Subclasses.Threshold        (ThresholdFun,
-                                              arityIteratedThreshold)
 import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
-                                              Property, Testable (property),
-                                              chooseInt, conjoin, sized, vector,
-                                              (=/=), (===))
+                                              Property, chooseInt, conjoin,
+                                              sized, vector, (=/=), (===))
 import           Test.QuickCheck.Gen         (Gen)
 
 ----------------- Types --------------------------------------
@@ -137,12 +132,10 @@ propConversionSymm f@(BasicSymmetric rv) = Just f === genToBasicSymmetricNaive (
 -- TODO-NEW: Figure out if we actually want this test or not. Right now it basically
 -- compares the generateAll and generateOne implementations.
 {-propConversionIteratedThreshold :: Iterated ThresholdFun -> Property
-propConversionIteratedThreshold f = property $ or equivalents
+propConversionIteratedThreshold f = property $ elem f funs
   where
-    gf = toGenFun arity f
     arity = arityIteratedThreshold f
-    funs = genToIteratedThresholdFun (toGenFun arity f)
-    equivalents = map (areEquivalent $ mkNGF gf) funs-}
+    funs = genToIteratedThresholdFun (toGenFun arity f)-}
 
 ----------------------- Representations ---------------------------------------
 
