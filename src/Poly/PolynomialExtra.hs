@@ -12,15 +12,17 @@ import           Control.Arrow      (second, (***), (>>>))
 import           Data.Maybe         (fromJust, isJust)
 import           Data.Monoid        (Sum (..))
 import           Data.Ratio         (Ratio, denominator, numerator, (%))
-import           Prelude            hiding (negate, quot, recip, (*), (+), (-))
+import           Prelude            hiding (negate, quot, recip, sum, (*), (+),
+                                     (-), (/))
 import qualified Prelude            ((*))
 
 import           DSLsofMath.Algebra (AddGroup (negate), Additive (..),
-                                     Euclidean, Field, MulGroup (recip),
+                                     Euclidean, Field, MulGroup (recip, (/)),
                                      Multiplicative (one, (*)), Ring, generator,
-                                     quot, two)
-import           DSLsofMath.PSDS    (Poly (..), comP, gcdP, normalPoly, scaleL,
-                                     scaleP, xP, yun)
+                                     quot, sum, two)
+import           DSLsofMath.PSDS    (Poly (..), comP, derP, factorials, gcdP,
+                                     isZero, normalPoly, scaleL, scaleP, xP,
+                                     yun)
 
 import           Control.DeepSeq    (NFData)
 import           GHC.Generics       (Generic)
@@ -66,6 +68,15 @@ scaleInput c = unP >>> h one >>> P
 -- Precomposes the given polynomial with addition by the given factor.
 translateInput :: Ring a => a -> Poly a -> Poly a
 translateInput c = (`comP` P [c, one])
+
+-- Not currently used as it is a little slower than using comP
+translateInputTaylor :: (Ring a, Eq a, MulGroup a) => a -> Poly a -> Poly a
+translateInputTaylor offset p = sum terms
+  where
+    dx = offset -- If this doesn't work, try -offset
+    derivatives = takeWhile (not . isZero) $ iterate derP p
+    derivatives' = zip3 derivatives factorials (iterate (* dx) one)
+    terms = map (\(p', fac, dx') -> scaleP (dx' / fac) p') derivatives'
 
 -- Reparametrize by flipping the unit interval around.
 flipUnitIntervalPoly :: (Ring a) => Poly a -> Poly a
