@@ -5,5 +5,6 @@
 - TODO-NEWs
 ## Homework
 
+- Undersök Taylor expansions
 - Se om man kan dra paralleller till entropi (Shannon) eller Huffman coding
 - Affine transformations

@@ -141,7 +141,7 @@ affineFromPoly p = AffinePoly scale offset where
   [offset, scale] = viewLow 2 p
 
 instance (Ring a) => Semigroup (AffinePoly a) where
-  a <> b = affineFromPoly $ comP (affinePoly a) (affinePoly b)
+  a <> b = affineFromPoly $ comAP (affinePoly a) b
 
 instance (Ring a) => Monoid (AffinePoly a) where
   mempty = affineFromPoly xP
@@ -150,6 +150,9 @@ instance (Field a) => Group (AffinePoly a) where
   invert (AffinePoly scale offset) = AffinePoly scale' offset' where
     scale' = recip scale
     offset' = negate $ scale' * offset
+
+comAP :: Ring a => Poly a -> AffinePoly a -> Poly a
+comAP p (AffinePoly scale offset) = undefined
 
 
 -- Relating rational and integral polynomials.
