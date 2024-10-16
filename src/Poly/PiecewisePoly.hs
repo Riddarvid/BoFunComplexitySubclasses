@@ -87,7 +87,7 @@ instance (Ring a) => Zoomable a (ZoomData a) where
 
 -- | TODO: why is UndecidableInstances needed here?
 instance (Ring a) => Zoomable a (Poly a) where
-  zoom (ZoomData _ t) = (`comAP` t)
+  zoom (ZoomData _ t) = (`comP` affinePoly t)
 
 
 -- | The graph of the counit map of free Zoom algebra adjunction.
