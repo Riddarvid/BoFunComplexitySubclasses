@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/Frågor till nästa möte.md",
                 "mode": "source",
                 "source": false
               }
@@ -43,7 +43,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -109,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/TODO generell.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Admin/Log.md",
+                "file": "Admin/TODO generell.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -149,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Admin/Log.md"
+                "file": "Admin/TODO generell.md"
               }
             }
           }
@@ -170,18 +171,19 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "7068f64a26768379",
+  "active": "aff43b5d6f452921",
   "lastOpenFiles": [
-    "Admin/TODO för veckan.md",
-    "Admin/Log.md",
-    "Admin/Svar från senaste mötet.md",
-    "Admin/TODO generell.md",
-    "Comparisons/Runtime table.md",
     "Admin/Frågor till nästa möte.md",
+    "Admin/TODO för veckan.md",
+    "Other/List of Known Bugs.md",
+    "Admin/TODO generell.md",
+    "Admin/Log.md",
+    "Comparisons/Runtime table.md",
+    "Comparisons/Notes.md",
+    "Admin/Svar från senaste mötet.md",
     "Frågor till Christian.md",
     "Other/Vår förståelse av PWs.md",
     "Report/Things to put in the paper.md",
-    "Comparisons/Notes.md",
     "Other/Observations and proofs.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",
     "Overall efficiency",
@@ -190,7 +192,6 @@
     "Exploration of classes/Analysis of classes.md",
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Exploration of classes/Egenskaper hos boolska funktioner.md",
-    "Other/List of Known Bugs.md",
     "Images/D-flip-inputs.png",
     "Images/Pasted image 20240905093302.png",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",

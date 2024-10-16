@@ -6,12 +6,11 @@ module Poly.Utils (
   numRootsInInterval,
   removeDoubleRoots
 ) where
-import           Data.Either          (isLeft)
 import           DSLsofMath.Algebra   (AddGroup, Additive (zero), MulGroup,
                                        product, (-))
 import           DSLsofMath.PSDS      (Poly, degree, evalP, yun)
 import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly,
-                                       Separation, linearizePW)
+                                       Separation, linearizePW, pieces)
 import           Poly.PolyCmp         (numRoots)
 import           Poly.PolynomialExtra (scaleInput, translateInput)
 import           Prelude              hiding (product, (+), (-))
@@ -34,7 +33,7 @@ minDegree xs = minimum $ map findDegreePW xs
 -- linearizePW results in a list of either pieces or separations,
 -- thus we can count the number of pieces by filtering on isLeft.
 countPieces :: (AddGroup a, MulGroup a, Eq a) => PiecewisePoly a -> Int
-countPieces pw = length $ filter isLeft $ linearizePW pw
+countPieces = length . pieces
 
 -- Transforms the polynomial p(x) into p((x - a) / diff) in order to be able
 -- to use numRoots. Counts in the exclusive interval (low, high).
@@ -49,7 +48,6 @@ numRootsInInterval p (low, high)
     diff = high - low
     p' = scaleInput diff $ translateInput low p
 
--- TODO-NEW QuickCheck
 -- Creates a polynomial with only single roots. The new polynomial has roots in exactly the points
 -- where the input polynomial has roots. No other guarantees are given for the new polynomial.
 removeDoubleRoots :: (Eq a, MulGroup a, AddGroup a) => Poly a -> Poly a

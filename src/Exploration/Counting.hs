@@ -8,8 +8,8 @@ module Exploration.Counting (
 import           BoFun                    (BoFun)
 import           Control.Monad            (replicateM)
 import           Data.DecisionDiagram.BDD (numNodes)
-import           Data.Set                 (Set)
-import qualified Data.Set                 as Set
+import           Data.HashSet             (HashSet)
+import qualified Data.HashSet             as HS
 import           Data.Vector.Generic      (fromList)
 import           Data.Vector.Primitive    (Vector)
 import           Prelude                  hiding ((*), (+))
@@ -23,12 +23,12 @@ import           Test.QuickCheck          (Arbitrary (arbitrary), generate,
 ----------------- Iterated threshold functions ---------------------------
 
 numberOfEquivalentITFs :: Int -> Int
-numberOfEquivalentITFs = Set.size . allEquivalentITFs
+numberOfEquivalentITFs = HS.size . allEquivalentITFs
 
 -- Gives the set of equivalance classes for n-bit ITFs, where each class is represented
 -- by the GenFun representation of the function.
-allEquivalentITFs :: Int -> Set GenFun
-allEquivalentITFs n = foldr (Set.insert . toGenFun n) Set.empty $ allNAryITFs n
+allEquivalentITFs :: Int -> HashSet GenFun
+allEquivalentITFs n = foldr (HS.insert . toGenFun n) HS.empty $ allNAryITFs n
 
 -------------------- Counting BDD nodes --------------------------
 -- ITF stands for Iterated Threshold Function

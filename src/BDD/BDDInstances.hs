@@ -9,19 +9,13 @@
 module BDD.BDDInstances () where
 
 import           Algorithm.Algor          (Algor (..))
-import           BDD.BDD                  (BDDFun, pick)
-import           Data.DecisionDiagram.BDD (BDD, Sig, false, inSig, outSig, true)
+import           BDD.BDD                  (pick)
+import           Data.DecisionDiagram.BDD (BDD, ItemOrder, Sig, false, inSig,
+                                           outSig, true)
 import           Data.Function.Memoize    (Memoizable (memoize),
                                            deriveMemoizable)
-import           Data.Ord                 (comparing)
-
--- Memoization
 
 $(deriveMemoizable ''Sig)
-
-instance Ord (BDD o) where
-  compare :: BDD o -> BDD o -> Ordering
-  compare = comparing outSig
 
 instance Memoizable (BDD o) where
   memoize :: (BDD o -> v) -> BDD o -> v
@@ -30,9 +24,9 @@ instance Memoizable (BDD o) where
 memoizeBF :: (BDD o -> a) -> (BDD o -> a)
 memoizeBF f = memoize (f . inSig) . outSig
 
-instance Algor BDDFun where
-  res :: Bool -> BDDFun
+instance ItemOrder o => Algor (BDD o) where
+  res :: Bool -> BDD o
   res False = false
   res True  = true
-  pic :: Int -> BDDFun -> BDDFun -> BDDFun
+  pic :: Int -> BDD o -> BDD o -> BDD o
   pic = pick

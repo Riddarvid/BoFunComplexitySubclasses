@@ -6,13 +6,14 @@ module LibMain (
 ) where
 import           Algorithm.GenAlg            (genAlgThinMemo, piecewiseBoth)
 import           Algorithm.GenAlgPW          (computeMin, computeMin')
-import           BDD.BDD                     (BDDFun, normalizeBDD)
+import           BDD.BDD                     (BDDa, normalizeBDD)
 import           Control.DeepSeq             (force)
 import           Control.Exception           (evaluate)
 import           Control.Monad               (void)
 import           Data.DecisionDiagram.BDD    (AscOrder, BDD, notB, var, (.&&.),
                                               (.||.))
 
+import qualified Data.HashSet                as HS
 import qualified Data.Set                    as Set
 import           DSLsofMath.Algebra          (AddGroup, MulGroup)
 import           Exploration.Comparisons     (mainBenchMaj,
@@ -56,10 +57,10 @@ main9 = do
   desmosPrintPW $ computeMin gf
   desmosPrintPW $ computeMin gf'
 
-tOR :: BDDFun
+tOR :: BDDa
 tOR = var 1 .||. var 2
 
-tNAND :: BDDFun
+tNAND :: BDDa
 tNAND = notB (var 1 .&&. var 2)
 
 main6 :: IO ()
@@ -90,7 +91,7 @@ genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) =>Int -> [BothPW a]
 genAllBoths n = map piecewiseBoth funs
   where
     funs :: [GenFun]
-    funs = Set.toList $ allGenFuns n
+    funs = HS.toList $ allGenFuns n
 
 --------------- test ------------------------
 

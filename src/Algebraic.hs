@@ -74,7 +74,6 @@ toAlgebraic x = Algebraic (P [negate x', one]) (x' - one, x' + one)
 -- shrinkIntervalPoly, which works on the assumption that low <= 0, high >= 0.
 -- Shrinks the interval by dividing it into two pieces and checking which
 -- piece contains the root.
--- TODO-NEW quickCheck
 shrinkIntervalStep :: Algebraic -> Algebraic
 shrinkIntervalStep (Algebraic p (low, high))
   | nRoots > 1 || nRoots < 0 = error "Interval has too many roots"

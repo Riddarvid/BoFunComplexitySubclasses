@@ -72,12 +72,28 @@ thresholdScale x (Threshold t) = Threshold $ tabulateBool $ lookupBool t >>> (x 
 thresholdNumInputs :: Threshold -> Int
 thresholdNumInputs (Threshold (nt, nf)) = nt + nf - 1
 
+-- | Reachable excluding constant functions.
+numReachable' :: [Threshold] -> Integer
+numReachable' [] = 1
+numReachable' ((Threshold v) : ts) = sum $ do
+  let n = numReachable' ts
+  let vs = squareToList v
+  i <- take (sum vs) naturals
+  let factor = vs & map (toInteger >>> subtract i >>> min 0) & sum & (+ i)
+  return $ factor * chooseMany n i
+
+{-
+Number of Boolean functions reachable from 'iteratedThresholdFun ts' by setting variables.
+That is:
+>>> length $ reachable $ iteratedThresholdFun ts'
+-}
+numReachable :: [Threshold] -> Integer
+numReachable = numReachable' >>> (+ 2)
+
 -- A constant threshold (fixed result).
--- TODO-NEW: Figure out how we want to handle this bugfix.
--- fixed by changing == to /=
--- we also had to change to thresholdConst (not val) in the definition of setBit.
 thresholdConst :: Bool -> Threshold
-thresholdConst v = Threshold $ tabulateBool ((== v) >>> boolToInt)
+thresholdConst False = Threshold (1, 0)
+thresholdConst True  = Threshold (0, 1)
 
 thresholdIsConst :: Threshold -> Maybe Bool
 thresholdIsConst (Threshold (nt, nf)) = if
@@ -124,16 +140,6 @@ enumerateITF :: Sized f => f (Iterated ThresholdFun)
 enumerateITF = go 0 where
   go n = aconcat (map pure (allNaryITFs n)) <|> pay (go (n + 1))-}
 
-{-
-TODO:
-Figure out why this doesn't work.
-The error message is:
-    • ‘Threshold’ is not in the type environment at a reify
-    • In the untyped splice: $(deriveMemoize ''ThresholdFun)
--}
--- instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
---   memoize = $(deriveMemoize ''ThresholdFun)
-
 -- TODO: Special case of transport of a type class along an isomorphism.
 instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
   memoize :: (ThresholdFun x -> v) -> ThresholdFun x -> v
@@ -165,25 +171,18 @@ thresholdFunNormalizeSub (ThresholdFun t us) = ThresholdFun (t - s) (MultiSet.fr
     & sum
 -}
 
--- QUESTION: It seems like we start by having a BoFun f and then "promoting" it to a
--- ThresholdFun. It is a bit unclear what the variable type actually means.
--- How does setBit work here?
-
--- OUR UNDERSTANDING: A threshold function is made up of a list of sub-functions.
--- The variables of our function can then be described by a combination of sub-function
--- and sub-function-variable. The basic principle is that any time a sub function becomes
--- fully evaluated, we can reduce the appropriate threshold variable by one, and if the
--- threshold becomes zero, then we are done.
-
 -- TODO: Figure out why this needs UndecidableInstances. (Haskell...)
 instance (Ord f, BoFun f i) => BoFun (ThresholdFun f) (Int, i) where
+  isConst :: ThresholdFun f -> Maybe Bool
   isConst = threshold >>> thresholdIsConst
 
+  variables :: ThresholdFun f -> [(Int, i)]
   variables (ThresholdFun _ us) = do
     (i, (u, _)) <- us & MultiSet.toAscOccurList & zip naturals
     v <- variables u
     return (i, v)
 
+  setBit :: ((Int, i), Bool) -> ThresholdFun f -> ThresholdFun f
   setBit ((i, v), val) (ThresholdFun t us) = case isConst u' of
     Just _  -> thresholdFunNormalize $ ThresholdFun t' us'
     Nothing -> ThresholdFun t $ MultiSet.insert u' us'
@@ -201,33 +200,16 @@ instance Constable ThresholdFun where
 thresholdFunReplicate :: (Ord f) => Threshold -> f -> ThresholdFun f
 thresholdFunReplicate t u = ThresholdFun t $ MultiSet.fromOccurList [(u, thresholdNumInputs t)]
 
-
 -- | Boolean functions built from iterated thresholding.
 type IteratedThresholdFun = Iterated ThresholdFun
+
+arityIteratedThreshold :: Iterated ThresholdFun -> Int
+arityIteratedThreshold = length . variables
 
 iteratedThresholdFunConst :: Bool -> Iterated' ThresholdFun f
 iteratedThresholdFunConst = thresholdFunConst >>> Free
 
-{-
--- General instance.
--- Conflicts with the specialized instance for IteratedThresholdFun' given below.
-instance (Ord f, BoFun f i) => BoFun (IteratedThresholdFun f) ([Int], i) where
-  isConst (Pure u) = isConst u
-  isConst (Free v) = isConst v
-
-  variables (Pure u) = variables u & map ([],)
-  variables (Free v) = variables v & map (\(i, (is, j)) -> (i : is, j))
-
-  setBit (([], j), val) (Pure u) = Pure $ setBit (j, val) u
-  setBit ((i : is, j), val) (Free v) = Free $ setBit ((i, (is, j)), val) v
--}
--- Pure () represents the id function.
-
--- Example Boolean functions.
-
--- | Majority on five bits
-maj5 :: ThresholdFun (Maybe Bool)
-maj5 = majFun 5
+-------------- Examples ------------------------------------
 
 majFun :: Int -> ThresholdFun (Maybe Bool)
 majFun n = thresholdFunReplicate (thresholdMaj n') Nothing
@@ -238,24 +220,6 @@ iteratedFun :: [Threshold] -> IteratedThresholdFun
 iteratedFun []       = Pure ()
 iteratedFun (t : ts) = Free $ thresholdFunReplicate t $ iteratedFun ts
 
--- | Reachable excluding constant functions.
-numReachable' :: [Threshold] -> Integer
-numReachable' [] = 1
-numReachable' ((Threshold v) : ts) = sum $ do
-  let n = numReachable' ts
-  let vs = squareToList v
-  i <- take (sum vs) naturals
-  let factor = vs & map (toInteger >>> subtract i >>> min 0) & sum & (+ i)
-  return $ factor * chooseMany n i
-
-{-
-Number of Boolean functions reachable from 'iteratedThresholdFun ts' by setting variables.
-That is:
->>> length $ reachable $ iteratedThresholdFun ts'
--}
-numReachable :: [Threshold] -> Integer
-numReachable = numReachable' >>> (+ 2)
-
 iteratedMajFun' :: [Int] -> IteratedThresholdFun
 iteratedMajFun' = map thresholdMaj >>> iteratedFun
 
@@ -265,46 +229,13 @@ iteratedMajFun nBits numStages = replicate numStages threshold & iteratedMajFun'
   where
     threshold = (nBits + 1) `div` 2
 
-iteratedMaj3 :: Int -> IteratedThresholdFun
-iteratedMaj3 = iteratedMajFun 3
-{-
-The number of Boolean functions reachable from iteratedMaj3 is 2 plus s_n where
-* s_0 = 1,
-* s_{n+1} = s_n (s_n + 2) (s_n + 7) / 6.
-For example:
-* s_0 = 1,
-* s_1 = 4
-* s_2 = 44,
-* s_3 = 17204,
-* s_4 = 849110490844,
--}
-
-iteratedMaj5 :: Int -> IteratedThresholdFun
-iteratedMaj5 = iteratedMajFun 5
-{-
-The number of Boolean functions reachable from iteratedMaj5 is 2 plus t_n where
-* t_0 = 1,
-* t_{n+1} = t_n (t_n + 2) (t_n + 3) (t_n ^ 2 + 15 t_n + 74) / 120
-For example:
-* t_0 = 1,
-* t_1 = 9,
-* t_2 = 2871,
-* t_3 = 1636845671105073,
-* t_4 = 97916848002123806402045274379974531999764335775612939415896877758995991565.
--}
-
-arityIteratedThreshold :: Iterated ThresholdFun -> Int
-arityIteratedThreshold = length . variables
-
 instance Arbitrary (Iterated ThresholdFun) where
   arbitrary :: Gen (Iterated ThresholdFun)
   arbitrary = sized $ \n -> do
     n' <- chooseInt (0, n)
     generateIteratedThresholdFun n'
 
--- Does not generate subfunctions with arity 0 as this would imply an infinite number of partitions.
--- Subfunctions with arity zero are also equivalent to
--- simply decreasing the threshold of the original function.
+-- Generator equivalent of allNAryITFs
 generateIteratedThresholdFun :: Int -> Gen (Iterated ThresholdFun)
 generateIteratedThresholdFun 0 = elements
   [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
@@ -332,7 +263,6 @@ generateSubFuns n = do
 -- Gives all possible representations of n-bit ITFs, except for the ones with
 -- 0-ary functions as their subfunctions, as this would lead to an infinite
 -- number of representations.
--- TODO-NEW: See if we can circumvent this problem using FEAT
 allNAryITFs :: Int -> [Iterated ThresholdFun]
 allNAryITFs = (map nAryITFEnum' [0 ..] !!)
   where

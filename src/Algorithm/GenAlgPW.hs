@@ -39,7 +39,7 @@ computeMin = fix $ appEndo computeMinStep >>> memoize
 
 type Complexity = PiecewisePoly Rational
 
-type ComputeState f = HashMap f [(f, Complexity)]
+type ComputeState f = HashMap f Complexity
 
 type ComputeAction f = State (ComputeState f) Complexity
 
@@ -51,12 +51,12 @@ computeMin'' f = case isConst f of
   Just _ -> return zero
   Nothing -> do
     memoMap <- get
-    case lookupList f memoMap of
+    case HM.lookup f memoMap of
       Just c  -> return c
       Nothing -> do
         subComplexities' <- subComplexities f
         let c = one + minPWs subComplexities'
-        modify (insertList f c)
+        modify (HM.insert f c)
         return c
 
 subComplexities :: (BoFun f i, Hashable f) => f -> State (ComputeState f) [Complexity]
@@ -75,18 +75,11 @@ subComplexity' f i (v, factor) = do
   c <- computeMin'' (setBit (i, v) f)
   return $ factor * c
 
-lookupList :: Hashable a => a -> HashMap a [(a, b)] -> Maybe b
-lookupList f compMap = do
-  vals <- HM.lookup f compMap
-  lookup f vals
-
-insertList :: Hashable a => a -> b -> HashMap a [(a, b)] -> HashMap a [(a, b)]
-insertList f v = HM.insertWith (++) f [(f, v)]
-
 -- Saved in case we want to explore mirrored complexities further.
-{-insertListMirror :: (Hashable f, BoFun f i) =>
-  f -> Complexity -> HashMap f [(f, Complexity)] -> HashMap f [(f, Complexity)]
-insertListMirror f c = insertList f' c' . insertList f c
+{-
+insertMirror :: (Hashable f, BoFun f i) =>
+  f -> Complexity -> HashMap f Complexity -> HashMap f Complexity
+insertMirror f c = HM.insert f' c' . HM.insert f c
   where
     f' = flipInputs f
     c' = mirrorPW (1 % 2) c-}

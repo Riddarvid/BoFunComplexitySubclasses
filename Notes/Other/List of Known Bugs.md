@@ -5,4 +5,4 @@
 	- Solution: switch the factors
 - The constant threshold functions give the wrong sign: 
   thresholdConst False results in (0, 1) when it should result in (1, 0).
-	- Solution: Tabulate over (/=) instead of (\==). A similar change is needed in setBit. See commit history for details.
+	- Solution: Redefine thresholdConst. A corresponding change is needed in setBit. See commit history for details.

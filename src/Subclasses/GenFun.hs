@@ -22,20 +22,17 @@ module Subclasses.GenFun (
   flipInputsGenFun
 ) where
 import           Algorithm.Algor           (Algor (..))
-import           BDD.BDD                   (BDDFun, bddFromOutput, isConstBDD,
-                                            pick)
+import           BDD.BDD                   (BDDa, bddFromOutputVector)
 import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
 import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
-                                            notB, restrict, substSet, support,
-                                            true, var)
+                                            notB, restrict, support, true)
 import           Data.Function.Memoize     (deriveMemoizable)
 import           Data.Hashable             (Hashable)
-import qualified Data.IntMap               as IM
+import           Data.HashSet              (HashSet)
+import qualified Data.HashSet              as HS
 import qualified Data.IntSet               as IS
-import           Data.Set                  (Set)
-import qualified Data.Set                  as Set
 import           GHC.Generics              (Generic)
 import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
                                             vector)
@@ -44,7 +41,7 @@ import           Utils                     (listToVarAssignment)
 
 -- The internal BDD should only ever be dependent on variables in [1..n]
 data GenFun = GenFun (BDD AscOrder) Int
-  deriving(Eq, Ord, Show, Generic)
+  deriving(Eq, Show, Generic)
 
 instance Hashable GenFun
 
@@ -52,7 +49,7 @@ $(deriveMemoizable ''GenFun)
 
 instance BoFun GenFun Int where
   isConst :: GenFun -> Maybe Bool
-  isConst = liftBDD isConstBDD
+  isConst = liftBDD BDD.isConst
   variables :: GenFun -> [Int]
   variables = IS.toList . liftBDD support
   setBit :: (Int, Bool) -> GenFun -> GenFun
@@ -81,11 +78,11 @@ generateGenFun :: Int -> Gen GenFun
 generateGenFun n = do
   output <- vector (2^n)
   let varAssignment = listToVarAssignment output
-  return $ GenFun (bddFromOutput n varAssignment) n
+  return $ GenFun (bddFromOutputVector n varAssignment) n
 
 ----------------- Boolean operators --------------------------------
 
-liftBDD :: (BDDFun -> a) -> (GenFun -> a)
+liftBDD :: (BDDa -> a) -> (GenFun -> a)
 liftBDD f (GenFun gf _) = f gf
 
 falseG :: Int -> GenFun
@@ -112,64 +109,27 @@ toGenFun' varN arity f = case isConst f of
       (GenFun subBDDF _) = toGenFun' (varN + 1) (arity - 1) $ setBit (i, False) f
       (GenFun subBDDT _) = toGenFun' (varN + 1) (arity - 1) $ setBit (i, True) f
 
-allGenFuns :: Int -> Set GenFun
-allGenFuns n
-  | n == 0 = Set.fromList [falseG 0, trueG 0]
-  | otherwise = Set.fromList [GenFun (pic n a1 a2) n | a1 <- subBDDs, a2 <- subBDDs]
+allGenFuns :: Int -> HashSet GenFun
+allGenFuns = (map allGenFuns' [0 ..] !!)
   where
-    n' = n - 1
-    subFuns = Set.toList $ allGenFuns n'
-    subBDDs = map (\(GenFun bdd _) -> bdd) subFuns
-
------------------ Examples -----------------------------------------
-
--- n is the number of bits of the functions
-majFun' :: Int -> BDDFun
-majFun' n = thresholdBDD threshold 1 n
-  where
-    threshold = (n `div` 2) + 1
-
-thresholdBDD :: Int -> Int -> Int -> BDDFun
-thresholdBDD 0 _ _ = true
-thresholdBDD threshold i n
-  | i > n = false
-  | otherwise = pick i
-    (thresholdBDD threshold (i + 1) n)
-    (thresholdBDD (threshold - 1) (i + 1) n)
-
-iteratedFun' :: Int -> Int -> BDDFun -> BDDFun
-iteratedFun' bits levels = iteratedFun'' bits levels 1
-
-iteratedFun'' :: Int -> Int -> Int -> BDDFun -> BDDFun
-iteratedFun'' bits _levels _varN f = go (_levels - 1) _varN
-  where
-    go :: Int -> Int -> BDDFun
-    go levels varN
-      | levels == 0 = substituteBase f bits varN
-      | otherwise = substituteSubFuns f subFuns
+    allGenFuns' n
+      | n == 0 = HS.fromList [falseG 0, trueG 0]
+      | otherwise = HS.fromList [GenFun (pic n a1 a2) n | a1 <- subBDDs, a2 <- subBDDs]
       where
-        varFactor = bits * levels
-        factors = iterate (+ varFactor) varN
-        subFuns = map (go (levels - 1)) $ take bits factors
-
-substituteBase :: BDDFun -> Int -> Int -> BDDFun
-substituteBase f bits varN = substSet (IM.fromList $ zip [1 .. bits] vars) f
-  where
-    vars = map var [varN ..]
-
-substituteSubFuns :: BDDFun -> [BDDFun] -> BDDFun
-substituteSubFuns f subFuns = substSet (IM.fromList $ zip [1 ..] subFuns) f
+        n' = n - 1
+        subFuns = HS.toList $ allGenFuns n'
+        subBDDs = map (\(GenFun bdd _) -> bdd) subFuns
 
 --------------- Exported ----------------------------
 
 majFun :: Int -> GenFun
-majFun n = GenFun (majFun' n) n
+majFun n = GenFun (BDD.majFun n) n
 
 iteratedMajFun :: Int -> Int -> GenFun
 iteratedMajFun bits levels = iteratedFun levels (majFun bits)
 
 iteratedFun :: Int -> GenFun -> GenFun
-iteratedFun levels (GenFun bdd bits) = GenFun (iteratedFun' bits levels bdd) n
+iteratedFun levels (GenFun bdd bits) = GenFun (BDD.iteratedFun bits levels bdd) n
   where
     n = bits ^ levels
 

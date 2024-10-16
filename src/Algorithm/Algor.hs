@@ -1,11 +1,8 @@
 {-# LANGUAGE InstanceSigs #-}
 module Algorithm.Algor (
   Algor(..),
-  DecTree(..),
-  allAlgors
+  DecTree(..)
 ) where
-import           Data.Set (Set)
-import qualified Data.Set as Set
 
 class Algor a  where
   res :: Bool -> a
@@ -32,13 +29,3 @@ instance Algor DecTree where
   pic :: Int -> DecTree -> DecTree -> DecTree
   pic = Pick
 
--- Iterates pic until all the "variables" have been used.
--- TODO-NEW: Figure out if this should be limited to just GenFuns since it doesn't
--- really make sense for all Algors.
-allAlgors :: (Algor a, Ord a) => Int -> Set a
-allAlgors n
-  | n == 0 = Set.fromList [res False, res True]
-  | otherwise = Set.fromList [pic n' a1 a2 | a1 <- subFuns, a2 <- subFuns]
-  where
-    n' = n - 1
-    subFuns = Set.toList $ allAlgors n'

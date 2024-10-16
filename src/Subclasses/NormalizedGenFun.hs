@@ -13,22 +13,15 @@ import           BoFun                    (BoFun (..))
 import           Data.DecisionDiagram.BDD (AscOrder, BDD)
 import           Data.Function.Memoize    (deriveMemoizable)
 import           Data.Hashable            (Hashable)
-import           Data.Ord                 (comparing)
 import           GHC.Generics             (Generic)
 import           Subclasses.GenFun        (GenFun (GenFun), toCanonicForm)
 
 newtype NormalizedGenFun = NormalizedGenFun GenFun
-  deriving (Generic)
+  deriving (Generic, Eq)
 
 $(deriveMemoizable ''NormalizedGenFun)
 
 instance Hashable NormalizedGenFun
-
-instance Eq NormalizedGenFun where
-  (==) :: NormalizedGenFun -> NormalizedGenFun -> Bool
-  ngf1 == ngf2 = case comparing ngfBDD ngf1 ngf2 of
-    EQ -> True
-    _  -> False
 
 mkNGF :: GenFun -> NormalizedGenFun
 mkNGF gf = NormalizedGenFun (normalizeGenFun gf)
