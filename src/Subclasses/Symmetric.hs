@@ -85,7 +85,9 @@ majFunBasic n = mkBasicSymmetric n (>= threshold)
 type Range = Int
 type Result = (Bool, Seq Range)
 
--- Invariant: the ranges are always sorted
+-- A result is defined as a sequence of ints, each describing the number of False/Trues,
+-- switching value each time we encounter a new segment.
+-- A bool signifies whether we start with a sequence of Falses or Trues.
 data Symmetric f = Symmetric {
   symmResultvector :: Result,
   symmSubFuns      :: MultiSet f
