@@ -10,11 +10,14 @@ module Subclasses.Iterated (
   Iterated'
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
+import           Control.Enumerable    (Enumerable, Shared, Sized (aconcat),
+                                        Typeable, c1, share)
 import           Control.Monad.Free    (Free (..))
 import           Data.Function         ((&))
 import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
 import           Data.Functor.Classes  (Eq1)
 import           Data.Hashable         (Hashable)
+import           Test.Feat             (enumerate)
 
 type Iterated' g f = Free g f
 
@@ -42,3 +45,9 @@ instance (BoFun (g (Iterated g)) (i, [i]),
 instance (Memoizable (f (Iterated f))) => Memoizable (Iterated f) where
   memoize :: (Iterated f -> v) -> Iterated f -> v
   memoize = $(deriveMemoize ''Free)
+
+instance (Enumerable (g (Iterated g)), Typeable g) => Enumerable (Iterated g) where
+  enumerate :: (Typeable f, Sized f) => Shared f (Iterated g)
+  enumerate = share $ aconcat [
+    c1 Pure,
+    c1 Free]

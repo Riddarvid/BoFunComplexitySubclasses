@@ -32,7 +32,7 @@ import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Applicative   (Applicative (liftA2), (<|>))
-import           Control.Enumerable    (Shareable, Shared, Sized (aconcat),
+import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         access, c1, datatype, share)
 import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
@@ -137,7 +137,7 @@ instance (Enumerable g, Ord g) => Enumerable (ThresholdFun g) where
   -- enumerate = datatype [c2 ThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
   enumerate = share $ go 0
     where
-      go n = enumerateThresholdFun n <|> go (n + 1)
+      go n = pay $ enumerateThresholdFun n <|> go (n + 1)
 
 enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (ThresholdFun g)
 enumerateThresholdFun n = (ThresholdFun . Threshold <$> tupleF) <*> multisetF
@@ -157,12 +157,6 @@ enumerateMultiSet n = insertMultiSetF access $ enumerateMultiSet (n - 1)
 
 insertMultiSetF :: (Applicative f, Ord a) => f a -> f (MultiSet a) -> f (MultiSet a)
 insertMultiSetF = liftA2 MultiSet.insert
-
-instance Enumerable (Iterated ThresholdFun) where
-  enumerate :: (Typeable f, Sized f) => Shared f (Iterated ThresholdFun)
-  enumerate = datatype [
-    c1 Pure,
-    c1 Free]
 
 {-enumerateITF :: Sized f => f (Iterated ThresholdFun)
 enumerateITF = go 0 where
