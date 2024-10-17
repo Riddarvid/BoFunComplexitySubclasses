@@ -67,3 +67,8 @@
 
 - Vi har undersökt Taylor expansion och kommit fram till att vi kan använda den för translation. Vi har testat att en affin transformation kan utföras genom att först utföra en translation och sedan en skalering. Planen nu är att använda Taylor expansion för translationen, sedan är skalering en enkel linjär operation.
 - Från vad vi kan se är Taylor-metoden inte snabbare än den tidigare implementationen. Den verkar dock inte vara långsammare heller, vilket är trevligt.
+## 17/10
+
+- Vi har nu skrivit en "bättre" implementation av Enumerable för ITFs. Den är inte kopplad till bitantal, men den är garanterad att endast generera giltiga funktioner. Skillnaden nu är att vi faktiskt jobbar med operationer på applicative functors istället för att generera en gigantisk lista och sen konvertera den till en Sharable.
+- aconcat av en lång lista blir ineffektivt eftersom vi måste iterera igenom hela listan för att få reda på kardinaliteten.
+- 

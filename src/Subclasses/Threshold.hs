@@ -31,10 +31,9 @@ import           Prelude               hiding (negate, sum, (+), (-))
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.Applicative   ((<|>))
-import           Control.Enumerable    (Shareable, Shared,
-                                        Sized (aconcat, fin, pay), c2,
-                                        deriveEnumerable, share)
+import           Control.Applicative   (Applicative (liftA2), (<|>))
+import           Control.Enumerable    (Shareable, Shared, Sized (aconcat),
+                                        access, c1, datatype, share)
 import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
 import           Test.Feat             (Enumerable (enumerate))
@@ -42,9 +41,9 @@ import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
                                         elements, sized)
 import           Test.QuickCheck.Gen   (Gen)
 import           Type.Reflection       (Typeable)
-import           Utils                 (Square, boolToInt, chooseMany,
-                                        duplicate, lookupBool, naturals,
-                                        partitions, squareToList, tabulateBool)
+import           Utils                 (Square, chooseMany, duplicate,
+                                        lookupBool, naturals, partitions,
+                                        squareToList, tabulateBool)
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
@@ -132,11 +131,40 @@ instance Show1 ThresholdFun where
 
 -- TODO: instance Read1 ThresholdFun
 
-{-instance Enumerable (Iterated ThresholdFun) where
-  enumerate :: (Typeable f, Sized f) => Shared f (Iterated ThresholdFun)
-  enumerate = share enumerateITF
+-- We iterate over the number of subfunctions
+instance (Enumerable g, Ord g) => Enumerable (ThresholdFun g) where
+  enumerate :: (Typeable f, Sized f) => Shared f (ThresholdFun g)
+  -- enumerate = datatype [c2 ThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
+  enumerate = share $ go 0
+    where
+      go n = enumerateThresholdFun n <|> go (n + 1)
 
-enumerateITF :: Sized f => f (Iterated ThresholdFun)
+enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (ThresholdFun g)
+enumerateThresholdFun n = (ThresholdFun . Threshold <$> tupleF) <*> multisetF
+  where
+    tupleF = enumerateTuples n
+    multisetF = enumerateMultiSet n
+
+-- Tuples are free
+enumerateTuples :: (Typeable f, Sized f) => Int -> Shareable f (Int, Int)
+enumerateTuples n = aconcat $ map pure $ [(nt, n + 1 - nt) | nt <- [0 .. n + 1]]
+
+-- Enumerates MultiSets with exactly n members
+-- MultSets are free
+enumerateMultiSet :: (Typeable f, Sized f, Ord a, Enumerable a) => Int -> Shareable f (MultiSet a)
+enumerateMultiSet 0 = pure MultiSet.empty
+enumerateMultiSet n = insertMultiSetF access $ enumerateMultiSet (n - 1)
+
+insertMultiSetF :: (Applicative f, Ord a) => f a -> f (MultiSet a) -> f (MultiSet a)
+insertMultiSetF = liftA2 MultiSet.insert
+
+instance Enumerable (Iterated ThresholdFun) where
+  enumerate :: (Typeable f, Sized f) => Shared f (Iterated ThresholdFun)
+  enumerate = datatype [
+    c1 Pure,
+    c1 Free]
+
+{-enumerateITF :: Sized f => f (Iterated ThresholdFun)
 enumerateITF = go 0 where
   go n = aconcat (map pure (allNaryITFs n)) <|> pay (go (n + 1))-}
 
