@@ -8,6 +8,7 @@ module Subclasses.Symmetric (
   BasicSymmetric(BasicSymmetric),
   mkBasicSymmetric,
   Symmetric,
+  resultVectorFromList,
   symmResultvector,
   symmSubFuns,
   majFunBasic,
@@ -17,7 +18,11 @@ module Subclasses.Symmetric (
 ) where
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
+import           Control.Applicative   ((<|>))
 import           Control.Arrow         ((>>>))
+import           Control.Enumerable    (Enumerable, Shareable, Shared,
+                                        Sized (aconcat, pay), Typeable,
+                                        enumerate, share)
 import           Control.Monad.Free    (Free (Free, Pure))
 import           Data.Foldable         (Foldable (toList))
 import           Data.Function         ((&))
@@ -25,6 +30,8 @@ import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Ord1 (liftCompare), Ord2 (liftCompare2),
                                         Show1 (liftShowsPrec), showsBinaryWith)
+import           Data.List.NonEmpty    (NonEmpty ((:|)))
+import qualified Data.List.NonEmpty    as NE
 import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
 import           Data.Sequence         (Seq (Empty, (:<|), (:|>)))
@@ -33,7 +40,7 @@ import           Subclasses.Iterated   (Iterated)
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt, sized,
                                         vector)
 import           Test.QuickCheck.Gen   (Gen)
-import           Utils                 (naturals)
+import           Utils                 (enumerateMultiSet, naturals, partitions)
 
 --------- BasicSymmetric -----------------------------
 
@@ -75,13 +82,19 @@ majFunBasic n = mkBasicSymmetric n (>= threshold)
 
 ---------------- Symmetric -----------------------------------------
 
-type Range = (Int, Int)
+type Range = Int
+type Result = (Bool, Seq Range)
 
 -- Invariant: the ranges are always sorted
 data Symmetric f = Symmetric {
-  symmResultvector :: Seq (Range, Bool),
+  symmResultvector :: Result,
   symmSubFuns      :: MultiSet f
 } deriving (Show)
+
+resultVectorFromList :: NonEmpty Bool -> Result
+resultVectorFromList res@(v :| _) = (v, Seq.fromList $ map NE.length $ NE.group res')
+  where
+    res' = NE.toList res
 
 instance Memoizable a => Memoizable (Seq a) where
   memoize :: (Seq a -> v) -> Seq a -> v
@@ -112,7 +125,7 @@ instance (Ord f, Memoizable f) => Memoizable (Symmetric f) where
 instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
   isConst :: Symmetric f -> Maybe Bool
   isConst (Symmetric ranges _) = case ranges of
-    (_, val) :<| Empty -> Just val
+    (val, _ :<| Empty) -> Just val
     _                  -> Nothing
   variables :: Symmetric f -> [(Int, i)]
   variables (Symmetric _ subFuns) = do
@@ -121,7 +134,7 @@ instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
     return (i, v)
   setBit :: ((Int, i), Bool) -> Symmetric f -> Symmetric f
   setBit ((i, v), val) (Symmetric rv subFuns) = case isConst subFun' of
-    Just res  -> Symmetric rv' subFuns'
+    Just res -> Symmetric rv' subFuns'
       where rv' = if res then removeLowest rv else removeHighest rv
     Nothing -> Symmetric rv $ MultiSet.insert subFun' subFuns'
     where
@@ -129,36 +142,32 @@ instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
     subFuns' = subFuns & MultiSet.delete subFun
     subFun' = setBit (v, val) subFun
 
-removeLowest :: Seq (Range, Bool) -> Seq (Range, Bool)
-removeLowest (((low, high), val) :<| xs)
-  | low' == high = xs
-  | otherwise = ((low', high), val) :<| xs
-  where
-    low' = low + 1
-removeLowest Empty = undefined
+removeLowest :: Result -> Result
+removeLowest (v, length' :<| xs)
+  | length' == 1 = (not v, xs)
+  | otherwise = (v, length' - 1 :<| xs)
+removeLowest (_, Empty) = undefined
 
-removeHighest :: Seq (Range, Bool) -> Seq (Range, Bool)
-removeHighest (xs :|> ((low, high), val))
-  | low == high' = xs
-  | otherwise = xs :|> ((low, high'), val)
-  where
-    high' = high - 1
-removeHighest Empty = undefined
+removeHighest :: Result -> Result
+removeHighest (v, xs :|> length')
+  | length' == 1 = (v, xs)
+  | otherwise = (v, xs :|> length' - 1)
+removeHighest (_, Empty) = undefined
 
 instance Constable Symmetric where
   mkConst :: Bool -> Symmetric f
-  mkConst val = Symmetric (Seq.singleton ((0, 1), val)) MultiSet.empty
+  mkConst val = Symmetric (val, Seq.singleton 1) MultiSet.empty
 
 -- Examples:
 
 majFun :: Int -> Symmetric (Maybe Bool)
-majFun n = Symmetric (Seq.fromList [((0, n'), False), ((n', n' + n'), True)]) $ MultiSet.fromOccurList [(Nothing, n)]
+majFun n = Symmetric (False, Seq.fromList [n', n']) $ MultiSet.fromOccurList [(Nothing, n)]
   where
     n' = (n `div` 2) + 1
 
 ----------- Iterated Symmetric -------------------------
 
-iteratedFun :: [(Int, Seq (Range, Bool))] -> Iterated Symmetric
+iteratedFun :: [(Int, Result)] -> Iterated Symmetric
 iteratedFun [] = Pure ()
 iteratedFun ((nBits, res) : ress) = Free $
   Symmetric res $ MultiSet.fromOccurList [(subFun, nBits)]
@@ -171,7 +180,26 @@ iteratedMajFun nBits numStages = replicate numStages nBits & iteratedMajFun'
 iteratedMajFun' :: [Int] -> Iterated Symmetric
 iteratedMajFun' = iteratedFun . map (\nBits -> (nBits, majSequence nBits))
 
-majSequence :: Int -> Seq (Range, Bool)
-majSequence nBits = Seq.fromList [((0, votes), False), ((votes, votes + votes), True)]
+majSequence :: Int -> Result
+majSequence nBits = (False, Seq.fromList [votes, votes])
   where
     votes = (nBits + 1) `div` 2
+
+-------------------- Enumeration ------------------------
+
+-- We iterate over the number of subfunctions
+instance (Enumerable g, Ord g) => Enumerable (Symmetric g) where
+  enumerate :: (Typeable f, Sized f) => Shared f (Symmetric g)
+  enumerate = share $ go 0
+    where
+      go n = pay $ enumerateSymmetric n <|> go (n + 1)
+
+enumerateSymmetric :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (Symmetric g)
+enumerateSymmetric n = Symmetric <$> enumerateResults n <*> enumerateMultiSet n
+
+enumerateResults :: (Typeable f, Sized f) => Int -> Shareable f Result
+enumerateResults n = aconcat $ map pure $ do
+  v <- [False, True]
+  seqList <- partitions (n + 1)
+  return (v, Seq.fromList seqList)
+

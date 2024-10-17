@@ -3,7 +3,10 @@
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 module Utils where
 
+import           Control.Applicative   (liftA2)
 import           Control.Arrow         ((&&&), (>>>))
+import           Control.Enumerable    (Enumerable, Shareable, Sized, Typeable,
+                                        access)
 import           Control.Monad         (forM_, unless)
 import           Control.Monad.State   (MonadState (..), execState)
 import           Data.Function.Memoize (Memoizable (..))
@@ -11,6 +14,7 @@ import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
                                         Ord2 (..), Show1 (..), Show2 (..))
 import           Data.IntMap           (IntMap)
 import qualified Data.IntMap           as IM
+import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
 import qualified Data.Set              as Set
 import           DSLsofMath.Algebra    (AddGroup, Additive (zero),
@@ -29,7 +33,7 @@ class (Monoid a) => Group a where
 
 -- MultiSet instances.
 
-instance (Ord a, Memoizable a) => Memoizable (MultiSet.MultiSet a) where
+instance (Ord a, Memoizable a) => Memoizable (MultiSet a) where
   memoize f = MultiSet.toAscOccurList >>> memoize (MultiSet.fromAscOccurList >>> f)
 
 -- TODO: These should be in Data.MultiSet.
@@ -134,6 +138,7 @@ type Partition a = [a]
 -- The reason that we're dropping the last one is that
 -- f == ThresholdFun (1,1) [f]. We are not creating a new function by simply wrapping it
 -- in a ThresholdFun.
+-- Does not generate any 0's.
 partitions :: (Ord a, Enum a, AddGroup a, Multiplicative a) => a -> [Partition a]
 partitions n = case partitions' one n of
   [] -> []
@@ -156,3 +161,14 @@ listToVarAssignment xs = IM.fromAscList $ zip [1 ..] xs
 
 data Sign = Neg | Zero | Pos
   deriving (Eq, Show)
+
+--------------------------------------------------------
+
+-- Enumerates MultiSets with exactly n members
+-- MultSets are free
+enumerateMultiSet :: (Typeable f, Sized f, Ord a, Enumerable a) => Int -> Shareable f (MultiSet a)
+enumerateMultiSet 0 = pure MultiSet.empty
+enumerateMultiSet n = insertMultiSetF access $ enumerateMultiSet (n - 1)
+
+insertMultiSetF :: (Applicative f, Ord a) => f a -> f (MultiSet a) -> f (MultiSet a)
+insertMultiSetF = liftA2 MultiSet.insert

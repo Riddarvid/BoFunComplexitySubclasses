@@ -71,4 +71,7 @@
 
 - Vi har nu skrivit en "bättre" implementation av Enumerable för ITFs. Den är inte kopplad till bitantal, men den är garanterad att endast generera giltiga funktioner. Skillnaden nu är att vi faktiskt jobbar med operationer på applicative functors istället för att generera en gigantisk lista och sen konvertera den till en Sharable.
 - aconcat av en lång lista blir ineffektivt eftersom vi måste iterera igenom hela listan för att få reda på kardinaliteten.
-- 
+- Vi har nu brutit ut iterated-delen av enumeration till Iterated-filen. Inget i denna fil kostar, vilket gör att kostnaden helt bestäms av den underliggande funktionen.
+- Nackdelen med Feat-enumeration är att vi inte har kontroll över funktionens arity. Vi borde alltså fortfarande använda QuickCheck när det är önskvärt. Vi kan dock använda feat när det inte är viktigt.
+- Vi får fundera på om Feat-enumeration borde tillåta 0-ary sub functions, eller om vi ska ha som invariant att ThresholdFuns aldrig får ha 0-ary sub functions.
+- Potentiell fråga: Borde invarianten vara ännu starkare: dvs. att vi inte ens tillåter konstanta subfunktioner? Detta är vad som händer i setBit för threshold functions just nu.

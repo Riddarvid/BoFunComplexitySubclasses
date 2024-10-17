@@ -31,9 +31,9 @@ import           Prelude               hiding (negate, sum, (+), (-))
 import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.Applicative   (Applicative (liftA2), (<|>))
+import           Control.Applicative   ((<|>))
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
-                                        access, c1, datatype, share)
+                                        share)
 import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
 import           Test.Feat             (Enumerable (enumerate))
@@ -42,8 +42,8 @@ import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
 import           Test.QuickCheck.Gen   (Gen)
 import           Type.Reflection       (Typeable)
 import           Utils                 (Square, chooseMany, duplicate,
-                                        lookupBool, naturals, partitions,
-                                        squareToList, tabulateBool)
+                                        enumerateMultiSet, lookupBool, naturals,
+                                        partitions, squareToList, tabulateBool)
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
@@ -130,37 +130,6 @@ instance Show1 ThresholdFun where
     showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "ThresholdFun" p t u
 
 -- TODO: instance Read1 ThresholdFun
-
--- We iterate over the number of subfunctions
-instance (Enumerable g, Ord g) => Enumerable (ThresholdFun g) where
-  enumerate :: (Typeable f, Sized f) => Shared f (ThresholdFun g)
-  -- enumerate = datatype [c2 ThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
-  enumerate = share $ go 0
-    where
-      go n = pay $ enumerateThresholdFun n <|> go (n + 1)
-
-enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (ThresholdFun g)
-enumerateThresholdFun n = (ThresholdFun . Threshold <$> tupleF) <*> multisetF
-  where
-    tupleF = enumerateTuples n
-    multisetF = enumerateMultiSet n
-
--- Tuples are free
-enumerateTuples :: (Typeable f, Sized f) => Int -> Shareable f (Int, Int)
-enumerateTuples n = aconcat $ map pure $ [(nt, n + 1 - nt) | nt <- [0 .. n + 1]]
-
--- Enumerates MultiSets with exactly n members
--- MultSets are free
-enumerateMultiSet :: (Typeable f, Sized f, Ord a, Enumerable a) => Int -> Shareable f (MultiSet a)
-enumerateMultiSet 0 = pure MultiSet.empty
-enumerateMultiSet n = insertMultiSetF access $ enumerateMultiSet (n - 1)
-
-insertMultiSetF :: (Applicative f, Ord a) => f a -> f (MultiSet a) -> f (MultiSet a)
-insertMultiSetF = liftA2 MultiSet.insert
-
-{-enumerateITF :: Sized f => f (Iterated ThresholdFun)
-enumerateITF = go 0 where
-  go n = aconcat (map pure (allNaryITFs n)) <|> pay (go (n + 1))-}
 
 -- TODO: Special case of transport of a type class along an isomorphism.
 instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
@@ -251,19 +220,21 @@ iteratedMajFun nBits numStages = replicate numStages threshold & iteratedMajFun'
   where
     threshold = (nBits + 1) `div` 2
 
+-------------- Generation of ITFs ---------------------------------------
+
 instance Arbitrary (Iterated ThresholdFun) where
   arbitrary :: Gen (Iterated ThresholdFun)
   arbitrary = sized $ \n -> do
     n' <- chooseInt (0, n)
-    generateIteratedThresholdFun n'
+    generateNAryITF n'
 
 -- Generator equivalent of allNAryITFs
-generateIteratedThresholdFun :: Int -> Gen (Iterated ThresholdFun)
-generateIteratedThresholdFun 0 = elements
+generateNAryITF :: Int -> Gen (Iterated ThresholdFun)
+generateNAryITF 0 = elements
   [iteratedThresholdFunConst False, iteratedThresholdFunConst True]
-generateIteratedThresholdFun 1 = elements
+generateNAryITF 1 = elements
   [iteratedThresholdFunConst False, iteratedThresholdFunConst True, Pure ()]
-generateIteratedThresholdFun n = do
+generateNAryITF n = do
   (subFuns, nSubFuns) <- generateSubFuns n
   threshold' <- generateThreshold nSubFuns
   return $ Free $ ThresholdFun threshold' subFuns
@@ -277,8 +248,28 @@ generateThreshold n = do
 generateSubFuns :: Int -> Gen (MultiSet (Free ThresholdFun ()), Int)
 generateSubFuns n = do
   partition <- elements $ partitions n
-  subFuns <- mapM generateIteratedThresholdFun partition
+  subFuns <- mapM generateNAryITF partition
   return (MultiSet.fromList subFuns, length subFuns)
+
+--------------- Enumeration -----------------------------
+
+-- We iterate over the number of subfunctions
+instance (Enumerable g, Ord g) => Enumerable (ThresholdFun g) where
+  enumerate :: (Typeable f, Sized f) => Shared f (ThresholdFun g)
+  -- enumerate = datatype [c2 ThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
+  enumerate = share $ go 0
+    where
+      go n = pay $ enumerateThresholdFun n <|> go (n + 1)
+
+enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (ThresholdFun g)
+enumerateThresholdFun n = ThresholdFun <$> tupleF <*> multisetF
+  where
+    tupleF = enumerateThresholds n
+    multisetF = enumerateMultiSet n
+
+-- Tuples are free
+enumerateThresholds :: (Typeable f, Sized f) => Int -> Shareable f Threshold
+enumerateThresholds n = aconcat $ [pure $ Threshold (nt, n + 1 - nt) | nt <- [0 .. n + 1]]
 
 --------------- Exhaustive generation ------------------------------
 
