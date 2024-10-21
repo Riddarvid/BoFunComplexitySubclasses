@@ -10,7 +10,7 @@
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 module Subclasses.Threshold (
   Threshold(Threshold),
-  ThresholdFun(ThresholdFun),
+  ThresholdFun,
   majFun,
   iteratedFun,
   iteratedMajFun,
@@ -36,7 +36,7 @@ import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
-import           Subclasses.Lifted     (Lifted)
+import           Subclasses.Lifted     (Lifted, LiftedSymmetric, mkLiftedSymm)
 import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
                                         elements, sized)
@@ -50,6 +50,7 @@ import           Utils                 (Square, chooseMany, duplicate,
 -- Number of inputs needed for 'True' and 'False' result, respectively.
 -- The sum of these thresholds equals the number of inputs plus one.
 -- Each threshold is non-negative.
+-- TODO-NEW: Normalized version
 newtype Threshold = Threshold (Square Int)
   deriving (Show, Eq, Ord)
 
@@ -111,6 +112,7 @@ reduceThreshold v (Threshold (nt, nf)) = if v
   else Threshold (nt, nf - 1)
 
 newtype BasicThresholdFun = BTF Threshold
+  deriving (Eq, Ord, Show)
 
 instance BoFun BasicThresholdFun () where
   isConst :: BasicThresholdFun -> Maybe Bool
@@ -122,86 +124,10 @@ instance BoFun BasicThresholdFun () where
   setBit :: ((), Bool) -> BasicThresholdFun -> BasicThresholdFun
   setBit (_, v) (BTF th) = BTF $ reduceThreshold v th
 
-type LiftedThresholdFun = Lifted BasicThresholdFun
-
--- | A threshold-type Boolean function.
-data ThresholdFun f = ThresholdFun {
-  threshold          :: Threshold,
-  -- The subfunctions.
-  -- None of the subfunctions are constant.
-  -- Normalization condition: if one of the thresholds is zero, then there are no subfunctions.
-  thresholdFunctions :: MultiSet.MultiSet f
-  -- Arvid's comment: Right now, all the elements of thresholdFunctions must have the same
-  -- type, i.e. Symmetric or ThresholdFun etc. Doesn't this limit what we can express?
-} deriving (Show)
-
--- Necessitated by misdesign of Haskell typeclasses.
-instance Eq1 ThresholdFun where
-  liftEq eq' (ThresholdFun t us) (ThresholdFun t' us') =
-    liftEq2 (==) (liftEq eq') (t, us) (t', us')
-
-instance Ord1 ThresholdFun where
-  liftCompare compare' (ThresholdFun t us) (ThresholdFun t' us') =
-    liftCompare2 compare (liftCompare compare') (t, us) (t', us')
-
--- TODO: use record fields.
-instance Show1 ThresholdFun where
-  liftShowsPrec showsPrec' showList' p (ThresholdFun t u) =
-    showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "ThresholdFun" p t u
-
--- TODO: instance Read1 ThresholdFun
-
--- TODO: Special case of transport of a type class along an isomorphism.
-instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
-  memoize :: (ThresholdFun x -> v) -> ThresholdFun x -> v
-  memoize f = m >>> memoize (n >>> f) where
-    -- Back and forth.
-    m (ThresholdFun t us) = (t, us)
-    n (t, us) = ThresholdFun t us
+type ThresholdFun = LiftedSymmetric BasicThresholdFun
 
 thresholdFunConst :: Bool -> ThresholdFun f
-thresholdFunConst val = ThresholdFun (thresholdConst val) MultiSet.empty
-
--- | Normalizes threshold functions equivalent to a constant function.
-thresholdFunNormalize :: ThresholdFun f -> ThresholdFun f
-thresholdFunNormalize u = case thresholdIsConst (threshold u) of
-  Just val -> thresholdFunConst val
-  Nothing  -> u
-
--- Reduces constant subfunctions in a threshold function.
--- Not used for anything right now.
-{-
-thresholdFunNormalizeSub :: (Eq f, BoFun f i) => ThresholdFun f -> ThresholdFun f
-thresholdFunNormalizeSub (ThresholdFun t us) = ThresholdFun (t - s) (MultiSet.fromAscOccurList us') where
-  (reduced, us') = us
-    & MultiSet.toOccurList
-    & map (first viewConst >>> (\(x, k) -> bimap (, k) (, k) x))
-    & partitionEithers
-  s = reduced
-    & map (\(val, k) -> thresholdScale k (thresholdConst val))
-    & sum
--}
-
--- TODO: Figure out why this needs UndecidableInstances. (Haskell...)
-instance (Ord f, BoFun f i) => BoFun (ThresholdFun f) (Int, i) where
-  isConst :: ThresholdFun f -> Maybe Bool
-  isConst = threshold >>> thresholdIsConst
-
-  variables :: ThresholdFun f -> [(Int, i)]
-  variables (ThresholdFun _ us) = do
-    (i, (u, _)) <- us & MultiSet.toAscOccurList & zip naturals
-    v <- variables u
-    return (i, v)
-
-  setBit :: ((Int, i), Bool) -> ThresholdFun f -> ThresholdFun f
-  setBit ((i, v), val) (ThresholdFun t us) = case isConst u' of
-    Just _  -> thresholdFunNormalize $ ThresholdFun t' us'
-    Nothing -> ThresholdFun t $ MultiSet.insert u' us'
-    where
-    (u, _) = MultiSet.toAscOccurList us !! i
-    us' = us & MultiSet.delete u
-    u' = setBit (v, val) u
-    t' = t - thresholdConst (not val)
+thresholdFunConst val = mkLiftedSymm (BTF $ thresholdConst val) MultiSet.empty
 
 instance Constable ThresholdFun where
   mkConst :: Bool -> ThresholdFun f
@@ -209,7 +135,7 @@ instance Constable ThresholdFun where
 
 -- | A thresholding function with copies of a single subfunction.
 thresholdFunReplicate :: (Ord f) => Threshold -> f -> ThresholdFun f
-thresholdFunReplicate t u = ThresholdFun t $ MultiSet.fromOccurList [(u, thresholdNumInputs t)]
+thresholdFunReplicate t u = mkLiftedSymm (BTF t) $ MultiSet.fromOccurList [(u, thresholdNumInputs t)]
 
 -- | Boolean functions built from iterated thresholding.
 type IteratedThresholdFun = Iterated ThresholdFun
@@ -257,7 +183,7 @@ generateNAryITF 1 = elements
 generateNAryITF n = do
   (subFuns, nSubFuns) <- generateSubFuns n
   threshold' <- generateThreshold nSubFuns
-  return $ Free $ ThresholdFun threshold' subFuns
+  return $ Free $ mkLiftedSymm (BTF threshold') subFuns
 
 generateThreshold :: Int -> Gen Threshold
 generateThreshold n = do
@@ -283,9 +209,9 @@ instance (Enumerable g, Ord g) => Enumerable (ThresholdFun g) where
 
 -- TODO-NEW: Tydligare namn
 enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (ThresholdFun g)
-enumerateThresholdFun nSubFuns = ThresholdFun <$> tupleF <*> multisetF
+enumerateThresholdFun nSubFuns = mkLiftedSymm <$> tupleF <*> multisetF
   where
-    tupleF = enumerateThresholds nSubFuns
+    tupleF = BTF <$> enumerateThresholds nSubFuns
     multisetF = enumerateMultiSet nSubFuns
 
 -- Tuples are free
@@ -307,7 +233,7 @@ allNAryITFs = (map nAryITFEnum' [0 ..] !!)
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns
-      return $ Free $ ThresholdFun threshold' subFuns
+      return $ Free $ mkLiftedSymm (BTF threshold') subFuns
 
 -- Gives all the thresholds satisfying the following properties:
 -- 0 <= tn <= n + 1

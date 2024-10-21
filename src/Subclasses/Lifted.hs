@@ -11,11 +11,17 @@ module Subclasses.Lifted (
   LiftedSymmetric,
   mkLiftedSymm
 ) where
-import           BoFun         (BoFun (..))
-import           Data.Maybe    (fromJust)
-import           Data.MultiSet (MultiSet)
-import qualified Data.MultiSet as MultiSet
-import           Utils         (naturals)
+import           BoFun                 (BoFun (..), Constable (mkConst))
+import           Control.Arrow         ((>>>))
+import           Data.Function.Memoize (Memoizable, deriveMemoizable,
+                                        deriveMemoize, memoize)
+import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
+                                        Ord1 (liftCompare), Ord2 (liftCompare2),
+                                        Show1 (liftShowsPrec), showsBinaryWith)
+import           Data.Maybe            (fromJust)
+import           Data.MultiSet         (MultiSet)
+import qualified Data.MultiSet         as MultiSet
+import           Utils                 (naturals)
 
 -- Invariant: g only contains non-const functions
 -- TODO-NEW: "smart constructor" ensuring this.
@@ -79,3 +85,28 @@ instance (BoFun f (), BoFun g j, Ord g) => BoFun (LiftedSymmetric f g) (Int, j) 
       (subFun, _) = MultiSet.toAscOccurList subFuns !! i
       subFuns' = MultiSet.delete subFun subFuns
       subFun' = setBit (j, v) subFun
+
+instance (Memoizable f, Memoizable g, Ord g) => Memoizable (LiftedSymmetric f g) where
+  memoize :: (LiftedSymmetric f g -> v) -> LiftedSymmetric f g -> v
+  memoize f = toTuple >>> memoize (fromTuple >>> f) where
+    toTuple (LiftedSymmetric fun subFuns) = (fun, subFuns)
+    fromTuple (t, us) = LiftedSymmetric t us
+
+-- Necessitated by misdesign of Haskell typeclasses.
+instance (Eq f) => Eq1 (LiftedSymmetric f) where
+  liftEq :: (a -> b -> Bool) -> LiftedSymmetric f a -> LiftedSymmetric f b -> Bool
+  liftEq eq' (LiftedSymmetric t us) (LiftedSymmetric t' us') =
+    liftEq2 (==) (liftEq eq') (t, us) (t', us')
+
+instance (Ord f) => Ord1 (LiftedSymmetric f) where
+  liftCompare :: (a -> b -> Ordering) -> LiftedSymmetric f a -> LiftedSymmetric f b -> Ordering
+  liftCompare compare' (LiftedSymmetric t us) (LiftedSymmetric t' us') =
+    liftCompare2 compare (liftCompare compare') (t, us) (t', us')
+
+-- TODO: use record fields.
+instance (Show f) => Show1 (LiftedSymmetric f) where
+  liftShowsPrec :: (Int -> a -> ShowS) -> ([a] -> ShowS) -> Int -> LiftedSymmetric f a -> ShowS
+  liftShowsPrec showsPrec' showList' p (LiftedSymmetric t u) =
+    showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "ThresholdFun" p t u
+
+-- TODO: Constable1
