@@ -1,4 +1,5 @@
 
+- Tanke: Vi kanske borde definiera "lifted functions" som en basic funktion + ett multiset av subfunktioner?
 - BDD forest for more sharing/reuse
 - Bestäm vad vi räknar när vi räknar antalet funktioner av olika klasser.
 	- Kan ha två varianter, en där man endast kollar på dependent bits och en där man inte gör det.

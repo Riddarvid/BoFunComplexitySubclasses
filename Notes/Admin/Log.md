@@ -75,3 +75,57 @@
 - Nackdelen med Feat-enumeration är att vi inte har kontroll över funktionens arity. Vi borde alltså fortfarande använda QuickCheck när det är önskvärt. Vi kan dock använda feat när det inte är viktigt.
 - Vi får fundera på om Feat-enumeration borde tillåta 0-ary sub functions, eller om vi ska ha som invariant att ThresholdFuns aldrig får ha 0-ary sub functions.
 - Potentiell fråga: Borde invarianten vara ännu starkare: dvs. att vi inte ens tillåter konstanta subfunktioner? Detta är vad som händer i setBit för threshold functions just nu.
+- Implementerade enumerable för Symmetric (och får gratis instans för ITF).
+- Refaktorerade Symmetric
+
+## 21/10 möte
+
+- Vad vi har gjort:
+	- Refaktorerat Symmetric
+	- Implementerat Enumerable för Threshold, Symmetric, och Iterated.
+	- Försökt skriva en effektivare composition specifikt för affina transformationer mha. Taylor-expansion. Resultatet blev inte bättre än det vi redan har.
+	- Arbetat med rapporten
+- Borde vi separera ThresholdFuns och NormalizedThresholdFuns? I så fall skulle vi kunna definiera särskilda invarianter specifikt för NTFs.
+	- Ja
+- Hur ska vi göra med 0-ary subfunctions? De är okej när vi enumererar, men inte när vi vill generera alla n-bits funktioner.
+	- Ta endast med dessa när vi specifikt är intresserade av bitbredd 0 på toppnivå, annars inte.
+	- Kan vara intressant att jämföra de första x elementen när man parameteriserar över bitbredd vs. ej
+	- Tanke: Det skulle kunna finnas någon form av samband mellan komplexitet uttryckt i antal konstruktorer och i level-p. Ta stickprov och evaluera i p = 1/2 tex.
+- Rörande effektivisering av PW-beräkningar: 
+	- https://stackoverflow.com/questions/141422/how-can-a-transform-a-polynomial-to-another-coordinate-system
+	- Om vi utför samma transformation flera gånger borde detta vara någorlunda effektivt.
+- Rörande rapporten: Hur borde vi ta upp saker som inte fungerade? Saker där vi testade men ännu inte vet om de verkligen inte funkar?
+	- Definitivt positiva/negativa saker ska vara med. Om man bara inte lyckades komma fram till något behöver man inte nämna det mer än i förbifarten (om ens det). I masterarbeten särskilt är definitivt negativa resultat intressanta.
+	- Struktur:
+		- 1) Pedagogisk: Hur kom vi fram till det vi kom fram till. Inte särskilt många sidospår osv.
+			- En sektion där man presenterar det positiva, sedan en sektion med det som inte fungerade.
+		- 2) Appendix: Här kan vi lägga det som inte fungerade. 
+			- Låter som en god idé
+
+### Sammanfattning:
+
+- Vi borde separera ThresholdFuns och NormalizedThresholdFuns
+- Vi borde kunna skriva en enumereringsfunktion för specifika bitbreddar. pay behöver inte motsvara bit-kostnaden.
+- Patrik tycker att en matris-representation av en transformation är rimlig.
+- Det lät bra att lägga saker som misslyckades i ett appendix.
+
+Exempelkod för enumeration:
+
+type Bag n k a -- innehåller exakt k element av typ a, med total "bitbredd" n
+
+xs :: Bag 7 5 "BF"
+xs = [(2,And2),(3,Id1)]
+bitbredd xs = 2*2+3*1 = 7
+
+Feat a ~= Set a
+  -- dessutom enumererad, dvs. uppdelad i massor av "småmängder" av bestämd storlek
+
+önskas :: (n : Int) -> Feat (BF n)
+
+help :: ((n : Int) -> Feat a) -> ((n : Int) -> Feat (Bag n ? a))
+help fas = fbs
+  where fbs n = let pss = partitions n  -- Kanske partitions ska ge en Feat [Int]
+                    xs = ... map fas ps ...
+		in {- combine them to a bag -}
+		
+  -- as :: Feat a, 

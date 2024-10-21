@@ -1,6 +1,22 @@
 
 - Vad vi har gjort:
-- Frågor om Feat:
-	- Hur ska vi tänka när vi använder Feat? instinktivt känns det som att vi vill använda det som list-monaden eller Gen-monaden från QuickCheck (förutom att det inte är en monad).
-	- Hur ska vi hantera kostnad? Är det okej att göra som vi har gjort nu, dvs bara calla pay i en "loop". Detta känns fel.
+	- Refaktorerat Symmetric
+	- Implementerat Enumerable för Threshold, Symmetric, och Iterated.
+	- Försökt skriva en effektivare composition specifikt för affina transformationer mha. Taylor-expansion. Resultatet blev inte bättre än det vi redan har.
+	- Arbetat med rapporten
 - Borde vi separera ThresholdFuns och NormalizedThresholdFuns? I så fall skulle vi kunna definiera särskilda invarianter specifikt för NTFs.
+	- Ja
+- Hur ska vi göra med 0-ary subfunctions? De är okej när vi enumererar, men inte när vi vill generera alla n-bits funktioner.
+	- Ta endast med dessa när vi specifikt är intresserade av bitbredd 0 på toppnivå, annars inte.
+	- Kan vara intressant att jämföra de första x elementen när man parameteriserar över bitbredd vs. ej
+	- Tanke: Det skulle kunna finnas någon form av samband mellan komplexitet uttryckt i antal konstruktorer och i level-p. Ta stickprov och evaluera i p = 1/2 tex.
+- Rörande effektivisering av PW-beräkningar: 
+	- https://stackoverflow.com/questions/141422/how-can-a-transform-a-polynomial-to-another-coordinate-system
+	- Om vi utför samma transformation flera gånger borde detta vara någorlunda effektivt.
+- Rörande rapporten: Hur borde vi ta upp saker som inte fungerade? Saker där vi testade men ännu inte vet om de verkligen inte funkar?
+	- Definitivt positiva/negativa saker ska vara med. Om man bara inte lyckades komma fram till något behöver man inte nämna det mer än i förbifarten (om ens det). I masterarbeten särskilt är definitivt negativa resultat intressanta.
+	- Struktur:
+		- 1) Pedagogisk: Hur kom vi fram till det vi kom fram till. Inte särskilt många sidospår osv.
+			- En sektion där man presenterar det positiva, sedan en sektion med det som inte fungerade.
+		- 2) Appendix: Här kan vi lägga det som inte fungerade. 
+			- Låter som en god idé

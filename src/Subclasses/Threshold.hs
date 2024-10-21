@@ -259,17 +259,18 @@ instance (Enumerable g, Ord g) => Enumerable (ThresholdFun g) where
   -- enumerate = datatype [c2 ThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
   enumerate = share $ go 0
     where
-      go n = pay $ enumerateThresholdFun n <|> go (n + 1)
+      go nSubFuns = pay $ enumerateThresholdFun nSubFuns <|> go (nSubFuns + 1)
 
+-- TODO-NEW: Tydligare namn
 enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (ThresholdFun g)
-enumerateThresholdFun n = ThresholdFun <$> tupleF <*> multisetF
+enumerateThresholdFun nSubFuns = ThresholdFun <$> tupleF <*> multisetF
   where
-    tupleF = enumerateThresholds n
-    multisetF = enumerateMultiSet n
+    tupleF = enumerateThresholds nSubFuns
+    multisetF = enumerateMultiSet nSubFuns
 
 -- Tuples are free
 enumerateThresholds :: (Typeable f, Sized f) => Int -> Shareable f Threshold
-enumerateThresholds n = aconcat $ [pure $ Threshold (nt, n + 1 - nt) | nt <- [0 .. n + 1]]
+enumerateThresholds nSubFuns = aconcat $ [pure $ Threshold (nt, nSubFuns + 1 - nt) | nt <- [0 .. nSubFuns + 1]]
 
 --------------- Exhaustive generation ------------------------------
 
