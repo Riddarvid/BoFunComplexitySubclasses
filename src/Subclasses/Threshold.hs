@@ -36,6 +36,7 @@ import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (Iterated, Iterated')
+import           Subclasses.Lifted     (Lifted)
 import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
                                         elements, sized)
@@ -103,6 +104,25 @@ thresholdIsConst (Threshold (nt, nf)) = if
 -- | A majority threshold.
 thresholdMaj :: Int -> Threshold
 thresholdMaj = duplicate >>> Threshold
+
+reduceThreshold :: Bool -> Threshold -> Threshold
+reduceThreshold v (Threshold (nt, nf)) = if v
+  then Threshold (nt - 1, nf)
+  else Threshold (nt, nf - 1)
+
+newtype BasicThresholdFun = BTF Threshold
+
+instance BoFun BasicThresholdFun () where
+  isConst :: BasicThresholdFun -> Maybe Bool
+  isConst (BTF th) = thresholdIsConst th
+  variables :: BasicThresholdFun -> [()]
+  variables f = case isConst f of
+    Just _  -> []
+    Nothing -> [()]
+  setBit :: ((), Bool) -> BasicThresholdFun -> BasicThresholdFun
+  setBit (_, v) (BTF th) = BTF $ reduceThreshold v th
+
+type LiftedThresholdFun = Lifted BasicThresholdFun
 
 -- | A threshold-type Boolean function.
 data ThresholdFun f = ThresholdFun {

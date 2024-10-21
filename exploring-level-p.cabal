@@ -50,6 +50,7 @@ library
       Subclasses.GenFun
       Subclasses.Id
       Subclasses.Iterated
+      Subclasses.Lifted
       Subclasses.NormalizedGenFun
       Subclasses.One
       Subclasses.Symmetric
