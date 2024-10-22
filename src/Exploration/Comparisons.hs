@@ -65,7 +65,6 @@ mainBenchMaj = measureComplexityTimes . majFuns
 
 majFuns :: Int -> [BoFunType]
 majFuns n = [
-  BoFunType $ Symm.majFunBasic n,
   BoFunType $ Symm.majFun n,
   BoFunType $ Thresh.majFun n,
   BoFunType $ Gen.majFun n

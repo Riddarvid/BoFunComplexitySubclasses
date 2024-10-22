@@ -8,6 +8,8 @@
 module Subclasses.Iterated (
   Iterated,
   IteratedSymm,
+  liftIter,
+  idIter,
   iterateSymmFun
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
@@ -18,8 +20,8 @@ import           Data.Function         ((&))
 import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
 import           Data.Functor.Classes  (Eq1)
 import           Data.Hashable         (Hashable)
-import           Subclasses.Lifted     (Lifted, LiftedSymmetric,
-                                        liftedSymmReplicate)
+import qualified Data.MultiSet         as MultiSet
+import           Subclasses.Lifted     (Lifted, LiftedSymmetric, liftFunSymm)
 import           Test.Feat             (enumerate)
 
 type Iterated'' f g = Free f g
@@ -73,11 +75,18 @@ instance (Constable (IterStep' f g)) => Constable (Iterated'' f g) where
   mkConst :: Bool -> Iterated'' f g
   mkConst = Free . mkConst
 
+liftIter :: f (Iterated' f) -> Iterated' f
+liftIter = Free
+
+idIter :: Iterated' f
+idIter = Pure ()
+
 -- The consumer must ensure that f is symmetric
 iterateSymmFun :: Ord f => Int -> f -> Int -> IteratedSymm f
 iterateSymmFun bits f = go
   where
-    go 0 = Pure ()
-    go n = Free $ liftedSymmReplicate f subFun bits
+    go 0 = idIter
+    go n = liftIter f'
       where
         subFun = iterateSymmFun bits f (n - 1)
+        f' = liftFunSymm f $ MultiSet.fromOccurList [(subFun, bits)]

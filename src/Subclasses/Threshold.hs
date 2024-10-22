@@ -28,9 +28,8 @@ import           Control.Applicative   ((<|>))
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
-import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun)
-import           Subclasses.Lifted     (LiftedSymmetric, liftedSymmReplicate,
-                                        mkLiftedSymm)
+import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun, liftIter)
+import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
 import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
                                         elements, sized)
@@ -99,7 +98,7 @@ type LiftedThresholdFun = LiftedSymmetric ThresholdFun
 
 -- | A thresholding function with copies of a single subfunction.
 thresholdFunReplicate :: (Ord f) => ThresholdFun -> f -> LiftedThresholdFun f
-thresholdFunReplicate t u = liftedSymmReplicate t u $ thresholdFunArity t
+thresholdFunReplicate t u = liftFunSymm t $ MultiSet.fromOccurList [(u, thresholdFunArity t)]
 
 -------------- Examples ------------------------------------
 
@@ -129,7 +128,7 @@ generateNAryITF 1 = elements
 generateNAryITF n = do
   (subFuns, nSubFuns) <- generateSubFuns n
   threshold' <- generateThreshold nSubFuns
-  return $ Free $ mkLiftedSymm (BTF threshold') subFuns
+  return $ liftIter $ liftFunSymm (BTF threshold') subFuns
 
 generateThreshold :: Int -> Gen Threshold
 generateThreshold n = do
@@ -155,7 +154,7 @@ instance (Enumerable g, Ord g) => Enumerable (LiftedThresholdFun g) where
 
 -- TODO-NEW: Tydligare namn
 enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (LiftedThresholdFun g)
-enumerateThresholdFun nSubFuns = mkLiftedSymm <$> tupleF <*> multisetF
+enumerateThresholdFun nSubFuns = liftFunSymm <$> tupleF <*> multisetF
   where
     tupleF = BTF <$> enumerateThresholds nSubFuns
     multisetF = enumerateMultiSet nSubFuns
@@ -179,7 +178,7 @@ allNAryITFs = (map nAryITFEnum' [0 ..] !!)
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns
-      return $ Free $ mkLiftedSymm (BTF threshold') subFuns
+      return $ liftIter $ liftFunSymm (BTF threshold') subFuns
 
 -- Gives all the thresholds satisfying the following properties:
 -- 0 <= tn <= n + 1

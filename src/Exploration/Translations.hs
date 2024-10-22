@@ -11,20 +11,21 @@ import           BoFun                       (BoFun (isConst, setBit, variables)
 import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
 import           Data.IntMap                 (IntMap)
 import qualified Data.IntMap                 as IM
+import           Data.List.NonEmpty          (NonEmpty)
+import qualified Data.List.NonEmpty          as NE
 import           Subclasses.GenFun           (GenFun (GenFun), toGenFun)
-import           Subclasses.Iterated         (Iterated)
+import           Subclasses.Iterated         (IteratedSymm)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
-import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
-import           Subclasses.Threshold        (IteratedThresholdFun,
-                                              ThresholdFun, allNAryITFs)
+import           Subclasses.Symmetric        (SymmetricFun, mkSymmetricFun)
+import           Subclasses.Threshold        (ThresholdFun, allNAryITFs)
 import           Utils                       (permutations)
 
 --------------- Basic symmetric ---------------------
 
-genToBasicSymmetricNaive :: GenFun -> Maybe BasicSymmetric
+genToBasicSymmetricNaive :: GenFun -> Maybe SymmetricFun
 genToBasicSymmetricNaive (GenFun bdd n) = do
   rv <- buildResultVector grouped bdd
-  return $ BasicSymmetric rv
+  return $ mkSymmetricFun rv
   where
     inputs = permutations n
     grouped = groupInputs inputs
@@ -39,10 +40,10 @@ insertInput input = IM.insertWith (++) nOnes [input]
   where
     nOnes = length $ filter id input
 
-buildResultVector :: IntMap [Input] -> BDD AscOrder -> Maybe [Bool]
+buildResultVector :: IntMap [Input] -> BDD AscOrder -> Maybe (NonEmpty Bool)
 buildResultVector inputMap bdd = traverse (toResult bdd) inputsList
   where
-    inputsList = map snd $ IM.toAscList inputMap
+    inputsList = NE.fromList $ map snd $ IM.toAscList inputMap
 
 toResult :: BDD AscOrder -> [Input] -> Maybe Bool
 toResult bdd inputs
@@ -56,11 +57,11 @@ toResult bdd inputs
 
 -- Very inefficient, does not use the structure of the function, rather, it
 -- generates all possible functions and filters out the correct ones.
-ngfToIteratedThresholdFun :: NormalizedGenFun -> [IteratedThresholdFun]
+ngfToIteratedThresholdFun :: NormalizedGenFun -> [IteratedSymm ThresholdFun]
 ngfToIteratedThresholdFun gf =
   filter (areEquivalent gf) $ allNAryITFs (ngfArity gf)
 
-areEquivalent :: NormalizedGenFun -> IteratedThresholdFun -> Bool
+areEquivalent :: NormalizedGenFun -> IteratedSymm ThresholdFun -> Bool
 areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 
 ------------------- From BoFun to Algor -----------------------------

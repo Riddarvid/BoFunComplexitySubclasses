@@ -33,7 +33,7 @@ import           Subclasses.GenFun           (GenFun, eval, flipInputsGenFun,
 import           Subclasses.Id               ()
 import           Subclasses.NormalizedGenFun (mkNGF, ngfArity)
 import qualified Subclasses.Symmetric        as Symm
-import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
+import           Subclasses.Symmetric        (SymmetricFun)
 import qualified Subclasses.Threshold        as Thresh
 import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
                                               Property, chooseInt, conjoin,
@@ -122,10 +122,8 @@ propComputeMin'Correct gf = computeMin gf === computeMin' gf
 ------------------- Conversions ----------------------------
 
 -- Converting from BasicSymm to GenFun and back again should yield the original function
-propConversionSymm :: BasicSymmetric -> Property
-propConversionSymm f@(BasicSymmetric rv) = Just f === genToBasicSymmetricNaive (toGenFun arity f)
-  where
-    arity = length rv - 1
+propConversionSymm :: SymmetricFun -> Property
+propConversionSymm f = Just f === genToBasicSymmetricNaive (toGenFun (Symm.arity f) f)
 
 -- Converting from Iterated ThresholdFun to GenFun and back again should yield a set
 -- of possible representations which includes the original function

@@ -7,10 +7,9 @@
 {-# HLINT ignore "Use tuple-section" #-}
 module Subclasses.Lifted (
   Lifted,
-  mkLifted,
+  liftFun,
   LiftedSymmetric,
-  mkLiftedSymm,
-  liftedSymmReplicate
+  liftFunSymm
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
@@ -31,8 +30,8 @@ data Lifted f g = Lifted {
 }
 
 -- TODO-NEW handle constant g's
-mkLifted :: f -> [g] -> Lifted f g
-mkLifted = Lifted
+liftFun :: f -> [g] -> Lifted f g
+liftFun = Lifted
 
 newtype NormalizedLifted f g = NL (Lifted f g)
 
@@ -65,11 +64,8 @@ data LiftedSymmetric f g = LiftedSymmetric {
 }
 
 -- TODO-NEW handle constant g's
-mkLiftedSymm :: f -> MultiSet g -> LiftedSymmetric f g
-mkLiftedSymm = LiftedSymmetric
-
-liftedSymmReplicate :: Ord g => f -> g -> Int -> LiftedSymmetric f g
-liftedSymmReplicate f g n = mkLiftedSymm f (MultiSet.fromOccurList [(g, n)])
+liftFunSymm :: f -> MultiSet g -> LiftedSymmetric f g
+liftFunSymm = LiftedSymmetric
 
 instance (BoFun f (), BoFun g j, Ord g) => BoFun (LiftedSymmetric f g) (Int, j) where
   isConst :: LiftedSymmetric f g -> Maybe Bool
