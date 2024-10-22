@@ -9,12 +9,12 @@ module Subclasses.Lifted (
   Lifted,
   mkLifted,
   LiftedSymmetric,
-  mkLiftedSymm
+  mkLiftedSymm,
+  liftedSymmReplicate
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
-import           Data.Function.Memoize (Memoizable, deriveMemoizable,
-                                        deriveMemoize, memoize)
+import           Data.Function.Memoize (Memoizable, memoize)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Ord1 (liftCompare), Ord2 (liftCompare2),
                                         Show1 (liftShowsPrec), showsBinaryWith)
@@ -68,6 +68,9 @@ data LiftedSymmetric f g = LiftedSymmetric {
 mkLiftedSymm :: f -> MultiSet g -> LiftedSymmetric f g
 mkLiftedSymm = LiftedSymmetric
 
+liftedSymmReplicate :: Ord g => f -> g -> Int -> LiftedSymmetric f g
+liftedSymmReplicate f g n = mkLiftedSymm f (MultiSet.fromOccurList [(g, n)])
+
 instance (BoFun f (), BoFun g j, Ord g) => BoFun (LiftedSymmetric f g) (Int, j) where
   isConst :: LiftedSymmetric f g -> Maybe Bool
   isConst = isConst . lsFun
@@ -92,7 +95,6 @@ instance (Memoizable f, Memoizable g, Ord g) => Memoizable (LiftedSymmetric f g)
     toTuple (LiftedSymmetric fun subFuns) = (fun, subFuns)
     fromTuple (t, us) = LiftedSymmetric t us
 
--- Necessitated by misdesign of Haskell typeclasses.
 instance (Eq f) => Eq1 (LiftedSymmetric f) where
   liftEq :: (a -> b -> Bool) -> LiftedSymmetric f a -> LiftedSymmetric f b -> Bool
   liftEq eq' (LiftedSymmetric t us) (LiftedSymmetric t' us') =
@@ -103,10 +105,11 @@ instance (Ord f) => Ord1 (LiftedSymmetric f) where
   liftCompare compare' (LiftedSymmetric t us) (LiftedSymmetric t' us') =
     liftCompare2 compare (liftCompare compare') (t, us) (t', us')
 
--- TODO: use record fields.
 instance (Show f) => Show1 (LiftedSymmetric f) where
   liftShowsPrec :: (Int -> a -> ShowS) -> ([a] -> ShowS) -> Int -> LiftedSymmetric f a -> ShowS
   liftShowsPrec showsPrec' showList' p (LiftedSymmetric t u) =
     showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "ThresholdFun" p t u
 
--- TODO: Constable1
+instance (Constable f) => Constable (LiftedSymmetric f g) where
+  mkConst :: Bool -> LiftedSymmetric f g
+  mkConst val = LiftedSymmetric (mkConst val) MultiSet.empty

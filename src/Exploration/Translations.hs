@@ -15,7 +15,8 @@ import           Subclasses.GenFun           (GenFun (GenFun), toGenFun)
 import           Subclasses.Iterated         (Iterated)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
 import           Subclasses.Symmetric        (BasicSymmetric (BasicSymmetric))
-import           Subclasses.Threshold        (ThresholdFun, allNAryITFs)
+import           Subclasses.Threshold        (IteratedThresholdFun,
+                                              ThresholdFun, allNAryITFs)
 import           Utils                       (permutations)
 
 --------------- Basic symmetric ---------------------
@@ -55,11 +56,11 @@ toResult bdd inputs
 
 -- Very inefficient, does not use the structure of the function, rather, it
 -- generates all possible functions and filters out the correct ones.
-ngfToIteratedThresholdFun :: NormalizedGenFun -> [Iterated ThresholdFun]
+ngfToIteratedThresholdFun :: NormalizedGenFun -> [IteratedThresholdFun]
 ngfToIteratedThresholdFun gf =
   filter (areEquivalent gf) $ allNAryITFs (ngfArity gf)
 
-areEquivalent :: NormalizedGenFun -> Iterated ThresholdFun -> Bool
+areEquivalent :: NormalizedGenFun -> IteratedThresholdFun -> Bool
 areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 
 ------------------- From BoFun to Algor -----------------------------

@@ -99,8 +99,8 @@ setBitBinary ((i, j), val) g = case isConst f' of
       Or f1' f2'  -> (f1', f2')
       _           -> undefined
 
-instance Constable Gate where
-  mkConst :: Bool -> Gate g
+instance Constable (Gate f) where
+  mkConst :: Bool -> Gate f
   mkConst = Const
 
 idHelp :: Iterated Gate -> Gate (Iterated Gate)

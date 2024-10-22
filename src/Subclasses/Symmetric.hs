@@ -156,7 +156,7 @@ removeHighest (v, xs :|> length')
   | otherwise = (v, xs :|> length' - 1)
 removeHighest (_, Empty) = undefined
 
-instance Constable Symmetric where
+instance Constable (Symmetric f) where
   mkConst :: Bool -> Symmetric f
   mkConst val = Symmetric (val, Seq.singleton 1) MultiSet.empty
 

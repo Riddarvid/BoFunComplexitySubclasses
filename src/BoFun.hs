@@ -1,5 +1,7 @@
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE QuantifiedConstraints  #-}
+{-# LANGUAGE RankNTypes             #-}
 {-# LANGUAGE UndecidableInstances   #-}
 module BoFun (
   BoFun(..),
@@ -33,12 +35,12 @@ outgoing u = do
 reachable :: (Ord f, BoFun f i) => f -> Set.Set f
 reachable = dfs outgoing
 
-class Constable f where
-  mkConst :: Bool -> f g
-
 shrinkFun :: BoFun f i => f -> [f]
 shrinkFun f = case vars of
   []    -> []
   vars' -> [setBit (v, val) f | v <- vars', val <- [False, True]]
   where
     vars = variables f
+
+class Constable f where
+  mkConst :: Bool -> f
