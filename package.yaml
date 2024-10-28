@@ -36,6 +36,7 @@ dependencies:
   - vector
   - hashable
   - size-based
+  - random
 
 ghc-options:
   - -Wall

@@ -131,7 +131,10 @@ iteratedMajFun bits levels = iteratedFun levels (majFun bits)
 -- Note that this function does not use Iterated. This is because we want to keep
 -- the result as a GenFun to enjoy the benefits that the BDD representation gives us.
 iteratedFun :: Int -> GenFun -> GenFun
-iteratedFun levels (GenFun bdd bits) = GenFun (BDD.iteratedFun bits levels bdd) n
+iteratedFun levels (GenFun bdd bits)
+  | levels <= 0 = error "Number of levels must be >= 1"
+  | bits <= 0 = error "Number of input bits must be >= 1"
+  | otherwise = GenFun (BDD.iteratedFun bits levels bdd) n
   where
     n = bits ^ levels
 

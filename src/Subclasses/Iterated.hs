@@ -13,6 +13,7 @@ module Subclasses.Iterated (
   iterateFun,
   iterateSymmFun
 ) where
+import           ArbitraryArity        (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Enumerable    (Enumerable, Shared, Sized (aconcat),
                                         Typeable, c1, share)
@@ -25,6 +26,8 @@ import qualified Data.MultiSet         as MultiSet
 import           Subclasses.Lifted     (Lifted, LiftedSymmetric, liftFun,
                                         liftFunSymm)
 import           Test.Feat             (enumerate)
+import           Test.QuickCheck       (Arbitrary (arbitrary), Gen, chooseInt,
+                                        frequency, oneof, sized)
 
 type Iterated'' f g = Free f g
 
@@ -65,6 +68,8 @@ instance (Memoizable (IterStep' f g), Memoizable g) => Memoizable (Iterated'' f 
   memoize :: (Iterated'' f g -> v) -> Iterated'' f g -> v
   memoize = $(deriveMemoize ''Free)
 
+-- TODO-NEW: This probably works as a general instance, but we should also look at
+-- something using bit-number.
 instance (Enumerable g, Enumerable (IterStep' f g), Typeable f) =>
   Enumerable (Iterated'' f g) where
 
@@ -77,6 +82,18 @@ instance (Constable (IterStep' f g)) => Constable (Iterated'' f g) where
   mkConst :: Bool -> Iterated'' f g
   mkConst = Free . mkConst
 
+-- Size is used to determine where the tree should end
+instance (ArbitraryArity (IterStep f)) => Arbitrary (Iterated' f) where
+  arbitrary :: Gen (Iterated' f)
+  arbitrary = sized $ \n -> do
+    n' <- chooseInt (0, n)
+    if n' == 0 then return (Pure ()) else arbitraryArity n'
+
+instance (ArbitraryArity (IterStep f)) => ArbitraryArity (Iterated' f) where
+  arbitraryArity :: Int -> Gen (Iterated' f)
+  arbitraryArity 1     = oneof [return $ Pure (), Free <$> arbitraryArity 1]
+  arbitraryArity arity = Free <$> arbitraryArity arity
+
 liftIter :: f (Iterated' f) -> Iterated' f
 liftIter = Free
 
@@ -85,12 +102,15 @@ idIter = Pure ()
 
 -- The consumer must ensure that f is symmetric
 iterateSymmFun :: Ord f => Int -> f -> Int -> IteratedSymm f
-iterateSymmFun bits f = go
+iterateSymmFun bits f n'
+  | n' <= 0 = error "Number of levels must be >= 1"
+  | bits <= 0 = error "Number of input bits must be >= 1"
+  | otherwise = go n'
   where
     go 0 = idIter
     go n = liftIter f'
       where
-        subFun = iterateSymmFun bits f (n - 1)
+        subFun = go (n - 1)
         f' = liftFunSymm f $ MultiSet.fromOccurList [(subFun, bits)]
 
 iterateFun :: Int -> f -> Int -> Iterated f

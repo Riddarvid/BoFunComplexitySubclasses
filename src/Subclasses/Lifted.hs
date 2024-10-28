@@ -11,8 +11,10 @@ module Subclasses.Lifted (
   LiftedSymmetric,
   liftFunSymm
 ) where
+import           ArbitraryArity        (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
+import           Control.Enumerable    (Shareable, Sized, Typeable)
 import           Data.Function.Memoize (Memoizable, memoize)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Ord1 (liftCompare), Ord2 (liftCompare2),
@@ -20,7 +22,8 @@ import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
 import           Data.Maybe            (fromJust)
 import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
-import           Utils                 (naturals)
+import           Test.QuickCheck       (Gen, elements)
+import           Utils                 (generatePartition, naturals, partitions)
 
 -- Invariant: g only contains non-const functions
 -- TODO-NEW: "smart constructor" ensuring this.
@@ -73,6 +76,8 @@ liftFunSymm = LiftedSymmetric
 -- the resulting lifted function will have variable type (Int, j). This is because we still
 -- need a way to determine which subfunction a setBit call should be applied to, since
 -- the subfunctions don't have any restrictions on them.
+
+-- The first value in the variable tuple is 0-indexed.
 instance (BoFun f (), BoFun g j, Ord g) => BoFun (LiftedSymmetric f g) (Int, j) where
   isConst :: LiftedSymmetric f g -> Maybe Bool
   isConst = isConst . lsFun
@@ -110,8 +115,31 @@ instance (Ord f) => Ord1 (LiftedSymmetric f) where
 instance (Show f) => Show1 (LiftedSymmetric f) where
   liftShowsPrec :: (Int -> a -> ShowS) -> ([a] -> ShowS) -> Int -> LiftedSymmetric f a -> ShowS
   liftShowsPrec showsPrec' showList' p (LiftedSymmetric t u) =
-    showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "ThresholdFun" p t u
+    showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "LiftedSymmetric" p t u
 
 instance (Constable f) => Constable (LiftedSymmetric f g) where
   mkConst :: Bool -> LiftedSymmetric f g
   mkConst val = LiftedSymmetric (mkConst val) MultiSet.empty
+
+instance (ArbitraryArity f, ArbitraryArity g, Ord g, Constable f) =>
+  ArbitraryArity (LiftedSymmetric f g) where
+  arbitraryArity :: Int -> Gen (LiftedSymmetric f g)
+  arbitraryArity 0 = elements [mkConst False, mkConst True]
+  arbitraryArity arity = do
+    (gs, nSubFuns) <- generateSubFuns arity
+    f <- arbitraryArity nSubFuns
+    return $ LiftedSymmetric {lsFun = f, lsSubFuns = gs}
+
+generateSubFuns :: (ArbitraryArity f, Ord f) => Int -> Gen (MultiSet f, Int)
+generateSubFuns totalArity = do
+  partition <- generatePartition totalArity
+  subFuns <- mapM arbitraryArity partition
+  return (MultiSet.fromList subFuns, length subFuns)
+
+----------- Enumeration --------------------
+
+enumerateNArySymm :: (Typeable f, Sized f) => Int -> Shareable f g
+enumerateNArySymm arity = undefined
+  where
+    partitions = enumeratePartitions arity
+    subFunEnumerations = map enumerateNAry [1 ..]

@@ -17,6 +17,7 @@ import           Data.Function.Memoize (deriveMemoizable)
 import qualified Data.MultiSet         as MultiSet
 import           Subclasses.Iterated   (IteratedSymm, idIter, liftIter)
 import           Subclasses.Lifted     (liftFunSymm)
+import           Test.QuickCheck       (Arbitrary, Gen, arbitrary, elements)
 
 data Gate = And | Or | Not | Id | Const Bool
   deriving (Eq, Ord, Show)
@@ -43,6 +44,10 @@ instance BoFun Gate () where
 instance Constable Gate where
   mkConst :: Bool -> Gate
   mkConst = Const
+
+instance Arbitrary Gate where
+  arbitrary :: Gen Gate
+  arbitrary = elements [And, Or, Not, Id, Const False, Const True]
 
 -------------- Iterated gates -------------------------
 

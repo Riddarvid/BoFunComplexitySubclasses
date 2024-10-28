@@ -23,6 +23,7 @@ import           Prelude               hiding (negate, sum, (+), (-))
 
 import           DSLsofMath.Algebra    (Additive (..), (-))
 
+import           ArbitraryArity        (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Applicative   ((<|>))
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
@@ -31,8 +32,7 @@ import           Data.MultiSet         (MultiSet)
 import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun, liftIter)
 import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
 import           Test.Feat             (Enumerable (enumerate))
-import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt,
-                                        elements, sized)
+import           Test.QuickCheck       (chooseInt)
 import           Test.QuickCheck.Gen   (Gen)
 import           Type.Reflection       (Typeable)
 import           Utils                 (Square, enumerateMultiSet, partitions)
@@ -70,27 +70,27 @@ reduceThreshold v (Threshold (nt, nf)) = if v
 
 ---------------------- Threshold function ----------------------------
 
-newtype ThresholdFun = BTF Threshold
+newtype ThresholdFun = ThresholdFun Threshold
   deriving (Eq, Ord, Show)
 
 $(deriveMemoizable ''ThresholdFun)
 
 instance BoFun ThresholdFun () where
   isConst :: ThresholdFun -> Maybe Bool
-  isConst (BTF th) = thresholdIsConst th
+  isConst (ThresholdFun th) = thresholdIsConst th
   variables :: ThresholdFun -> [()]
   variables f = case isConst f of
     Just _  -> []
     Nothing -> [()]
   setBit :: ((), Bool) -> ThresholdFun -> ThresholdFun
-  setBit (_, v) (BTF th) = BTF $ reduceThreshold v th
+  setBit (_, v) (ThresholdFun th) = ThresholdFun $ reduceThreshold v th
 
 instance Constable ThresholdFun where
   mkConst :: Bool -> ThresholdFun
-  mkConst = BTF . thresholdConst
+  mkConst = ThresholdFun . thresholdConst
 
 thresholdFunArity :: ThresholdFun -> Int
-thresholdFunArity (BTF t) = thresholdArity t
+thresholdFunArity (ThresholdFun t) = thresholdArity t
 
 ----------------- Lifted Threshold Function ------------------
 
@@ -103,7 +103,7 @@ thresholdFunReplicate t u = liftFunSymm t $ MultiSet.fromOccurList [(u, threshol
 -------------- Examples ------------------------------------
 
 majFun :: Int -> ThresholdFun
-majFun bits = BTF $ Threshold (n, n)
+majFun bits = ThresholdFun $ Threshold (n, n)
   where
     n = (bits `div` 2) + 1
 
@@ -113,36 +113,21 @@ iteratedMajFun bits = iterateSymmFun bits (majFun bits)
 -------------- Generation of ITFs ---------------------------------------
 
 -- TODO-NEW: These instances can probably be generalized and moved to Iterated
-instance Arbitrary (IteratedSymm ThresholdFun) where
-  arbitrary :: Gen (IteratedSymm ThresholdFun)
-  arbitrary = sized $ \n -> do
-    n' <- chooseInt (0, n)
-    generateNAryITF n'
-
--- Generator equivalent of allNAryITFs
-generateNAryITF :: Int -> Gen (IteratedSymm ThresholdFun)
-generateNAryITF 0 = elements
-  [mkConst False, mkConst True]
-generateNAryITF 1 = elements
-  [mkConst False, mkConst True, Pure ()]
-generateNAryITF n = do
-  (subFuns, nSubFuns) <- generateSubFuns n
-  threshold' <- generateThreshold nSubFuns
-  return $ liftIter $ liftFunSymm (BTF threshold') subFuns
+instance ArbitraryArity ThresholdFun where
+  arbitraryArity :: Int -> Gen ThresholdFun
+  arbitraryArity arity = ThresholdFun <$> generateThreshold arity
 
 generateThreshold :: Int -> Gen Threshold
-generateThreshold n = do
-  nt <- chooseInt (0, n + 1)
-  let nf = n + 1 - nt
+generateThreshold arity = do
+  nt <- chooseInt (0, arity + 1)
+  let nf = arity + 1 - nt
   return $ Threshold (nt, nf)
 
-generateSubFuns :: Int -> Gen (MultiSet (Free LiftedThresholdFun ()), Int)
-generateSubFuns n = do
-  partition <- elements $ partitions n
-  subFuns <- mapM generateNAryITF partition
-  return (MultiSet.fromList subFuns, length subFuns)
-
 --------------- Enumeration -----------------------------
+
+enumerateNAry :: (Typeable f, Sized f) =>Int -> Shareable f ThresholdFun
+enumerateNAry arity = aconcat $
+  [pure $ ThresholdFun $ Threshold (nt, arity + 1 - nt) | nt <- [0 .. arity + 1]]
 
 -- We iterate over the number of subfunctions
 instance (Enumerable g, Ord g) => Enumerable (LiftedThresholdFun g) where
@@ -156,7 +141,7 @@ instance (Enumerable g, Ord g) => Enumerable (LiftedThresholdFun g) where
 enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (LiftedThresholdFun g)
 enumerateThresholdFun nSubFuns = liftFunSymm <$> tupleF <*> multisetF
   where
-    tupleF = BTF <$> enumerateThresholds nSubFuns
+    tupleF = ThresholdFun <$> enumerateThresholds nSubFuns
     multisetF = enumerateMultiSet nSubFuns
 
 -- Tuples are free
@@ -178,7 +163,7 @@ allNAryITFs = (map nAryITFEnum' [0 ..] !!)
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns
-      return $ liftIter $ liftFunSymm (BTF threshold') subFuns
+      return $ liftIter $ liftFunSymm (ThresholdFun threshold') subFuns
 
 -- Gives all the thresholds satisfying the following properties:
 -- 0 <= tn <= n + 1

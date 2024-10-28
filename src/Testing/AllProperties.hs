@@ -24,12 +24,11 @@ allProps = [
   Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
   Check propNormalizedComplexity stdArgs'{maxSize = 5},
   Check propRepsCorrect stdArgs'{maxSize = 5},
-  Check propRepsComplexity stdArgs',
+  Check propRepsComplexity stdArgs'{maxSize = 9},
   Check propFlipOutputCorrect stdArgs'{maxSize = 10},
   Check propFlipOutputComplexity stdArgs'{maxSize = 5},
   Check propFlipInputComplexity stdArgs'{maxSize = 5},
   Check propConversionSymm stdArgs'{maxSize = 10},
-  --Check propConversionIteratedThreshold stdArgs'{maxSize = 7},
   Check propComputeMinCorrect stdArgs'{maxSize = 5},
   Check propComputeMin'Correct stdArgs'{maxSize = 5, maxSuccess = 1000}
   ]

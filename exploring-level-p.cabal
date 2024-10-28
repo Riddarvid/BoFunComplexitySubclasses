@@ -28,6 +28,7 @@ library
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
+      ArbitraryArity
       Archived.Algebraic
       Archived.MatrixBridge
       BDD.BDD
@@ -79,6 +80,7 @@ library
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , random
     , size-based
     , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
@@ -109,6 +111,7 @@ executable exploring-level-p-exe
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , random
     , size-based
     , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
@@ -140,6 +143,7 @@ test-suite exploring-level-p-test
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , random
     , size-based
     , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1

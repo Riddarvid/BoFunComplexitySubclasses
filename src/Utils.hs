@@ -20,6 +20,9 @@ import qualified Data.Set              as Set
 import           DSLsofMath.Algebra    (AddGroup, Additive (zero),
                                         Multiplicative (one))
 import qualified DSLsofMath.Algebra    as A
+import           System.Random         (Random)
+import qualified Test.QuickCheck       as QC
+import           Test.QuickCheck       (Gen)
 
 -- Monoids.
 
@@ -140,9 +143,7 @@ type Partition a = [a]
 -- in a ThresholdFun.
 -- Does not generate any 0's.
 partitions :: (Ord a, Enum a, AddGroup a, Multiplicative a) => a -> [Partition a]
-partitions n = case partitions' one n of
-  [] -> []
-  xs -> init xs
+partitions = partitions' one
 
 -- Generate all partitions of n where a partition is a sorted list of numbers summing to n.
 -- The first element in the partition must be >= highest.
@@ -151,6 +152,16 @@ partitions' highest n
   | n == zero = [[]]
   | highest > n = []
   | otherwise = concatMap (\m -> map (m :) $ partitions' m (n A.- m)) [highest .. n]
+
+generatePartition :: (Random a, Ord a, Enum a, AddGroup a, Multiplicative a) => a -> Gen (Partition a)
+generatePartition n
+  | n == zero = return []
+  | n == one = return [n]
+  | otherwise = do
+  m' <- QC.choose (one, n)
+  let n' = n A.- m'
+  p <- generatePartition n'
+  return (m' : p)
 
 ------------------------------------------------------------------------
 

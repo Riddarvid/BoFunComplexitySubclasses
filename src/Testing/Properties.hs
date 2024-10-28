@@ -12,7 +12,8 @@ module Testing.Properties (
   propComputeMin'Correct,
   propRepsCorrect,
   propRepsComplexity,
-  propRationalSign
+  propRationalSign,
+  IterInput
 ) where
 import           Algebraic                   (signAtAlgebraic, signAtDyadic,
                                               toAlgebraic)
@@ -37,7 +38,8 @@ import           Subclasses.Symmetric        (SymmetricFun)
 import qualified Subclasses.Threshold        as Thresh
 import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
                                               Property, chooseInt, conjoin,
-                                              sized, vector, (=/=), (===))
+                                              elements, sized, vector, (=/=),
+                                              (===))
 import           Test.QuickCheck.Gen         (Gen)
 
 ----------------- Types --------------------------------------
@@ -154,18 +156,41 @@ propRepsCorrect (Input vals) = conjoin
     resGen = eval majGeneral vals
     resThresh = eval majThreshold vals
 
+data IterInput = IterInput Int Int
+  deriving (Show)
+
+-- The total number of bits will never be higher than n.
+instance Arbitrary IterInput where
+  arbitrary :: Gen IterInput
+  arbitrary = sized $ \limit -> do
+    let limit' = if limit == 0 then 1 else limit
+    elements [IterInput bits levels | bits <- [1 .. limit'], levels <- validLevels bits limit']
+
+validLevels :: Int -> Int -> [Int]
+validLevels bits limit = takeWhile (\levels -> bits ^ levels <= limit) [1 .. limit]
+
+newtype IterMajInput = IMI IterInput
+  deriving (Show)
+
+instance Arbitrary IterMajInput where
+  arbitrary :: Gen IterMajInput
+  arbitrary = do
+    IterInput bits levels <- arbitrary
+    let bits' = if even bits then bits - 1 else bits
+    return $ IMI $ IterInput bits' levels
+
 -- Static test that ensures that the Gen, Symm, and Thresh representations of
 -- maj 3 2 yield the same complexity.
-propRepsComplexity :: Property
-propRepsComplexity = conjoin
+propRepsComplexity :: IterMajInput -> Property
+propRepsComplexity (IMI (IterInput bits levels)) = conjoin
   [
     symm === gen,
     thresh === gen
   ]
   where
-    gen = computeMin $ Gen.iteratedMajFun 3 2
-    symm = computeMin $ Symm.iteratedMajFun 3 2
-    thresh = computeMin $ Thresh.iteratedMajFun 3 2
+    gen = computeMin $ Gen.iteratedMajFun bits levels
+    symm = computeMin $ Symm.iteratedMajFun bits levels
+    thresh = computeMin $ Thresh.iteratedMajFun bits levels
 
 ------------------ Algebraic numbers --------------------------------
 
