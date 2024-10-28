@@ -33,6 +33,8 @@ data Lifted f g = Lifted {
 liftFun :: f -> [g] -> Lifted f g
 liftFun = Lifted
 
+-- TODO-NEW Normalized version where setBit, in the case that the entire function becomes
+-- constant, replaces the function with a 0-ary const function. Requires Constable.
 newtype NormalizedLifted f g = NL (Lifted f g)
 
 instance (BoFun f Int, BoFun g j) => BoFun (Lifted f g) (Int, j) where
@@ -67,6 +69,10 @@ data LiftedSymmetric f g = LiftedSymmetric {
 liftFunSymm :: f -> MultiSet g -> LiftedSymmetric f g
 liftFunSymm = LiftedSymmetric
 
+-- Note that even though the lifted function is symmetric, and therefore has variable type (),
+-- the resulting lifted function will have variable type (Int, j). This is because we still
+-- need a way to determine which subfunction a setBit call should be applied to, since
+-- the subfunctions don't have any restrictions on them.
 instance (BoFun f (), BoFun g j, Ord g) => BoFun (LiftedSymmetric f g) (Int, j) where
   isConst :: LiftedSymmetric f g -> Maybe Bool
   isConst = isConst . lsFun

@@ -128,6 +128,8 @@ majFun n = GenFun (BDD.majFun n) n
 iteratedMajFun :: Int -> Int -> GenFun
 iteratedMajFun bits levels = iteratedFun levels (majFun bits)
 
+-- Note that this function does not use Iterated. This is because we want to keep
+-- the result as a GenFun to enjoy the benefits that the BDD representation gives us.
 iteratedFun :: Int -> GenFun -> GenFun
 iteratedFun levels (GenFun bdd bits) = GenFun (BDD.iteratedFun bits levels bdd) n
   where
@@ -135,6 +137,7 @@ iteratedFun levels (GenFun bdd bits) = GenFun (BDD.iteratedFun bits levels bdd) 
 
 ----------------- Eval for GenFuns -------------------------
 
+-- TODO-NEW: Review and see if this function still makes sense
 -- Might be better to use an IntMap instead of a list of bools.
 eval :: GenFun -> [Bool] -> Maybe Bool
 eval gf@(GenFun bdd _) input = isConst $

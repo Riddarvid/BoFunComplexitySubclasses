@@ -11,6 +11,7 @@
 	- Even
 	- Odd
 	- Monotone
+- Fundera på hur mycket vi får ut av att skilja på Iterated och IteratedSymm.
 
 ## TODO Arvid:
 

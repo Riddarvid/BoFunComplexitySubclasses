@@ -47,7 +47,9 @@ instance Constable Gate where
 -------------- Iterated gates -------------------------
 
 gateHelper :: Gate -> [IteratedSymm Gate] -> IteratedSymm Gate
-gateHelper g subGates = liftIter $ liftFunSymm g $ MultiSet.fromList subGates
+gateHelper g subGates = liftIter g'
+  where
+    g' = liftFunSymm g $ MultiSet.fromList subGates
 
 andG :: IteratedSymm Gate -> IteratedSymm Gate -> IteratedSymm Gate
 andG g1 g2 = gateHelper And [g1, g2]

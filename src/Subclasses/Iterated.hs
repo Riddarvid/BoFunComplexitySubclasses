@@ -10,6 +10,7 @@ module Subclasses.Iterated (
   IteratedSymm,
   liftIter,
   idIter,
+  iterateFun,
   iterateSymmFun
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
@@ -21,7 +22,8 @@ import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
 import           Data.Functor.Classes  (Eq1)
 import           Data.Hashable         (Hashable)
 import qualified Data.MultiSet         as MultiSet
-import           Subclasses.Lifted     (Lifted, LiftedSymmetric, liftFunSymm)
+import           Subclasses.Lifted     (Lifted, LiftedSymmetric, liftFun,
+                                        liftFunSymm)
 import           Test.Feat             (enumerate)
 
 type Iterated'' f g = Free f g
@@ -90,3 +92,12 @@ iterateSymmFun bits f = go
       where
         subFun = iterateSymmFun bits f (n - 1)
         f' = liftFunSymm f $ MultiSet.fromOccurList [(subFun, bits)]
+
+iterateFun :: Int -> f -> Int -> Iterated f
+iterateFun bits f = go
+  where
+    go 0 = idIter
+    go n = liftIter f'
+      where
+        subFun = iterateFun bits f (n - 1)
+        f' = liftFun f $ replicate bits subFun
