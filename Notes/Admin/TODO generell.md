@@ -1,7 +1,5 @@
-
-- Tanke: Vi kanske borde definiera "lifted functions" som en basic funktion + ett multiset av subfunktioner?
-- BDD forest for more sharing/reuse
 - Bestäm vad vi räknar när vi räknar antalet funktioner av olika klasser.
+	- Det är skillnad på olika funktioner och olika representationer av samma funktion.
 	- Kan ha två varianter, en där man endast kollar på dependent bits och en där man inte gör det.
 	- Kan verifiera våra resultat med the dictionary of integer sequences.
 	- Är det skillnad på 2-bits funktionen x0 && x1 och 3-bits funktionen x0 && x1?
@@ -12,6 +10,12 @@
 	- Odd
 	- Monotone
 - Fundera på hur mycket vi får ut av att skilja på Iterated och IteratedSymm.
+- Kolla på att effektivisera PW-beräkningar.
+	- Verkar som att Christian har lämnat en TODO: memoize i PW-koden på zoomHalf
+	- Idé: Om vi utför samma transformation många gånger borde det vara snabbare att räkna ut transformations-matrisen en enda gång och sedan använda den för kommande transformationer. 
+		- TODO: Räkna hur ofta samma transformation utförs.
+- Separera ThresholdFuns och NormalizedThresholdFuns
+- Försök använda Feat för att enumerera funktioner med en viss bitbredd. Det blir nog bäst om vi även enumererar partitioner, snarare än skapar en lista över alla.
 
 ## TODO Arvid:
 
