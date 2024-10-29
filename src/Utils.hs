@@ -3,10 +3,10 @@
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 module Utils where
 
-import           Control.Applicative   (liftA2)
+import           Control.Applicative   (Alternative (empty), liftA2)
 import           Control.Arrow         ((&&&), (>>>))
-import           Control.Enumerable    (Enumerable, Shareable, Sized, Typeable,
-                                        access)
+import           Control.Enumerable    (Enumerable, Shareable, Sized (aconcat),
+                                        Typeable, access)
 import           Control.Monad         (forM_, unless)
 import           Control.Monad.State   (MonadState (..), execState)
 import           Data.Function.Memoize (Memoizable (..))
@@ -162,6 +162,19 @@ generatePartition n
   let n' = n A.- m'
   p <- generatePartition n'
   return (m' : p)
+
+newtype Partition' a = Partition' [a]
+
+enumeratePartitions :: (Typeable f, Sized f, Ord a, Enum a, AddGroup a, Multiplicative a) => a -> Shareable f (Partition' a)
+enumeratePartitions = enumeratePartitions' one
+
+enumeratePartitions' :: (Ord a, Enum a, AddGroup a, Typeable f, Sized f) => a -> a -> Shareable f (Partition' a)
+enumeratePartitions' highest n
+  | n == zero = pure (Partition' [])
+  | highest > n = empty
+  | otherwise = subPartitions
+  where
+    subPartitions = aconcat $ map (\m -> (\(Partition' ms) -> Partition' (m : ms)) <$> enumeratePartitions' m (n A.- m)) [highest .. n]
 
 ------------------------------------------------------------------------
 

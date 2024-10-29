@@ -3,37 +3,39 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 module Subclasses.Iterated (
-  Iterated,
   IteratedSymm,
   liftIter,
   idIter,
-  iterateFun,
   iterateSymmFun
 ) where
-import           ArbitraryArity        (ArbitraryArity (arbitraryArity))
+import           Arity                 (AllArity (allArity),
+                                        ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Enumerable    (Enumerable, Shared, Sized (aconcat),
                                         Typeable, c1, share)
 import           Control.Monad.Free    (Free (..))
 import           Data.Function         ((&))
 import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
-import           Data.Functor.Classes  (Eq1)
+import           Data.Functor.Classes  (Eq1, Ord1)
 import           Data.Hashable         (Hashable)
 import qualified Data.MultiSet         as MultiSet
-import           Subclasses.Lifted     (Lifted, LiftedSymmetric, liftFun,
-                                        liftFunSymm)
+import           Data.Set              (Set)
+import qualified Data.Set              as Set
+import qualified DSLsofMath.Algebra    as A
+import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
 import           Test.Feat             (enumerate)
 import           Test.QuickCheck       (Arbitrary (arbitrary), Gen, chooseInt,
-                                        frequency, oneof, sized)
+                                        oneof, sized)
 
 type Iterated'' f g = Free f g
 
 type Iterated' f = Iterated'' f ()
 
-type Iterated f = Iterated' (Lifted f)
+-- type Iterated f = Iterated' (Lifted f)
 
 type IteratedSymm f = Iterated' (LiftedSymmetric f)
 
@@ -94,6 +96,11 @@ instance (ArbitraryArity (IterStep f)) => ArbitraryArity (Iterated' f) where
   arbitraryArity 1     = oneof [return $ Pure (), Free <$> arbitraryArity 1]
   arbitraryArity arity = Free <$> arbitraryArity arity
 
+instance (AllArity (IterStep f), Ord1 f) => AllArity (Iterated' f) where
+  allArity :: Int -> Set (Iterated' f)
+  allArity 1 = Set.insert (Pure ()) $ Set.map Free $ allArity 1
+  allArity n = Set.map Free $ allArity n
+
 liftIter :: f (Iterated' f) -> Iterated' f
 liftIter = Free
 
@@ -110,14 +117,14 @@ iterateSymmFun bits f n'
     go 0 = idIter
     go n = liftIter f'
       where
-        subFun = go (n - 1)
+        subFun = go (n A.- 1)
         f' = liftFunSymm f $ MultiSet.fromOccurList [(subFun, bits)]
 
-iterateFun :: Int -> f -> Int -> Iterated f
+{-iterateFun :: Int -> f -> Int -> Iterated f
 iterateFun bits f = go
   where
     go 0 = idIter
     go n = liftIter f'
       where
-        subFun = iterateFun bits f (n - 1)
-        f' = liftFun f $ replicate bits subFun
+        subFun = iterateFun bits f (n A.- 1)
+        f' = liftFun f $ replicate bits subFun-}

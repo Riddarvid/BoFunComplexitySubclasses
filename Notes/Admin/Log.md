@@ -129,3 +129,8 @@ help fas = fbs
 		in {- combine them to a bag -}
 		
   -- as :: Feat a, 
+
+## 29/10
+
+- Vi har beslutat oss för att pausa fokuset på FEAT. Vi har redan funktionalitet för generering av samtlig funktioner, men som använder listor istället. Vi stöter på problem i FEAT eftersom vi får typ Feat (Feat f), men eftersom Feat inte är en monad kan vi inte använda join för att få en Feat a.
+- Vi känner oss relativt klara med Lifted och Iterated för tillfället.

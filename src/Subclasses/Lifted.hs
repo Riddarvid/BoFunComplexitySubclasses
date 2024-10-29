@@ -1,30 +1,36 @@
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE InstanceSigs          #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE UndecidableInstances       #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
+{-# LANGUAGE ConstraintKinds            #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Subclasses.Lifted (
-  Lifted,
-  liftFun,
   LiftedSymmetric,
   liftFunSymm
 ) where
-import           ArbitraryArity        (ArbitraryArity (arbitraryArity))
+import           Arity                 (AllArity (allArity),
+                                        ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
-import           Control.Enumerable    (Shareable, Sized, Typeable)
 import           Data.Function.Memoize (Memoizable, memoize)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Ord1 (liftCompare), Ord2 (liftCompare2),
                                         Show1 (liftShowsPrec), showsBinaryWith)
-import           Data.Maybe            (fromJust)
 import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
+import           Data.Set              (Set)
+import qualified Data.Set              as Set
 import           Test.QuickCheck       (Gen, elements)
 import           Utils                 (generatePartition, naturals, partitions)
 
+
+
+-- Code for the non-symmetric version of Lifted. Will probably be useful in the future, but right
+-- now it leads to a lot of almost duplicated code.
+{-
 -- Invariant: g only contains non-const functions
 -- TODO-NEW: "smart constructor" ensuring this.
 data Lifted f g = Lifted {
@@ -39,6 +45,7 @@ liftFun = Lifted
 -- TODO-NEW Normalized version where setBit, in the case that the entire function becomes
 -- constant, replaces the function with a 0-ary const function. Requires Constable.
 newtype NormalizedLifted f g = NL (Lifted f g)
+
 
 instance (BoFun f Int, BoFun g j) => BoFun (Lifted f g) (Int, j) where
   isConst :: Lifted f g -> Maybe Bool
@@ -62,15 +69,37 @@ splitList n xs = case end of
   (x: end') -> Just (start, x, end')
   where
     (start, end) = splitAt n xs
+-}
 
 data LiftedSymmetric f g = LiftedSymmetric {
   lsFun     :: f,
   lsSubFuns :: MultiSet g
-}
+} deriving(Eq, Ord)
 
 -- TODO-NEW handle constant g's
 liftFunSymm :: f -> MultiSet g -> LiftedSymmetric f g
 liftFunSymm = LiftedSymmetric
+
+-- TODO-NEW: Figure out how to derive AllArity
+-- Currently can't coerce.
+-- This type probably only grants a very small efficiency improvement, removing
+-- some equivalent functions.
+-- Might even give worse performance as we have to do a lot more isConst calculations.
+newtype NormalizedLiftedSymmetric f g = NLS (LiftedSymmetric f g)
+  deriving (Eq1, Ord1, Show1, Memoizable, Constable, ArbitraryArity)
+
+instance (BoFun f (), BoFun g j, Ord g, Constable f) =>
+  BoFun (NormalizedLiftedSymmetric f g) (Int, j) where
+  isConst :: NormalizedLiftedSymmetric f g -> Maybe Bool
+  isConst (NLS f) = isConst f
+  variables :: NormalizedLiftedSymmetric f g -> [(Int, j)]
+  variables (NLS f) = variables f
+  setBit :: ((Int, j), Bool) -> NormalizedLiftedSymmetric f g -> NormalizedLiftedSymmetric f g
+  setBit v (NLS f) = case isConst f' of
+    Nothing  -> NLS f'
+    Just res -> mkConst res
+    where
+      f' = setBit v f
 
 -- Note that even though the lifted function is symmetric, and therefore has variable type (),
 -- the resulting lifted function will have variable type (Int, j). This is because we still
@@ -136,10 +165,32 @@ generateSubFuns totalArity = do
   subFuns <- mapM arbitraryArity partition
   return (MultiSet.fromList subFuns, length subFuns)
 
+----------- Generate all ------------------
+
+instance (Ord f, Ord g, AllArity g, AllArity f) => AllArity (LiftedSymmetric f g) where
+  allArity :: Int -> Set (LiftedSymmetric f g)
+  allArity n = Set.fromList $ do
+    partition <- partitions n
+    subFuns <- mapM (Set.toList . allArity) partition
+    f <- Set.toList $ allArity $ length subFuns
+    return $ LiftedSymmetric {lsFun = f, lsSubFuns = MultiSet.fromList subFuns}
+
 ----------- Enumeration --------------------
 
-enumerateNArySymm :: (Typeable f, Sized f) => Int -> Shareable f g
-enumerateNArySymm arity = undefined
+-- TODO-NEW: Right now it feels like we won't get much value out of enumerate,
+-- so we will focus our efforts elsewhere.
+{-enumerateNArySymm :: (Typeable f1, Sized f1, EnumerateArity g) => Int -> Shareable f1 (LiftedSymmetric f g)
+enumerateNArySymm = help
+
+
+help :: (Typeable f1, Sized f1) => Int -> Shareable f1 (LiftedSymmetric f g)
+help n = () <$> enumerateArity ()
   where
-    partitions = enumeratePartitions arity
-    subFunEnumerations = map enumerateNAry [1 ..]
+    subEnum = aconcat $ map buildLiftedSymm $ partitions n
+
+buildLiftedSymm :: Partition Int -> Shareable f1 ([g])
+buildLiftedSymm []  = undefined
+buildLiftedSymm [n] = enumerateArity n-}
+
+
+

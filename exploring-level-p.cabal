@@ -28,9 +28,9 @@ library
       Algorithm.Algor
       Algorithm.GenAlg
       Algorithm.GenAlgPW
-      ArbitraryArity
       Archived.Algebraic
       Archived.MatrixBridge
+      Arity
       BDD.BDD
       BDD.BDDInstances
       BoFun

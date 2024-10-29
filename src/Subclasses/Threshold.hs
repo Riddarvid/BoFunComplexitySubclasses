@@ -23,7 +23,7 @@ import           Prelude               hiding (negate, sum, (+), (-))
 
 import           DSLsofMath.Algebra    (Additive (..), (-))
 
-import           ArbitraryArity        (ArbitraryArity (arbitraryArity))
+import           Arity                 (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Applicative   ((<|>))
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
@@ -124,6 +124,7 @@ generateThreshold arity = do
   return $ Threshold (nt, nf)
 
 --------------- Enumeration -----------------------------
+-- Is not really used for much right now.
 
 enumerateNAry :: (Typeable f, Sized f) =>Int -> Shareable f ThresholdFun
 enumerateNAry arity = aconcat $
