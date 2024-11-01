@@ -15,7 +15,7 @@ module Testing.Properties (
   propRationalSign,
   IterInput
 ) where
-import           Algebraic                   (signAtAlgebraic, signAtDyadic,
+import           Algebraic                   (signAtAlgebraic, signAtRational,
                                               toAlgebraic)
 import           Algorithm.GenAlg            (genAlgThinMemoPoly)
 import           Algorithm.GenAlgPW          (computeMin, computeMin')
@@ -200,5 +200,5 @@ propRationalSign :: Rational -> Poly Rational -> Property
 propRationalSign r p = s1 === s2
   where
     x = toAlgebraic r
-    s1 = signAtDyadic r p
+    s1 = signAtRational r p
     s2 = signAtAlgebraic x p
