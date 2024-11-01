@@ -7,7 +7,7 @@ module Algebraic (
   toAlgebraic,
   shrinkIntervalStep,
   signAtAlgebraic,
-  signAtDyadic
+  signAtRational
 ) where
 import           Control.Monad      (replicateM)
 import           Data.List          (nub, sort)
@@ -107,11 +107,11 @@ normalizeLimits n@(Algebraic p (l, h))
 -- Assumes that p and q do not share a root in the interval and that p(l) < 0 and p(h) > 0
 signAtAlgebraic' :: Algebraic -> Poly Rational -> Sign
 signAtAlgebraic' n@(Algebraic _ int) q
-  | numRootsInInterval q int == 0 = signAtDyadic (intMid int) q
+  | numRootsInInterval q int == 0 = signAtRational (intMid int) q
   | otherwise = signAtAlgebraic' (shrinkIntervalPoly' n) q
 
-signAtDyadic :: (Ord a, AddGroup a, Multiplicative a) => a -> Poly a -> Sign
-signAtDyadic x p = case compare res zero of
+signAtRational :: (Ord a, AddGroup a, Multiplicative a) => a -> Poly a -> Sign
+signAtRational x p = case compare res zero of
   LT -> Neg
   EQ -> Zero
   GT -> Pos
@@ -121,7 +121,7 @@ signAtDyadic x p = case compare res zero of
 -- Only works if p(l) < 0 and p(h) > 0
 -- In other cases, use shrinkIntervalStep for general algebraic numbers.
 shrinkIntervalPoly' :: Algebraic -> Algebraic
-shrinkIntervalPoly' (Algebraic p int@(l, h)) = case signAtDyadic mid p of
+shrinkIntervalPoly' (Algebraic p int@(l, h)) = case signAtRational mid p of
   Neg -> Algebraic p (mid, h)
   _   -> Algebraic p (l, mid)
   where
