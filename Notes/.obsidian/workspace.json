@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Report/Storyboard.md",
+                "file": "Admin/Frågor till nästa möte.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Storyboard"
+              "title": "Frågor till nästa möte"
             }
           }
         ],
@@ -193,14 +193,19 @@
   },
   "active": "71e7181bed081195",
   "lastOpenFiles": [
-    "Other/Memoize - Arvid.md",
+    "Admin/TODO generell.md",
+    "Comparisons/threshold-maj301/flamegraph-301maj-threshold.svg",
+    "Comparisons/gen-maj9/exploring-level-p-exe.svg",
+    "Images/D-flip-inputs.png",
+    "Images/Pasted image 20240905093302.png",
+    "Images/Pasted image 20240906154104.png",
     "Report/Storyboard.md",
+    "Other/Memoize - Arvid.md",
     "Other/Observations and proofs.md",
     "Other/Vår förståelse av PWs.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",
     "Report/Things to put in the paper.md",
     "Admin/TODO för veckan.md",
-    "Admin/TODO generell.md",
     "Admin/Log.md",
     "Admin/Svar från senaste mötet.md",
     "Admin/Frågor till nästa möte.md",
@@ -210,18 +215,14 @@
     "Comparisons/Notes.md",
     "Frågor till Christian.md",
     "Overall efficiency",
-    "Comparisons/gen-maj9/exploring-level-p-exe.svg",
     "Comparisons/gen-maj9/Notes.md",
     "Exploration of classes/Analysis of classes.md",
     "Exploration of classes/Funktioner som är stängda under setBit.md",
     "Exploration of classes/Egenskaper hos boolska funktioner.md",
-    "Images/D-flip-inputs.png",
-    "Images/Pasted image 20240905093302.png",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
     "Comparisons/Benchmarking.md",
     "Comparisons/symm-maj301-old/Notes.md",
     "Comparisons/symm-maj301-old/exploring-level-p-exe.svg",
-    "Comparisons/threshold-maj301/exploring-level-p-exe.svg",
     "Comparisons/symm-maj301-old/exploring-level-p-exe.prof",
     "Other/BDD forest.md",
     "Comparisons/symm-maj301-old",
@@ -233,8 +234,6 @@
     "Comparisons/threshold-maj301",
     "Comparisons/gen-maj9/exploring-level-p-exe.prof",
     "Comparisons/gen-maj9",
-    "Comparisons",
-    "Exploration of classes/ThresholdFuns.md",
-    "Images/Pasted image 20240906154104.png"
+    "Comparisons"
   ]
 }
