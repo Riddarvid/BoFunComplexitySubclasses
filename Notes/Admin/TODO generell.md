@@ -16,7 +16,3 @@
 		- TODO: Räkna hur ofta samma transformation utförs.
 - Separera ThresholdFuns och NormalizedThresholdFuns
 - Försök använda Feat för att enumerera funktioner med en viss bitbredd. Det blir nog bäst om vi även enumererar partitioner, snarare än skapar en lista över alla.
-
-## TODO Arvid:
-
-- Läs på om entropi (Shannon) och Huffman coding

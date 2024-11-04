@@ -35,7 +35,7 @@ import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
 import           Testing.PrettyPrinting      (desmosPrintPW, desmosShowPW)
 
 main :: IO ()
-main = main12
+main = main10
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')
@@ -45,10 +45,10 @@ main11 = print (and12 == and23, and12 == and23')
     (and23', _) = normalizeBDD and23
 
 main12 :: IO ()
-main12 = void $ evaluate $ force $ computeMin (Thresh.iteratedMajFun 3 2)
+main12 = void $ evaluate $ force $ computeMin (Thresh.majFun 301)
 
 main10 :: IO ()
-main10 = measureComplexityTime' (mkNGF $ Gen.iteratedMajFun 3 2) >>= print
+main10 = measureComplexityTime (Thresh.majFun 301) >>= print
 
 main9 :: IO ()
 main9 = do
