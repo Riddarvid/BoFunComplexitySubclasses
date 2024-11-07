@@ -1,20 +1,19 @@
 
-- Ta bort allt om Hughes, referera istället till Sattler och Jansson mha. misc-källa till github-repot.
-	- TODO Arvid
-- Slå ihop "What can be improved" och "Generation and testing" till en enda method-del.
-	- TODO Selina
-- Döp om kap. 4 till Applications eller case studies och ha kvar min/max där
-	- TODO Selina
-- Skriv bevis för de egenskaper vi vill använda. Fundera på var i texten detta borde vara.
-	- TODO Arvid
-- Ta upp de buggar QuickCheck hjälpte oss hitta i den gamla koden
-	- TODO Selina
-- Graf för resultat av speedups
-	- TODO Selina
-- Lägg in komplexiteterna för våra tre exempelfunktioner i results
-	- TODO Arvid - gör direkt
-- Förklara hur Free-monaden är definierad och varför vi använder den.
-	- TODO Arvid
+Selina TODO: ADD picture for front from planning report
+
+Arvid TODO: Shorten name of Properties of level p complexity sub titles.
+
+Arvid TODO: Bytta ut ref med cref 
+
+Selina TODO: Comment for first paragraph intro
+
+Arvid TODO: 1.4.1, Lägg till mer text
+
+Arvid TODO: Add examples to all the classes 2.1.1
+
+Selina TODO: 2.1.1, Revise this explination of monotonic functions. make it more direct. 
+
+Arvid TODO: 2.2.1 EXPAND ON WHAT LIFTED IS
 
 ### Låg prio
 
