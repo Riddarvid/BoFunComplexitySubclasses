@@ -25,6 +25,17 @@
 	- Fråga Christian
 
 
+
+Frågor: 
+
+2.1.4 Vår def av hash-consig är korrekt (är unique integer) men burde vi förklara det mer?
+
+2.4 Hur kan vi förbättra våra bevis?
+
+
+
+
+
 Inför release:
 - CI mha github actions för att bygga och köra tester vid merge.
 	- Finns ett paket (haskell-ci) som genererar github action baserat på koden.
