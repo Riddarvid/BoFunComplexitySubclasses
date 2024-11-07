@@ -5,6 +5,8 @@ Arvid TODO: Shorten name of Properties of level p complexity sub titles.
 
 Arvid TODO: Bytta ut ref med cref 
 
+Selina TODO: Rewrite Theory 2.1.1:The BoFun typeclass (see feedback från Patrik)
+
 Selina TODO: Comment for first paragraph intro
 
 Arvid TODO: 1.4.1, Lägg till mer text
@@ -13,7 +15,7 @@ Arvid TODO: Add examples to all the classes 2.1.1
 
 Selina TODO: 2.1.1, Revise this explination of monotonic functions. make it more direct. 
 
-Arvid TODO: 2.2.1 EXPAND ON WHAT LIFTED IS
+Arvid TODO: 2.2.1 expand on what lifted is. 
 
 ### Låg prio
 
