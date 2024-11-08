@@ -33,6 +33,15 @@ Frågor:
 2.4 Hur kan vi förbättra våra bevis?
 
 
+4.4: "How are variables distinguished in the general case?", explain this feedback?
+
+6.2: "How are function built? Do you need to know special syntax/rep for a class or can you use general combinators?" - Patrik 
+
+Bibliography: including the version of the code from 
+JanssonJansson2023?
+
+
+
 
 
 
