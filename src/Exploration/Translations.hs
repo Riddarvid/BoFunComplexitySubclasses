@@ -1,18 +1,27 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant evaluate" #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Exploration.Translations (
   genToBasicSymmetricNaive,
   ngfToIteratedThresholdFun,
-  funToAlg,
-  areEquivalent
+  areEquivalent,
+  boFunToGenFuns,
+  allRepresentableFuns
 ) where
-import           Algorithm.Algor             (Algor (pic, res))
+import           Arity                       (AllArity (allArity))
+import           BDD.BDD                     (pick)
 import           BoFun                       (BoFun (isConst, setBit, variables))
-import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
+import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate, false,
+                                              true)
+import           Data.HashSet                (HashSet)
+import qualified Data.HashSet                as HS
 import           Data.IntMap                 (IntMap)
 import qualified Data.IntMap                 as IM
 import           Data.List.NonEmpty          (NonEmpty)
 import qualified Data.List.NonEmpty          as NE
+import           Data.Set                    (Set)
+import qualified Data.Set                    as Set
 import           Subclasses.GenFun           (GenFun (GenFun), toGenFun)
 import           Subclasses.Iterated         (IteratedSymm)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
@@ -64,16 +73,34 @@ ngfToIteratedThresholdFun gf =
 areEquivalent :: NormalizedGenFun -> IteratedSymm ThresholdFun -> Bool
 areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 
-------------------- From BoFun to Algor -----------------------------
+------------------- From BoFun to GenFun -----------------------------
 
-funToAlg :: (BoFun f i, Algor a) => f -> a
-funToAlg = funToAlg' 0
+-- Translates a BoFun to a set of the possible GenFuns that it could represent.
+-- It is necessary to return a set, as we don't have a way of deciding how
+-- the variable oredrings should translate to eachother.
+-- Should probably only be used when trying to generate all representations of
+-- members of a class.
+boFunToGenFuns :: (BoFun f i) => Int -> f -> HashSet GenFun
+boFunToGenFuns n f = HS.map (`GenFun` n) bdds
+  where
+    bdds = boFunToBDDs n f
 
--- If the function is not const, picks an arbitrary variable and recursively calls
--- itself for the branches.
--- Useful when converting from one function type to another.
-funToAlg' :: (BoFun f i, Algor a) => Int -> f -> a
-funToAlg' n f = case isConst f of
-  Just val -> res val
-  Nothing -> let i = head (variables f) in
-    pic n (funToAlg' (n + 1) (setBit (i, False) f)) (funToAlg' (n + 1) (setBit (i, True) f))
+boFunToBDDs :: (BoFun f i) => Int -> f -> HashSet (BDD AscOrder)
+boFunToBDDs n f = case isConst f of
+  Just val -> if val then HS.singleton true else HS.singleton false
+  Nothing  -> HS.fromList bdds
+  where
+    bdds = do
+      i <- variables f
+      let subFunF = setBit (i, False) f
+      let subFunT = setBit (i, True) f
+      subFunFBDD <- HS.toList $ boFunToBDDs (n - 1) subFunF
+      subFunTBDD <- HS.toList $ boFunToBDDs (n - 1) subFunT
+      return $ pick n subFunFBDD subFunTBDD
+
+-- Returns the set of all GenFuns that can be represented by the given type.
+allRepresentableFuns :: forall f i proxy. (AllArity f, BoFun f i) => proxy f -> Int -> HashSet GenFun
+allRepresentableFuns _ n = Set.foldr (HS.union . boFunToGenFuns n) HS.empty reps
+  where
+    reps :: Set f
+    reps = allArity n

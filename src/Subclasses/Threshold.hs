@@ -9,7 +9,8 @@
 {-# HLINT ignore "Replace case with maybe" #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 module Subclasses.Threshold (
-  ThresholdFun,
+  Threshold (Threshold),
+  ThresholdFun (ThresholdFun),
   LiftedThresholdFun,
   majFun,
   iteratedMajFun,
@@ -23,12 +24,15 @@ import           Prelude               hiding (negate, sum, (+), (-))
 
 import           DSLsofMath.Algebra    (Additive (..), (-))
 
-import           Arity                 (ArbitraryArity (arbitraryArity))
+import           Arity                 (AllArity (allArity),
+                                        ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Applicative   ((<|>))
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
+import           Data.Set              (Set)
+import qualified Data.Set              as Set
 import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun, liftIter)
 import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
 import           Test.Feat             (Enumerable (enumerate))
@@ -122,6 +126,10 @@ generateThreshold arity = do
   nt <- chooseInt (0, arity + 1)
   let nf = arity + 1 - nt
   return $ Threshold (nt, nf)
+
+instance AllArity ThresholdFun where
+  allArity :: Int -> Set ThresholdFun
+  allArity n = Set.fromList $ map ThresholdFun (allThresholds n)
 
 --------------- Enumeration -----------------------------
 -- Is not really used for much right now.

@@ -167,6 +167,8 @@ generateSubFuns totalArity = do
 
 ----------- Generate all ------------------
 
+-- Special case for n = 1, since we could iterate a function consuming
+-- one bit forever, and it would still only consume one bit.
 instance (Ord f, Ord g, AllArity g, AllArity f) => AllArity (LiftedSymmetric f g) where
   allArity :: Int -> Set (LiftedSymmetric f g)
   allArity n = Set.fromList $ do

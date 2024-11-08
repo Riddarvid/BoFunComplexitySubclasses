@@ -12,7 +12,7 @@ module Subclasses.Iterated (
   idIter,
   iterateSymmFun
 ) where
-import           Arity                 (AllArity (allArity),
+import           Arity                 (AllArity (allArity, allArityExplicit),
                                         ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Enumerable    (Enumerable, Shared, Sized (aconcat),
@@ -96,10 +96,20 @@ instance (ArbitraryArity (IterStep f)) => ArbitraryArity (Iterated' f) where
   arbitraryArity 1     = oneof [return $ Pure (), Free <$> arbitraryArity 1]
   arbitraryArity arity = Free <$> arbitraryArity arity
 
+-- If you explicity ask for all iterated functions of arity 1,
+-- you get one level of iteration. This is done to prevent
+-- an infinite iterated structure.
+-- Basically, if you ask for a 1-bit function,
+-- you get one level of iteration, as we don't think that multiple levels
+-- of iteration will add anything.
 instance (AllArity (IterStep f), Ord1 f) => AllArity (Iterated' f) where
   allArity :: Int -> Set (Iterated' f)
-  allArity 1 = Set.insert (Pure ()) $ Set.map Free $ allArity 1
+  allArity 1 = Set.singleton (Pure ())
   allArity n = Set.map Free $ allArity n
+
+  allArityExplicit :: Int -> Set (Iterated' f)
+  allArityExplicit 1 = Set.insert (Pure ()) $ Set.map Free $ allArity 1
+  allArityExplicit n = allArity n
 
 liftIter :: f (Iterated' f) -> Iterated' f
 liftIter = Free

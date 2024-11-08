@@ -21,6 +21,7 @@ import           Exploration.Comparisons     (mainBenchMaj,
                                               measureComplexityTime',
                                               measureComplexityTime'')
 import           Exploration.Filters         (degreePred, maximaPred)
+import           Exploration.Translations    (boFunToGenFuns)
 import           Poly.PiecewisePoly          (BothPW (BothPW), PiecewisePoly)
 import           Poly.Utils                  (minDegree)
 import           Prelude                     hiding ((*), (+))
@@ -31,11 +32,16 @@ import           Subclasses.Id               ()
 import           Subclasses.NormalizedGenFun (mkNGF)
 import qualified Subclasses.Symmetric        as Symm
 import qualified Subclasses.Threshold        as Thresh
+import           Subclasses.Threshold        (Threshold (Threshold),
+                                              ThresholdFun (ThresholdFun))
 import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
 import           Testing.PrettyPrinting      (desmosPrintPW, desmosShowPW)
 
 main :: IO ()
-main = main10
+main = do
+  let tf = ThresholdFun (Threshold (2, 2))
+  let gfs = boFunToGenFuns 3 tf
+  print gfs
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')
