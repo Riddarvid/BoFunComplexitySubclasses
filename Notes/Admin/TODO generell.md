@@ -16,3 +16,4 @@
 		- TODO: Räkna hur ofta samma transformation utförs.
 - Separera ThresholdFuns och NormalizedThresholdFuns
 - Försök använda Feat för att enumerera funktioner med en viss bitbredd. Det blir nog bäst om vi även enumererar partitioner, snarare än skapar en lista över alla.
+- Skapa vår egen version av Free, som också klarar att representera konstanta värden.

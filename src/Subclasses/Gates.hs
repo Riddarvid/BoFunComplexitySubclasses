@@ -15,7 +15,8 @@ module Subclasses.Gates (
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Data.Function.Memoize (deriveMemoizable)
 import qualified Data.MultiSet         as MultiSet
-import           Subclasses.Iterated   (IteratedSymm, idIter, liftIter)
+import qualified Subclasses.Iterated   as Iter
+import           Subclasses.Iterated   (Iterated (Iterated), IteratedSymm)
 import           Subclasses.Lifted     (liftFunSymm)
 import           Test.QuickCheck       (Arbitrary, Gen, arbitrary, elements)
 
@@ -52,7 +53,7 @@ instance Arbitrary Gate where
 -------------- Iterated gates -------------------------
 
 gateHelper :: Gate -> [IteratedSymm Gate] -> IteratedSymm Gate
-gateHelper g subGates = liftIter g'
+gateHelper g subGates = Iterated g'
   where
     g' = liftFunSymm g $ MultiSet.fromList subGates
 
@@ -66,4 +67,4 @@ notG :: IteratedSymm Gate -> IteratedSymm Gate
 notG g1 = gateHelper Not [g1]
 
 var :: IteratedSymm Gate
-var = idIter
+var = Iter.Id

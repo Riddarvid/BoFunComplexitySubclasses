@@ -51,6 +51,8 @@ library
       Subclasses.GenFun
       Subclasses.Id
       Subclasses.Iterated
+      Subclasses.IteratedInstances
+      Subclasses.IteratedSimplified
       Subclasses.Lifted
       Subclasses.NormalizedGenFun
       Subclasses.One

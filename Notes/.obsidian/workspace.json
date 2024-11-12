@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Admin/TODO för veckan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Frågor till nästa möte"
+              "title": "TODO för veckan"
             }
           }
         ],
@@ -179,12 +179,12 @@
   },
   "active": "415e3e41ed1d9e37",
   "lastOpenFiles": [
+    "Admin/TODO generell.md",
+    "Admin/Frågor till nästa möte.md",
     "Admin/Log.md",
     "Admin/Svar från senaste mötet.md",
-    "Admin/Frågor till nästa möte.md",
     "Report/Report TODO.md",
     "Admin/TODO för veckan.md",
-    "Admin/TODO generell.md",
     "Other/List of Known Bugs.md",
     "Report/Storyboard.md",
     "Comparisons/threshold-maj301/flamegraph-301maj-threshold.svg",

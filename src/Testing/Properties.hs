@@ -15,32 +15,34 @@ module Testing.Properties (
   propRationalSign,
   IterInput
 ) where
-import           Algebraic                   (signAtAlgebraic, signAtRational,
-                                              toAlgebraic)
-import           Algorithm.GenAlg            (genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW          (computeMin, computeMin')
-import           BDD.BDDInstances            ()
-import           BoFun                       (BoFun (variables))
-import           Data.List                   (sort)
-import           Data.Ratio                  ((%))
-import qualified Data.Set                    as Set
-import           DSLsofMath.PSDS             (Poly)
-import           Exploration.Translations    (genToBasicSymmetricNaive)
-import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
-                                              propIsMirrorPW)
-import qualified Subclasses.GenFun           as Gen
-import           Subclasses.GenFun           (GenFun, eval, flipInputsGenFun,
-                                              generateGenFun, notG, toGenFun)
-import           Subclasses.Id               ()
-import           Subclasses.NormalizedGenFun (mkNGF, ngfArity)
-import qualified Subclasses.Symmetric        as Symm
-import           Subclasses.Symmetric        (SymmetricFun)
-import qualified Subclasses.Threshold        as Thresh
-import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
-                                              Property, chooseInt, conjoin,
-                                              elements, sized, vector, (=/=),
-                                              (===))
-import           Test.QuickCheck.Gen         (Gen)
+import           Algebraic                    (signAtAlgebraic, signAtRational,
+                                               toAlgebraic)
+import           Algorithm.GenAlg             (genAlgThinMemoPoly)
+import           Algorithm.GenAlgPW           (computeMin, computeMin')
+import           BDD.BDDInstances             ()
+import           BoFun                        (BoFun (variables))
+import           Data.List                    (sort)
+import           Data.Ratio                   ((%))
+import qualified Data.Set                     as Set
+import           DSLsofMath.PSDS              (Poly)
+import           Exploration.Translations     (genToBasicSymmetricNaive)
+import           Poly.PiecewisePoly           (minPWs, pieces,
+                                               piecewiseFromPoly,
+                                               propIsMirrorPW)
+import qualified Subclasses.GenFun            as Gen
+import           Subclasses.GenFun            (GenFun, eval, flipInputsGenFun,
+                                               generateGenFun, notG, toGenFun)
+import           Subclasses.Id                ()
+import           Subclasses.IteratedInstances ()
+import           Subclasses.NormalizedGenFun  (mkNGF, ngfArity)
+import qualified Subclasses.Symmetric         as Symm
+import           Subclasses.Symmetric         (SymmetricFun)
+import qualified Subclasses.Threshold         as Thresh
+import           Test.QuickCheck              (Arbitrary (arbitrary, shrink),
+                                               Property, chooseInt, conjoin,
+                                               elements, sized, vector, (=/=),
+                                               (===))
+import           Test.QuickCheck.Gen          (Gen)
 
 ----------------- Types --------------------------------------
 

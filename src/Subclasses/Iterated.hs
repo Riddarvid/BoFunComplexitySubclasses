@@ -1,111 +1,118 @@
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
-{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 module Subclasses.Iterated (
+  Iterated(..),
+  SubFun,
   IteratedSymm,
-  liftIter,
-  idIter,
   iterateSymmFun
 ) where
-import           Arity                 (AllArity (allArity),
-                                        ArbitraryArity (arbitraryArity))
-import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.Enumerable    (Enumerable, Shared, Sized (aconcat),
-                                        Typeable, c1, share)
-import           Control.Monad.Free    (Free (..))
-import           Data.Function         ((&))
-import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
-import           Data.Functor.Classes  (Eq1, Ord1)
-import           Data.Hashable         (Hashable)
-import qualified Data.MultiSet         as MultiSet
-import           Data.Set              (Set)
-import qualified Data.Set              as Set
-import qualified DSLsofMath.Algebra    as A
-import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
-import           Test.Feat             (enumerate)
-import           Test.QuickCheck       (Arbitrary (arbitrary), Gen, chooseInt,
-                                        oneof, sized)
+import           Arity              (AllArity (allArity),
+                                     ArbitraryArity (arbitraryArity))
+import           BoFun              (BoFun (..), Constable (mkConst))
+import           Control.Enumerable (Enumerable, Shared, Sized, Typeable, c0,
+                                     c1, datatype)
+import           Data.Hashable      (Hashable)
+import qualified Data.MultiSet      as MultiSet
+import           Data.Set           (Set)
+import qualified Data.Set           as Set
+import qualified DSLsofMath.Algebra as A
+import           GHC.Generics       (Generic)
+import           Subclasses.Lifted  (LiftedSymmetric, liftFunSymm)
+import           Test.Feat          (enumerate)
+import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, chooseInt,
+                                     oneof, sized)
 
-type Iterated'' f g = Free f g
+type SubFun f = f (Iterated f)
 
-type Iterated' f = Iterated'' f ()
+data Iterated f = Const Bool | Id | Iterated (SubFun f)
+  deriving (Generic)
 
--- type Iterated f = Iterated' (Lifted f)
+-- Some functions that are equal could still result in False,
+-- but this should not be an issue.
+instance (Eq (SubFun f)) => Eq (Iterated f) where
+  (==) :: Iterated f -> Iterated f -> Bool
+  (Const v1) == (Const v2)   = v1 == v2
+  Id == Id                   = True
+  Iterated f1 == Iterated f2 = f1 == f2
+  _ == _                     = False
 
-type IteratedSymm f = Iterated' (LiftedSymmetric f)
+instance Ord (SubFun f) => Ord (Iterated f) where
+  compare :: Iterated f -> Iterated f -> Ordering
+  compare (Const v1)    (Const v2)    = compare v1 v2
+  compare (Const _)     _             = LT
+  compare _             (Const _)     = GT
+  compare Id            Id            = EQ
+  compare (Iterated f1) (Iterated f2) = compare f1 f2
+  compare (Iterated _)  _             = GT
+  compare _             (Iterated _)  = LT
 
--------------------------------------------
-
-type IterStep' f g = f (Iterated'' f g)
-
-type IterStep f = f (Iterated' f)
+type IteratedSymm f = Iterated (LiftedSymmetric f)
 
 --------------------------------------------
 
-instance (Eq1 f, Hashable g, Hashable (f (Iterated'' f g))) => Hashable (Iterated'' f g)
+instance (Hashable (SubFun f)) => Hashable (Iterated f)
 
-instance (BoFun (IterStep f) (i, [i]), Constable (IterStep f)) => BoFun (Iterated' f) [i] where
-  isConst :: Iterated' f -> Maybe Bool
-  isConst (Pure ()) = Nothing
-  isConst (Free u)  = isConst u
+instance (BoFun (SubFun f) (i, [i])) => BoFun (Iterated f) [i] where
+  isConst :: Iterated f -> Maybe Bool
+  isConst (Const v)    = Just v
+  isConst Id           = Nothing
+  isConst (Iterated f) = isConst f
 
-  variables :: Iterated' f -> [[i]]
-  variables (Pure ()) = [[]]
-  variables (Free v)  = variables v & map (uncurry (:))
+  variables :: Iterated f -> [[i]]
+  variables (Const _)    = []
+  variables Id           = [[]]
+  variables (Iterated f) = map (uncurry (:)) $ variables f
 
-  setBit :: ([i], Bool) -> Iterated' f -> Iterated' f
-  setBit ([], val)     (Pure _) = Free $ mkConst val
-  setBit _             (Pure _) = error "Too many levels"
-  setBit (i : is, val) (Free v) = Free $ setBit ((i, is), val) v
-  setBit ([], _)       (Free _) = error "Too few levels"
-
--- f will likely be memoizable over all types of subfunction,
--- but here we only need it to be memoizable over specifically f (Iterated f)
-instance (Memoizable (IterStep' f g), Memoizable g) => Memoizable (Iterated'' f g) where
-  memoize :: (Iterated'' f g -> v) -> Iterated'' f g -> v
-  memoize = $(deriveMemoize ''Free)
+  setBit :: ([i], Bool) -> Iterated f -> Iterated f
+  setBit _             (Const _)    = error "setBit on const"
+  setBit ([], v)       Id           = Const v
+  setBit _             Id           = error "Too many levels in path"
+  setBit (i : is, val) (Iterated v) = Iterated $ setBit ((i, is), val) v
+  setBit ([], _)       (Iterated _) = error "Too few levels in path"
 
 -- TODO-NEW: This probably works as a general instance, but we should also look at
 -- something using bit-number.
-instance (Enumerable g, Enumerable (IterStep' f g), Typeable f) =>
-  Enumerable (Iterated'' f g) where
+instance (Enumerable (SubFun f), Typeable f) => Enumerable (Iterated f) where
+  enumerate :: (Typeable enum, Sized enum) => Shared enum (Iterated f)
+  enumerate = datatype [
+    c1 Const,
+    c0 Id,
+    c1 Iterated]
 
-  enumerate :: (Typeable enum, Sized enum) => Shared enum (Iterated'' f g)
-  enumerate = share $ aconcat [
-    c1 Pure,
-    c1 Free]
-
-instance (Constable (IterStep' f g)) => Constable (Iterated'' f g) where
-  mkConst :: Bool -> Iterated'' f g
-  mkConst = Free . mkConst
+instance Constable (Iterated f) where
+  mkConst :: Bool -> Iterated f
+  mkConst = Const
 
 -- Size is used to determine where the tree should end
-instance (ArbitraryArity (IterStep f)) => Arbitrary (Iterated' f) where
-  arbitrary :: Gen (Iterated' f)
+instance (ArbitraryArity (SubFun f)) => Arbitrary (Iterated f) where
+  arbitrary :: Gen (Iterated f)
   arbitrary = sized $ \n -> do
     n' <- chooseInt (0, n)
-    if n' == 0 then return (Pure ()) else arbitraryArity n'
+    arbitraryArity n'
 
-instance (ArbitraryArity (IterStep f)) => ArbitraryArity (Iterated' f) where
-  arbitraryArity :: Int -> Gen (Iterated' f)
-  arbitraryArity 1     = oneof [return $ Pure (), Free <$> arbitraryArity 1]
-  arbitraryArity arity = Free <$> arbitraryArity arity
+instance (ArbitraryArity (SubFun f)) => ArbitraryArity (Iterated f) where
+  arbitraryArity :: Int -> Gen (Iterated f)
+  arbitraryArity arity = oneof (subFunGen : gens)
+    where
+      subFunGen = Iterated <$> arbitraryArity arity
+      gens = case arity of
+        0 -> [Const <$> arbitrary]
+        1 -> [pure Id]
+        _ -> []
 
-instance (AllArity (IterStep f), Ord1 f) => AllArity (Iterated' f) where
-  allArity :: Int -> Set (Iterated' f)
-  allArity 1 = Set.insert (Pure ()) $ Set.map Free $ allArity 1
-  allArity n = Set.map Free $ allArity n
-
-liftIter :: f (Iterated' f) -> Iterated' f
-liftIter = Free
-
-idIter :: Iterated' f
-idIter = Pure ()
+instance (AllArity (SubFun f), Ord (SubFun f)) => AllArity (Iterated f) where
+  allArity :: Int -> Set (Iterated f)
+  allArity n = case n of
+    0 -> Set.insert (Const False) $ Set.insert (Const True) subFuns
+    1 -> Set.insert Id subFuns
+    _ -> subFuns
+    where
+      subFuns = Set.map Iterated $ allArity n
 
 -- The consumer must ensure that f is symmetric
 iterateSymmFun :: Ord f => Int -> f -> Int -> IteratedSymm f
@@ -114,11 +121,10 @@ iterateSymmFun bits f n'
   | bits <= 0 = error "Number of input bits must be >= 1"
   | otherwise = go n'
   where
-    go 0 = idIter
-    go n = liftIter f'
+    go 0 = Id
+    go n = Iterated $ liftFunSymm f $ MultiSet.fromOccurList [(subFun, bits)]
       where
         subFun = go (n A.- 1)
-        f' = liftFunSymm f $ MultiSet.fromOccurList [(subFun, bits)]
 
 {-iterateFun :: Int -> f -> Int -> Iterated f
 iterateFun bits f = go

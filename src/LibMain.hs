@@ -35,7 +35,7 @@ import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
 import           Testing.PrettyPrinting      (desmosPrintPW, desmosShowPW)
 
 main :: IO ()
-main = main10
+main = void $ evaluate $ force $ computeMin (Thresh.majFun 301)
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

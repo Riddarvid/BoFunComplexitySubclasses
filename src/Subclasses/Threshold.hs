@@ -16,7 +16,6 @@ module Subclasses.Threshold (
   allNAryITFs
 ) where
 
-import           Control.Monad.Free    (Free (..))
 import           Data.Function.Memoize (deriveMemoizable)
 import qualified Data.MultiSet         as MultiSet
 import           Prelude               hiding (negate, sum, (+), (-))
@@ -29,7 +28,8 @@ import           Control.Applicative   ((<|>))
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
-import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun, liftIter)
+import           Subclasses.Iterated   (Iterated (Id, Iterated), IteratedSymm,
+                                        iterateSymmFun)
 import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
 import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (chooseInt)
@@ -160,11 +160,11 @@ allNAryITFs = (map nAryITFEnum' [0 ..] !!)
     nAryITFEnum' 0 =
       [mkConst False, mkConst True]
     nAryITFEnum' 1 =
-      [mkConst False, mkConst True, Pure ()]
+      [mkConst False, mkConst True, Id]
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns
-      return $ liftIter $ liftFunSymm (ThresholdFun threshold') subFuns
+      return $ Iterated $ liftFunSymm (ThresholdFun threshold') subFuns
 
 -- Gives all the thresholds satisfying the following properties:
 -- 0 <= tn <= n + 1
