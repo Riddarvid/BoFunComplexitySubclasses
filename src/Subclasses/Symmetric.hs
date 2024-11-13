@@ -4,6 +4,7 @@
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE DeriveGeneric         #-}
 module Subclasses.Symmetric (
   SymmetricFun,
   mkSymmetricFun,
@@ -14,12 +15,14 @@ module Subclasses.Symmetric (
 
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
+import           Control.DeepSeq       (NFData)
 import           Data.Foldable         (Foldable (toList))
 import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
 import           Data.List.NonEmpty    (NonEmpty ((:|)))
 import qualified Data.List.NonEmpty    as NE
 import           Data.Sequence         (Seq (Empty, (:<|), (:|>)))
 import qualified Data.Sequence         as Seq
+import           GHC.Generics          (Generic)
 import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun)
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt, sized,
                                         vector)
@@ -60,7 +63,9 @@ instance Memoizable a => Memoizable (Seq a) where
 --------- Symmetric Functions ---------------------
 
 newtype SymmetricFun = SymmetricFun Result
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
+
+instance NFData SymmetricFun
 
 -- The input vector represents the result for zero 1's, one 1, two 1's etc.
 mkSymmetricFun :: NonEmpty Bool -> SymmetricFun

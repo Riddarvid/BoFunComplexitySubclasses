@@ -4,38 +4,47 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg            (genAlgThinMemo, piecewiseBoth)
-import           Algorithm.GenAlgPW          (computeMin, computeMin')
-import           BDD.BDD                     (BDDa, normalizeBDD)
-import           Control.DeepSeq             (force)
-import           Control.Exception           (evaluate)
-import           Control.Monad               (void)
-import           Data.DecisionDiagram.BDD    (AscOrder, BDD, notB, var, (.&&.),
-                                              (.||.))
+import           Algorithm.GenAlg                     (genAlgThinMemo,
+                                                       piecewiseBoth)
+import           Algorithm.GenAlgPW                   (computeMin, computeMin')
+import           BDD.BDD                              (BDDa, normalizeBDD)
+import           Control.DeepSeq                      (force)
+import           Control.Exception                    (evaluate)
+import           Control.Monad                        (void)
+import           Data.DecisionDiagram.BDD             (AscOrder, BDD, notB, var,
+                                                       (.&&.), (.||.))
 
-import qualified Data.HashSet                as HS
-import qualified Data.Set                    as Set
-import           DSLsofMath.Algebra          (AddGroup, MulGroup)
-import           Exploration.Comparisons     (mainBenchMaj,
-                                              measureComplexityTime,
-                                              measureComplexityTime',
-                                              measureComplexityTime'')
-import           Exploration.Filters         (degreePred, maximaPred)
-import           Poly.PiecewisePoly          (BothPW (BothPW), PiecewisePoly)
-import           Poly.Utils                  (minDegree)
-import           Prelude                     hiding ((*), (+))
-import qualified Subclasses.GenFun           as Gen
-import           Subclasses.GenFun           (GenFun (GenFun), allGenFuns,
-                                              flipInputsGenFun)
-import           Subclasses.Id               ()
-import           Subclasses.NormalizedGenFun (mkNGF)
-import qualified Subclasses.Symmetric        as Symm
-import qualified Subclasses.Threshold        as Thresh
-import           Test.QuickCheck             (Arbitrary (arbitrary), generate)
-import           Testing.PrettyPrinting      (desmosPrintPW, desmosShowPW)
+import qualified Data.HashSet                         as HS
+import qualified Data.Set                             as Set
+import           DSLsofMath.Algebra                   (AddGroup, MulGroup)
+import           Exploration.Comparisons              (mainBenchMaj,
+                                                       measureTimeComputeMin)
+import           Exploration.Filters                  (degreePred, maximaPred)
+import           Poly.PiecewisePoly                   (BothPW (BothPW),
+                                                       PiecewisePoly)
+import           Poly.Utils                           (minDegree)
+import           Prelude                              hiding ((*), (+))
+import           Subclasses.CanonicalGenFun           (mkCGF)
+import qualified Subclasses.GenFun                    as Gen
+import           Subclasses.GenFun                    (GenFun (GenFun),
+                                                       allGenFuns,
+                                                       flipInputsGenFun)
+import           Subclasses.Id                        ()
+import           Subclasses.IteratedInstances         ()
+import           Subclasses.NormalizedCanonicalGenFun (mkNCGF)
+import           Subclasses.NormalizedGenFun          (mkNGF)
+import qualified Subclasses.Symmetric                 as Symm
+import qualified Subclasses.Threshold                 as Thresh
+import           Test.QuickCheck                      (Arbitrary (arbitrary),
+                                                       generate)
+import           Testing.PrettyPrinting               (desmosPrintPW,
+                                                       desmosShowPW)
+import           Timing                               (measureMajs)
 
 main :: IO ()
-main = void $ evaluate $ force $ computeMin (Thresh.majFun 301)
+main = do
+  measurements <- measureMajs measureTimeComputeMin (Symm.majFun) 3 11
+  print measurements
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')
@@ -48,7 +57,7 @@ main12 :: IO ()
 main12 = void $ evaluate $ force $ computeMin (Thresh.majFun 301)
 
 main10 :: IO ()
-main10 = measureComplexityTime (Thresh.majFun 301) >>= print
+main10 = measureTimeComputeMin (Thresh.majFun 301) >>= print
 
 main9 :: IO ()
 main9 = do

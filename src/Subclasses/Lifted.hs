@@ -6,6 +6,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
 {-# LANGUAGE ConstraintKinds            #-}
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Subclasses.Lifted (
   LiftedSymmetric,
@@ -15,6 +16,7 @@ import           Arity                 (AllArity (allArity),
                                         ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
+import           Control.DeepSeq       (NFData)
 import           Data.Function.Memoize (Memoizable, memoize)
 import           Data.Functor.Classes  (Eq1 (liftEq), Eq2 (liftEq2),
                                         Ord1 (liftCompare), Ord2 (liftCompare2),
@@ -23,6 +25,7 @@ import           Data.MultiSet         (MultiSet)
 import qualified Data.MultiSet         as MultiSet
 import           Data.Set              (Set)
 import qualified Data.Set              as Set
+import           GHC.Generics          (Generic)
 import           Test.QuickCheck       (Gen, elements)
 import           Utils                 (generatePartition, naturals, partitions)
 
@@ -74,7 +77,9 @@ splitList n xs = case end of
 data LiftedSymmetric f g = LiftedSymmetric {
   lsFun     :: f,
   lsSubFuns :: MultiSet g
-} deriving(Eq, Ord)
+} deriving(Eq, Ord, Generic)
+
+instance (NFData f, NFData g) => NFData (LiftedSymmetric f g)
 
 -- TODO-NEW handle constant g's
 liftFunSymm :: f -> MultiSet g -> LiftedSymmetric f g

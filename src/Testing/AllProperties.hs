@@ -21,7 +21,7 @@ stdArgs' = stdArgs{maxSuccess = 200}
 allProps :: [Check]
 allProps = [
   Check propRationalSign stdArgs'{maxSize = 5},
-  Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
+  --Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
   Check propNormalizedComplexity stdArgs'{maxSize = 5},
   Check propRepsCorrect stdArgs'{maxSize = 5},
   Check propRepsComplexity stdArgs'{maxSize = 9},

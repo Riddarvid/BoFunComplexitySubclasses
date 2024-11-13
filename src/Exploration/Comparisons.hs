@@ -6,14 +6,14 @@
 module Exploration.Comparisons (
   mainBenchMaj,
   mainBench,
-  measureComplexityTime,
-  measureComplexityTime',
-  measureComplexityTime''
+  measureTimeComputeMin,
+  measureTimeComputeMin',
+  measureTimeGenAlg
 ) where
 import           Algorithm.GenAlg      (genAlgThinMemo)
 import           Algorithm.GenAlgPW    (computeMin, computeMin')
 import           BoFun                 (BoFun)
-import           Control.DeepSeq       (force)
+import           Control.DeepSeq       (NFData, force)
 import           Control.Exception     (evaluate)
 import           Control.Monad         (forM, void)
 import           Criterion             (Benchmark, bench, bgroup, nf)
@@ -31,30 +31,33 @@ import qualified Subclasses.Threshold  as Thresh
 
 -- Running a single evaluation of the complexity of a function and measuring the time it takes
 
-data BoFunType = forall f i. (BoFun f i, Memoizable f) => BoFunType f
+data BoFunType = forall f i. (BoFun f i, Memoizable f, NFData f) => BoFunType f
 
 measureComplexityTimes :: [BoFunType] -> IO [NominalDiffTime]
-measureComplexityTimes funs = forM funs $ \(BoFunType f) -> measureComplexityTime f
+measureComplexityTimes funs = forM funs $ \(BoFunType f) -> measureTimeComputeMin f
 
 -- Usees computeMin
-measureComplexityTime :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
-measureComplexityTime f = do
+measureTimeComputeMin :: (BoFun f i, Memoizable f, NFData f) => f -> IO NominalDiffTime
+measureTimeComputeMin f = do
+  void $ evaluate $ force f
   start <- getCurrentTime
   void $ evaluate $ force $ computeMin f
   end <- getCurrentTime
   return (diffUTCTime end start)
 
 -- Uses computeMin'
-measureComplexityTime' :: (BoFun f i, Hashable f) => f -> IO NominalDiffTime
-measureComplexityTime' f = do
+measureTimeComputeMin' :: (BoFun f i, Hashable f, NFData f) => f -> IO NominalDiffTime
+measureTimeComputeMin' f = do
+  void $ evaluate $ force f
   start <- getCurrentTime
   void $ evaluate $ force $ computeMin' f
   end <- getCurrentTime
   return (diffUTCTime end start)
 
 -- Uses genAlgMemoThin
-measureComplexityTime'' :: (BoFun f i, Memoizable f) => f -> IO NominalDiffTime
-measureComplexityTime'' f = do
+measureTimeGenAlg :: (BoFun f i, Memoizable f, NFData f) => f -> IO NominalDiffTime
+measureTimeGenAlg f = do
+  void $ evaluate $ force f
   start <- getCurrentTime
   void $ evaluate $ force (genAlgThinMemo f :: Set (Poly Rational))
   end <- getCurrentTime

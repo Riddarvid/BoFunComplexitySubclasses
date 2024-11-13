@@ -14,6 +14,7 @@ module Subclasses.Iterated (
 import           Arity              (AllArity (allArity),
                                      ArbitraryArity (arbitraryArity))
 import           BoFun              (BoFun (..), Constable (mkConst))
+import           Control.DeepSeq    (NFData)
 import           Control.Enumerable (Enumerable, Shared, Sized, Typeable, c0,
                                      c1, datatype)
 import           Data.Hashable      (Hashable)
@@ -31,6 +32,8 @@ type SubFun f = f (Iterated f)
 
 data Iterated f = Const Bool | Id | Iterated (SubFun f)
   deriving (Generic)
+
+instance (NFData (SubFun f)) => NFData (Iterated f)
 
 -- Some functions that are equal could still result in False,
 -- but this should not be an issue.

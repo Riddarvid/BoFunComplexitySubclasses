@@ -8,6 +8,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Replace case with maybe" #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
+{-# LANGUAGE DeriveGeneric          #-}
 module Subclasses.Threshold (
   ThresholdFun,
   LiftedThresholdFun,
@@ -25,9 +26,11 @@ import           DSLsofMath.Algebra    (Additive (..), (-))
 import           Arity                 (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Applicative   ((<|>))
+import           Control.DeepSeq       (NFData)
 import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
+import           GHC.Generics          (Generic)
 import           Subclasses.Iterated   (Iterated (Id, Iterated), IteratedSymm,
                                         iterateSymmFun)
 import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
@@ -45,7 +48,9 @@ import           Utils                 (Square, enumerateMultiSet, partitions)
 -- Each threshold is non-negative.
 -- TODO-NEW: Normalized version, that is, only (1,0) and (0,1) are allowed as const funs.
 newtype Threshold = Threshold (Square Int)
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic)
+
+instance NFData Threshold
 
 $(deriveMemoizable ''Threshold)
 
@@ -71,7 +76,9 @@ reduceThreshold v (Threshold (nt, nf)) = if v
 ---------------------- Threshold function ----------------------------
 
 newtype ThresholdFun = ThresholdFun Threshold
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance NFData ThresholdFun
 
 $(deriveMemoizable ''ThresholdFun)
 

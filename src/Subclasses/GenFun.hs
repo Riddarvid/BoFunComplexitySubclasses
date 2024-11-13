@@ -26,6 +26,7 @@ import           BDD.BDD                   (BDDa, bddFromOutputVector)
 import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
+import           Control.DeepSeq           (NFData)
 import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
                                             notB, restrict, support, true)
 import           Data.Function.Memoize     (deriveMemoizable)
@@ -44,6 +45,8 @@ data GenFun = GenFun (BDD AscOrder) Int
   deriving(Eq, Show, Generic)
 
 instance Hashable GenFun
+
+instance NFData GenFun
 
 $(deriveMemoizable ''GenFun)
 
@@ -155,7 +158,7 @@ flipInputsGenFun (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n
 ---------------------------------------------------------
 
 -- We have chosen to call a BDD canonical if its leftmost path reaches 0.
--- This is equivalent with the output for an input consistiong only of 0s being 0.
+-- This is equivalent with the output for an input consisting only of 0s being 0.
 -- Other definitions might be better.
 toCanonicForm :: GenFun -> GenFun
 toCanonicForm gf@(GenFun bdd n)

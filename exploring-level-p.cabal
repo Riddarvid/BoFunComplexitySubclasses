@@ -47,6 +47,7 @@ library
       Poly.PolyInstances
       Poly.PolynomialExtra
       Poly.Utils
+      Subclasses.CanonicalGenFun
       Subclasses.Gates
       Subclasses.GenFun
       Subclasses.Id
@@ -54,6 +55,7 @@ library
       Subclasses.IteratedInstances
       Subclasses.IteratedSimplified
       Subclasses.Lifted
+      Subclasses.NormalizedCanonicalGenFun
       Subclasses.NormalizedGenFun
       Subclasses.One
       Subclasses.Symmetric
@@ -62,6 +64,7 @@ library
       Testing.PrettyPrinting
       Testing.Properties
       Thin
+      Timing
       Utils
   other-modules:
       Paths_exploring_level_p
