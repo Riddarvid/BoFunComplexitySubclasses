@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Comparisons/Runtime table.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TODO för veckan"
+              "title": "Runtime table"
             }
           },
           {
@@ -179,9 +179,10 @@
   },
   "active": "415e3e41ed1d9e37",
   "lastOpenFiles": [
-    "Report/Report TODO.md",
-    "Comparisons/majN.md",
+    "Comparisons/Runtime table.md",
     "Admin/TODO för veckan.md",
+    "Comparisons/majN.md",
+    "Report/Report TODO.md",
     "Admin/TODO generell.md",
     "Admin/Svar från senaste mötet.md",
     "Admin/Frågor till nästa möte.md",
@@ -198,7 +199,6 @@
     "Other/Vår förståelse av PWs.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",
     "Other/Hash consing.md",
-    "Comparisons/Runtime table.md",
     "Comparisons/Notes.md",
     "Frågor till Christian.md",
     "Overall efficiency",

@@ -5,6 +5,7 @@ module LibMain (
   main
 ) where
 import           Algorithm.GenAlg                     (genAlgThinMemo,
+                                                       genAlgThinMemoPoly,
                                                        piecewiseBoth)
 import           Algorithm.GenAlgPW                   (computeMin, computeMin')
 import           BDD.BDD                              (BDDa, normalizeBDD)
@@ -18,7 +19,9 @@ import qualified Data.HashSet                         as HS
 import qualified Data.Set                             as Set
 import           DSLsofMath.Algebra                   (AddGroup, MulGroup)
 import           Exploration.Comparisons              (mainBenchMaj,
-                                                       measureTimeComputeMin)
+                                                       measureTimeComputeMin,
+                                                       measureTimeComputeMin',
+                                                       measureTimeGenAlg)
 import           Exploration.Filters                  (degreePred, maximaPred)
 import           Poly.PiecewisePoly                   (BothPW (BothPW),
                                                        PiecewisePoly)
@@ -43,7 +46,8 @@ import           Timing                               (measureMajs)
 
 main :: IO ()
 main = do
-  measurements <- measureMajs measureTimeComputeMin (Symm.majFun) 3 11
+  --print $ genAlgThinMemoPoly $ Gen.majFun 11
+  measurements <- measureMajs measureTimeComputeMin' (mkNCGF . Gen.majFun) 3 11
   print measurements
 
 main11 :: IO ()

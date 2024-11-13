@@ -10,7 +10,7 @@ module Exploration.Comparisons (
   measureTimeComputeMin',
   measureTimeGenAlg
 ) where
-import           Algorithm.GenAlg      (genAlgThinMemo)
+import           Algorithm.GenAlg      (genAlgThinMemo, genAlgThinMemoPoly)
 import           Algorithm.GenAlgPW    (computeMin, computeMin')
 import           BoFun                 (BoFun)
 import           Control.DeepSeq       (NFData, force)
@@ -59,7 +59,7 @@ measureTimeGenAlg :: (BoFun f i, Memoizable f, NFData f) => f -> IO NominalDiffT
 measureTimeGenAlg f = do
   void $ evaluate $ force f
   start <- getCurrentTime
-  void $ evaluate $ force (genAlgThinMemo f :: Set (Poly Rational))
+  void $ evaluate $ force $ genAlgThinMemoPoly f
   end <- getCurrentTime
   return (diffUTCTime end start)
 

@@ -31,7 +31,7 @@ genAlgThinMemo :: (BoFun fun i, Memoizable fun, Thin a, Algor a) => fun -> S.Set
 genAlgThinMemo = memoFix genAlgStepThin
 
 -- Same as above but type specified to Poly Rational
-genAlgThinMemoPoly :: (Memoizable fun, BoFun fun Int) => fun -> S.Set (Poly Rational)
+genAlgThinMemoPoly :: (Memoizable fun, BoFun fun i) => fun -> S.Set (Poly Rational)
 genAlgThinMemoPoly = genAlgThinMemo
 
 -- Same as above but type specified to (Poly Rational, DecTree)
