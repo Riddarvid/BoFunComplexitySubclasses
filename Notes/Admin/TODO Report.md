@@ -1,4 +1,4 @@
-### Låg prio
+
 
 - 5.1 Förklara hur signAtAlgebraic funkar, gärna med illustration/diagram.
 	- Ta även upp exempel på hur vår första numeriska version av hasMaximum (den felaktiga) gav fel för vissa PWs, men där vår nya ger rätt. 
@@ -7,8 +7,9 @@
 - Uppdatera med ny hasMaximum-kod när den väl har skrivits
 - Lägg in komplexiteten av IterMaj 3 3 i appendix A
 - Se om vi vill lägga till "När vi skriver effektiv eller optimerad menar vi alltid med avseende på komplexitetsberäkningar om inget annat sägs". I introduktionen någonstans?
-- Förklara de nya diagrammen när det är dags
+- Förklara de nya box-plotsen när det är dags
 - Ta med att vi i nuläget har flera representationer av samma funktion för en given datatyp (ex. Iterated ThresholdFun)
+- Skriv om de egenskaper vi har hittat hos komplexiteter (mirroring osv.)
 
 ## Latex-grejer
 

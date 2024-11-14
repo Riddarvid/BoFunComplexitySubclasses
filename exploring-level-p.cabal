@@ -39,6 +39,7 @@ library
       DSLsofMath.PSDS
       Exploration.Comparisons
       Exploration.Counting
+      Exploration.Eval
       Exploration.Filters
       Exploration.Translations
       LibMain

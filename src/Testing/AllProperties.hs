@@ -10,8 +10,7 @@ import           Testing.Properties (propComputeMin'Correct,
                                      propFlipOutputCorrect,
                                      propNormalizedComplexity,
                                      propNormalizedCorrectVars,
-                                     propRationalSign, propRepsComplexity,
-                                     propRepsCorrect)
+                                     propRationalSign, propRepsCorrect)
 
 data Check = forall p. Testable p => Check p Args
 
@@ -21,10 +20,9 @@ stdArgs' = stdArgs{maxSuccess = 200}
 allProps :: [Check]
 allProps = [
   Check propRationalSign stdArgs'{maxSize = 5},
-  --Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
+  Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
   Check propNormalizedComplexity stdArgs'{maxSize = 5},
   Check propRepsCorrect stdArgs'{maxSize = 5},
-  Check propRepsComplexity stdArgs'{maxSize = 9},
   Check propFlipOutputCorrect stdArgs'{maxSize = 10},
   Check propFlipOutputComplexity stdArgs'{maxSize = 5},
   Check propFlipInputComplexity stdArgs'{maxSize = 5},

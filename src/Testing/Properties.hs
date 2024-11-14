@@ -11,7 +11,6 @@ module Testing.Properties (
   propConversionSymm,
   propComputeMin'Correct,
   propRepsCorrect,
-  propRepsComplexity,
   propRationalSign,
   IterInput
 ) where
@@ -25,6 +24,7 @@ import           Data.List                    (sort)
 import           Data.Ratio                   ((%))
 import qualified Data.Set                     as Set
 import           DSLsofMath.PSDS              (Poly)
+import           Exploration.Eval             (evalSymmetric)
 import           Exploration.Translations     (genToBasicSymmetricNaive)
 import           Poly.PiecewisePoly           (minPWs, pieces,
                                                piecewiseFromPoly,
@@ -151,12 +151,13 @@ propRepsCorrect (Input vals) = conjoin
   ]
   where
     n = length vals
+    nOnes = length $ filter id vals
     majGeneral = Gen.majFun n
-    majSymm = toGenFun n $ Symm.majFun n
-    majThreshold = toGenFun n $ Thresh.majFun n
-    resSymm = eval majSymm vals
-    resGen = eval majGeneral vals
-    resThresh = eval majThreshold vals
+    majSymm = Symm.majFun n
+    majThreshold = Thresh.majFun n
+    resSymm = evalSymmetric majSymm nOnes
+    resGen = evalSymmetric majGeneral nOnes
+    resThresh = evalSymmetric majThreshold nOnes
 
 data IterInput = IterInput Int Int
   deriving (Show)
@@ -183,7 +184,9 @@ instance Arbitrary IterMajInput where
 
 -- Static test that ensures that the Gen, Symm, and Thresh representations of
 -- maj 3 2 yield the same complexity.
-propRepsComplexity :: IterMajInput -> Property
+-- This property is obsolete since we show
+-- propRepsCorrect and propComputeMinCorrect + propComputeMin'Correct
+{-propRepsComplexity :: IterMajInput -> Property
 propRepsComplexity (IMI (IterInput bits levels)) = conjoin
   [
     symm === gen,
@@ -192,7 +195,7 @@ propRepsComplexity (IMI (IterInput bits levels)) = conjoin
   where
     gen = computeMin $ Gen.iteratedMajFun bits levels
     symm = computeMin $ Symm.iteratedMajFun bits levels
-    thresh = computeMin $ Thresh.iteratedMajFun bits levels
+    thresh = computeMin $ Thresh.iteratedMajFun bits levels-}
 
 ------------------ Algebraic numbers --------------------------------
 

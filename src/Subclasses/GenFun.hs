@@ -5,6 +5,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use list comprehension" #-}
 {-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleContexts      #-}
 module Subclasses.GenFun (
   GenFun(GenFun),
   liftBDD,
@@ -154,14 +155,11 @@ iteratedFun levels (GenFun bdd bits)
 
 ----------------- Eval for GenFuns -------------------------
 
--- TODO-NEW: Review and see if this function still makes sense
--- Might be better to use an IntMap instead of a list of bools.
 eval :: GenFun -> [Bool] -> Maybe Bool
-eval gf@(GenFun bdd _) input = isConst $
-  foldl (\gf' (varN, v) -> restrictGenFun varN v gf') gf input'
+eval gf input = isConst $
+  foldl (\gf' (varN, v) -> setBit (varN, v) gf') gf input'
   where
-    input' = filter (\(i, _) -> IS.member i supporting) $ zip [1..] input
-    supporting = support bdd
+    input' = zip [1..] input
 
 flipInputsGenFun :: GenFun -> GenFun
 flipInputsGenFun (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n
