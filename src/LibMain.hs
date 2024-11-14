@@ -17,6 +17,7 @@ import           Data.DecisionDiagram.BDD             (AscOrder, BDD, notB, var,
 
 import qualified Data.HashSet                         as HS
 import qualified Data.Set                             as Set
+import           Data.Time                            (NominalDiffTime)
 import           DSLsofMath.Algebra                   (AddGroup, MulGroup)
 import           Exploration.Comparisons              (mainBenchMaj,
                                                        measureTimeComputeMin,
@@ -27,28 +28,34 @@ import           Poly.PiecewisePoly                   (BothPW (BothPW),
                                                        PiecewisePoly)
 import           Poly.Utils                           (minDegree)
 import           Prelude                              hiding ((*), (+))
-import           Subclasses.CanonicalGenFun           (mkCGF)
+import           Subclasses.CanonicalGenFun           (CanonicalGenFun, mkCGF)
 import qualified Subclasses.GenFun                    as Gen
 import           Subclasses.GenFun                    (GenFun (GenFun),
                                                        allGenFuns,
                                                        flipInputsGenFun)
 import           Subclasses.Id                        ()
+import           Subclasses.Iterated                  (IteratedSymm)
 import           Subclasses.IteratedInstances         ()
-import           Subclasses.NormalizedCanonicalGenFun (mkNCGF)
-import           Subclasses.NormalizedGenFun          (mkNGF)
+import           Subclasses.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun,
+                                                       mkNCGF)
+import           Subclasses.NormalizedGenFun          (NormalizedGenFun, mkNGF)
 import qualified Subclasses.Symmetric                 as Symm
+import           Subclasses.Symmetric                 (SymmetricFun)
 import qualified Subclasses.Threshold                 as Thresh
+import           Subclasses.Threshold                 (ThresholdFun)
 import           Test.QuickCheck                      (Arbitrary (arbitrary),
                                                        generate)
 import           Testing.PrettyPrinting               (desmosPrintPW,
                                                        desmosShowPW)
-import           Timing                               (measureMajs)
+import           Timing                               (measureMajs,
+                                                       measureRandomFuns)
 
 main :: IO ()
 main = do
-  --print $ genAlgThinMemoPoly $ Gen.majFun 11
-  measurements <- measureMajs measureTimeComputeMin' (mkNCGF . Gen.majFun) 3 11
-  print measurements
+  t <- measureTimeComputeMin $ Gen.majFun 11
+  print t
+  --vals <- measureRandomFuns (measureTimeComputeMin :: IteratedSymm SymmetricFun -> IO NominalDiffTime) 30 3 10
+  --print vals
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

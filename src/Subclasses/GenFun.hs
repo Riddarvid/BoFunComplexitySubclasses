@@ -11,6 +11,7 @@ module Subclasses.GenFun (
   falseG,
   trueG,
   notG,
+  constGF,
   toGenFun,
   allGenFuns,
   majFun,
@@ -22,6 +23,7 @@ module Subclasses.GenFun (
   flipInputsGenFun
 ) where
 import           Algorithm.Algor           (Algor (..))
+import           Arity                     (ArbitraryArity (arbitraryArity))
 import           BDD.BDD                   (BDDa, bddFromOutputVector)
 import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
@@ -76,6 +78,10 @@ instance Arbitrary GenFun where
     (GenFun (Leaf _) n) -> [GenFun (Leaf v') n' | n' <- [0 .. n - 1], v' <- [False, True]]
     _                   -> shrinkFun gf
 
+instance ArbitraryArity GenFun where
+  arbitraryArity :: Int -> Gen GenFun
+  arbitraryArity = generateGenFun
+
 -- Generator for a General function with at most n variables.
 generateGenFun :: Int -> Gen GenFun
 generateGenFun n = do
@@ -96,6 +102,11 @@ trueG = GenFun true
 
 notG :: GenFun -> GenFun
 notG (GenFun bdd n) = GenFun (notB bdd) n
+
+constGF :: Bool -> Int -> GenFun
+constGF v = GenFun v'
+  where
+    v' = if v then true else false
 
 ----------------- Conversions ---------------------------------------
 

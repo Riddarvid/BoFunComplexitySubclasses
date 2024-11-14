@@ -1,4 +1,4 @@
-Note: The first results using criterion seem unreliable.
+Note: The first results using criterion seem unreliable. We probably can't use these results.
 
 ## Using non-normalized BDDs:
 

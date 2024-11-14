@@ -10,7 +10,4 @@ för en given evalueringsordning (binary decision tree).
 Om vi hittar detta väntevärde för alla möjliga evalueringsordningar kan vi välja den som har lägst väntevärde.
 Detta definierar vi som level-p-komplexiteten för funktionen.
 
-
-
-
 "Given a Boolean function f, a decision tree t describes one way to evaluate the function f."

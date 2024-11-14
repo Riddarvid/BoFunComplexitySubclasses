@@ -6,6 +6,7 @@ module Subclasses.NormalizedCanonicalGenFun (
   NormalizedCanonicalGenFun,
   mkNCGF
 ) where
+import           Arity                       (ArbitraryArity (arbitraryArity))
 import           BoFun                       (BoFun (..))
 import           Control.DeepSeq             (NFData)
 import           Data.Function.Memoize       (deriveMemoizable)
@@ -13,6 +14,7 @@ import           Data.Hashable               (Hashable)
 import           GHC.Generics                (Generic)
 import           Subclasses.GenFun           (GenFun, toCanonicForm)
 import           Subclasses.NormalizedGenFun (normalizeGenFun)
+import           Test.QuickCheck             (Gen)
 
 newtype NormalizedCanonicalGenFun = NCGF GenFun
   deriving (Generic, Eq, Show)
@@ -36,3 +38,7 @@ instance BoFun NormalizedCanonicalGenFun Int where
   variables = unlift variables
   setBit :: (Int, Bool) -> NormalizedCanonicalGenFun -> NormalizedCanonicalGenFun
   setBit v = NCGF . toCanonicForm . normalizeGenFun . unlift (setBit v)
+
+instance ArbitraryArity NormalizedCanonicalGenFun where
+  arbitraryArity :: Int -> Gen NormalizedCanonicalGenFun
+  arbitraryArity arity = mkNCGF <$> arbitraryArity arity

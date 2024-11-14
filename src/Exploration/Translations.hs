@@ -3,17 +3,18 @@
 module Exploration.Translations (
   genToBasicSymmetricNaive,
   ngfToIteratedThresholdFun,
-  funToAlg,
+  boFunToGenFun,
   areEquivalent
 ) where
-import           Algorithm.Algor             (Algor (pic, res))
+import           BDD.BDD                     (pick)
 import           BoFun                       (BoFun (isConst, setBit, variables))
 import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
 import           Data.IntMap                 (IntMap)
 import qualified Data.IntMap                 as IM
 import           Data.List.NonEmpty          (NonEmpty)
 import qualified Data.List.NonEmpty          as NE
-import           Subclasses.GenFun           (GenFun (GenFun), toGenFun)
+import           Subclasses.GenFun           (GenFun (GenFun), constGF,
+                                              toGenFun)
 import           Subclasses.Iterated         (IteratedSymm)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
 import           Subclasses.Symmetric        (SymmetricFun, mkSymmetricFun)
@@ -66,14 +67,20 @@ areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 
 ------------------- From BoFun to Algor -----------------------------
 
-funToAlg :: (BoFun f i, Algor a) => f -> a
-funToAlg = funToAlg' 0
+-- The caller is responsible for calling with a correct arity
+boFunToGenFun :: (BoFun f i) => f -> Int -> GenFun
+boFunToGenFun f = GenFun bdd
+  where
+    (GenFun bdd _) = boFunToGenFun' 0 f
 
 -- If the function is not const, picks an arbitrary variable and recursively calls
 -- itself for the branches.
 -- Useful when converting from one function type to another.
-funToAlg' :: (BoFun f i, Algor a) => Int -> f -> a
-funToAlg' n f = case isConst f of
-  Just val -> res val
-  Nothing -> let i = head (variables f) in
-    pic n (funToAlg' (n + 1) (setBit (i, False) f)) (funToAlg' (n + 1) (setBit (i, True) f))
+boFunToGenFun' :: (BoFun f i) => Int -> f -> GenFun
+boFunToGenFun' n f = case isConst f of
+  Just val -> constGF val 0
+  Nothing -> let
+    i = head (variables f)
+    (GenFun bddF _) = boFunToGenFun' (n + 1) (setBit (i, False) f)
+    (GenFun bddT _) = boFunToGenFun' (n + 1) (setBit (i, True) f)
+    in GenFun (pick n bddF bddT) 0

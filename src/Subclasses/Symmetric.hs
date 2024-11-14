@@ -13,6 +13,7 @@ module Subclasses.Symmetric (
   iteratedMajFun
 ) where
 
+import           Arity                 (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
 import           Control.Arrow         ((>>>))
 import           Control.DeepSeq       (NFData)
@@ -79,8 +80,13 @@ $(deriveMemoizable ''SymmetricFun)
 instance Arbitrary SymmetricFun where
   arbitrary :: Gen SymmetricFun
   arbitrary = sized $ \n -> do
-    n' <- (+1) <$> chooseInt (0, n)
-    SymmetricFun . resultVectorFromList . NE.fromList <$> vector n'
+    arity' <- chooseInt (0, n)
+    arbitraryArity arity'
+
+instance ArbitraryArity SymmetricFun where
+  arbitraryArity :: Int -> Gen SymmetricFun
+  arbitraryArity arity' = do
+    SymmetricFun . resultVectorFromList . NE.fromList <$> vector (arity' + 1)
 
 instance BoFun SymmetricFun () where
   isConst :: SymmetricFun -> Maybe Bool
