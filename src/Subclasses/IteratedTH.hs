@@ -3,8 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Subclasses.IteratedTH () where
-import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable,
-                                        deriveMemoize)
+import           Data.Function.Memoize (Memoizable (memoize), deriveMemoize)
 import           Subclasses.Iterated   (Iterated', SubFun)
 
 instance (Memoizable (SubFun f)) => Memoizable (Iterated' f) where

@@ -11,6 +11,7 @@ module Testing.Properties (
   propConversionSymm,
   propComputeMin'Correct,
   propRepsCorrect,
+  propIterRepsCorrect,
   propRationalSign,
   IterInput
 ) where
@@ -24,7 +25,7 @@ import           Data.List                   (sort)
 import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
 import           DSLsofMath.PSDS             (Poly)
-import           Exploration.Eval            (evalSymmetric)
+import           Exploration.Eval            (evalNonSymmetric, evalSymmetric)
 import           Exploration.Translations    (genToBasicSymmetricNaive)
 import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
                                               propIsMirrorPW)
@@ -157,7 +158,7 @@ propRepsCorrect (Input vals) = conjoin
     resGen = evalSymmetric majGeneral nOnes
     resThresh = evalSymmetric majThreshold nOnes
 
-data IterInput = IterInput Int Int
+data IterInput = IterInput Int Int [Bool]
   deriving (Show)
 
 -- The total number of bits will never be higher than n.
@@ -165,7 +166,9 @@ instance Arbitrary IterInput where
   arbitrary :: Gen IterInput
   arbitrary = sized $ \limit -> do
     let limit' = if limit == 0 then 1 else limit
-    elements [IterInput bits levels | bits <- [1 .. limit'], levels <- validLevels bits limit']
+    let bitLevels = [(bits, levels) | bits <- [1 .. limit'], levels <- validLevels bits limit']
+    inputs <- traverse (\(bits, levels) -> vector (bits ^ levels)) bitLevels
+    elements $ zipWith (\(bits, levels) input -> IterInput bits levels input ) bitLevels inputs
 
 validLevels :: Int -> Int -> [Int]
 validLevels bits limit = takeWhile (\levels -> bits ^ levels <= limit) [1 .. limit]
@@ -176,9 +179,22 @@ newtype IterMajInput = IMI IterInput
 instance Arbitrary IterMajInput where
   arbitrary :: Gen IterMajInput
   arbitrary = do
-    IterInput bits levels <- arbitrary
-    let bits' = if even bits then bits - 1 else bits
-    return $ IMI $ IterInput bits' levels
+    IterInput bits levels input <- arbitrary
+    let (bits', input') = if even bits then (bits - 1, take (levels ^ bits') input) else (bits, input)
+    return $ IMI $ IterInput bits' levels input'
+
+propIterRepsCorrect :: IterMajInput -> Property
+propIterRepsCorrect (IMI (IterInput bits levels input)) = conjoin [
+    resSymm === resGen,
+    resThresh === resGen
+  ]
+  where
+    majGeneral = Gen.iteratedMajFun bits levels
+    majSymm = Symm.iteratedMajFun bits levels
+    majThreshold = Thresh.iteratedMajFun bits levels
+    resGen = evalNonSymmetric majGeneral input
+    resSymm = evalNonSymmetric majSymm input
+    resThresh = evalNonSymmetric majThreshold input
 
 -- Static test that ensures that the Gen, Symm, and Thresh representations of
 -- maj 3 2 yield the same complexity.

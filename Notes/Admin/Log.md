@@ -193,3 +193,32 @@ Frågor:
 Använd lhs2Tex för att generera snygga listings.
 
 https://github.com/patrikja/skeleton
+
+## Möte 18/11
+
+- Frågor om mätning och presentation av data.
+	- Hur många samples borde vi göra?
+	- Borde vi köra om samma komplexitetsberäkningar av samma funktion flera gånger?
+	- Hur jämför vi funktioner som klarar olika antal bitar med väldigt olika hastigheter?
+	- Svar: Utgå från Criterion, antingen använd direkt eller basera det på det.
+- Hur kan vi identifiera maxima/minima inuti ett polynom-segment?
+	- Gissar att det lättaste är att köra root counting av derivatan
+- Just nu har vi ett problem rörande Iterated. Vi vill använda ett multiset för att lagra subfunktionerna, eftersom detta blir mer effektivt (?). Det leder dock till att indexeringen blir lite ologisk, och kan ändras från ett call av setBit till ett annat. Hur borde vi göra?
+	- Svar: Testa att implementera lifting mha funktioner, inte mha. typeclass
+- Är QuickCheck ett bra verktyg för statistisk sampling? Vad borde vi annars använda?
+- Functional dependencies
+
+How to write a great research paper:
+
+- Page 1 är viktigast, det är där man faktiskt har läsare.
+	- Refererar vi till varje sektion, och om inte - varför?
+- Vad är vår main idea?
+	- Borde väl vara subklasser?
+	- Men även att man kan använda hash consing för det här problemet.
+- Tänk på det som "Nu ska jag berätta om min idé för en kompis" för att etablera en storyline.
+- I hans talk har han en väldigt kort introduktion, som i princip bara introducerar problemet och hur vi bidrar till att lösa det.
+	- Han tycker också att man borde skippa onödiga saker, som inte inspirerar läsaren.
+- State your contributions - det gör vi!
+	- Specifikt borde man ha saker som inte är självklara, saker som skulle kunna vara falska.
+	- Ha med forward references från contributions.
+- Borde vi ha en dedikerad "related work"-sektion?

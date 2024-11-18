@@ -98,7 +98,7 @@ instance BoFun SymmetricFun () where
     _                  -> Nothing
   variables :: SymmetricFun -> [()]
   variables f@(SymmetricFun _) = case isConst f of
-    Nothing -> replicate (arity f) ()
+    Nothing -> [()]
     Just _  -> []
   setBit :: ((), Bool) -> SymmetricFun -> SymmetricFun
   setBit (_, val) (SymmetricFun rv) = SymmetricFun rv'

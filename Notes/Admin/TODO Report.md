@@ -10,6 +10,9 @@
 - Förklara de nya box-plotsen när det är dags
 - Ta med att vi i nuläget har flera representationer av samma funktion för en given datatyp (ex. Iterated ThresholdFun)
 - Skriv om de egenskaper vi har hittat hos komplexiteter (mirroring osv.)
+- Referera till bilden på framsidan 
+- I samband med våra grafer borde vi ha en hypotes om det de visar. Ex. om vi ser ett linjärt beteende, vad är k och m? Vad betyder det?
+	- t.ex. "Kvoten mellan körtiderna ökar exponentiellt"
 
 ## Latex-grejer
 

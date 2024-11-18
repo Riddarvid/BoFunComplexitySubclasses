@@ -19,28 +19,20 @@ module Subclasses.Threshold (
 ) where
 
 import           Data.Function.Memoize (Memoizable, deriveMemoizable)
-import qualified Data.MultiSet         as MultiSet
 import           Prelude               hiding (negate, sum, (+), (-))
 
 import           DSLsofMath.Algebra    (Additive (..), (-))
 
 import           Arity                 (ArbitraryArity (arbitraryArity))
 import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.Applicative   ((<|>))
 import           Control.DeepSeq       (NFData)
-import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
-                                        share)
-import           Data.MultiSet         (MultiSet)
 import           GHC.Generics          (Generic)
 import           Subclasses.Iterated   (Iterated, iterId, iterateFun,
                                         toIterated)
 import           Subclasses.Lifted     (Lifted, toLifted)
-import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (chooseInt)
 import           Test.QuickCheck.Gen   (Gen)
-import           Type.Reflection       (Typeable)
-import           Utils                 (Square, enumerateMultiSet, naturals,
-                                        partitions)
+import           Utils                 (Square, naturals, partitions)
 
 --------------- Threshold ----------------------------------------
 
@@ -90,7 +82,7 @@ instance BoFun ThresholdFun () where
   variables :: ThresholdFun -> [()]
   variables f = case isConst f of
     Just _  -> []
-    Nothing -> replicate (thresholdFunArity f) ()
+    Nothing -> [()]
   setBit :: ((), Bool) -> ThresholdFun -> ThresholdFun
   setBit (_, v) (ThresholdFun th) = ThresholdFun $ reduceThreshold v th
 
