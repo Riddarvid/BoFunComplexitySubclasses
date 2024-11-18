@@ -222,3 +222,9 @@ How to write a great research paper:
 	- Specifikt borde man ha saker som inte är självklara, saker som skulle kunna vara falska.
 	- Ha med forward references från contributions.
 - Borde vi ha en dedikerad "related work"-sektion?
+
+## 18/11
+
+- Refactor Lifted
+- Add property for IterRepCorrectness
+- Började implementera pretty printing av funktioner

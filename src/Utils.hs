@@ -196,3 +196,6 @@ enumerateMultiSet n = insertMultiSetF access $ enumerateMultiSet (n - 1)
 
 insertMultiSetF :: (Applicative f, Ord a) => f a -> f (MultiSet a) -> f (MultiSet a)
 insertMultiSetF = liftA2 MultiSet.insert
+
+indent :: String -> String
+indent = unlines . map ('\t' :) . lines

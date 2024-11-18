@@ -12,7 +12,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Subclasses.Threshold (
   ThresholdFun,
-  ThresholdFun',
+  ThresholdFun'(ThresholdFun'),
   majFun,
   iteratedMajFun,
   allNAryITFs
@@ -70,11 +70,17 @@ reduceThreshold v (Threshold (nt, nf)) = if v
 ---------------------- Threshold function ----------------------------
 
 newtype ThresholdFun = ThresholdFun Threshold
-  deriving (Eq, Ord, Show, Generic)
-
-instance NFData ThresholdFun
+  deriving (Eq, Ord, Generic)
 
 $(deriveMemoizable ''ThresholdFun)
+
+instance Show ThresholdFun where
+  show :: ThresholdFun -> String
+  show f@(ThresholdFun (Threshold (nt, _))) = show arity ++ "-bit threshold function, threshold at " ++ show nt
+    where
+      arity = thresholdFunArity f
+
+instance NFData ThresholdFun
 
 instance BoFun ThresholdFun () where
   isConst :: ThresholdFun -> Maybe Bool
@@ -95,6 +101,10 @@ thresholdFunArity (ThresholdFun t) = thresholdArity t
 
 newtype ThresholdFun' = ThresholdFun' ThresholdFun
   deriving (Memoizable, NFData)
+
+instance Show ThresholdFun' where
+  show :: ThresholdFun' -> String
+  show (ThresholdFun' f) = show f
 
 instance BoFun ThresholdFun' Int where
   isConst :: ThresholdFun' -> Maybe Bool

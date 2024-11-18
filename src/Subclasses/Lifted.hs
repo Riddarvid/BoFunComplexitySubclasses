@@ -19,13 +19,22 @@ import           Data.Function.Memoize (Memoizable, memoize)
 import           Data.Maybe            (fromJust)
 import           GHC.Generics          (Generic)
 import           Test.QuickCheck       (Gen)
-import           Utils                 (generatePartition, naturals)
+import           Utils                 (generatePartition, indent, naturals)
 
 -- Invariant: g only contains non-const functions
 data Lifted f g = Lifted {
   lFun     :: f,
   lSubFuns :: [g]
-} deriving (Generic, Show)
+} deriving (Generic)
+
+instance (Show f, Show g) => Show (Lifted f g) where
+  show :: Lifted f g -> String
+  show (Lifted f gs) =
+    show f ++ "\n" ++
+    indent (showSubFuns gs)
+
+showSubFuns :: Show g => [g] -> String
+showSubFuns = unlines . map show
 
 instance (NFData f, NFData g) => NFData (Lifted f g)
 

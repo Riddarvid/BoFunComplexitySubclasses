@@ -37,6 +37,7 @@ import           Subclasses.GenFun                    (GenFun (GenFun),
 import           Subclasses.Id                        ()
 import           Subclasses.Iterated                  (Iterated)
 import           Subclasses.IteratedTH                ()
+import           Subclasses.Lifted                    (toLifted)
 import           Subclasses.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun,
                                                        mkNCGF)
 import           Subclasses.NormalizedGenFun          (NormalizedGenFun, mkNGF)
@@ -44,7 +45,8 @@ import qualified Subclasses.Symmetric                 as Symm
 import           Subclasses.Symmetric                 (SymmetricFun,
                                                        SymmetricFun')
 import qualified Subclasses.Threshold                 as Thresh
-import           Subclasses.Threshold                 (ThresholdFun)
+import           Subclasses.Threshold                 (ThresholdFun,
+                                                       ThresholdFun' (ThresholdFun'))
 import           Test.QuickCheck                      (Arbitrary (arbitrary),
                                                        generate)
 import           Testing.PrettyPrinting               (desmosPrintPW,
@@ -53,9 +55,9 @@ import           Timing                               (measureMajs,
                                                        measureRandomFuns)
 
 main :: IO ()
-main = do
-  vals <- measureRandomFuns (measureTimeComputeMin :: Iterated SymmetricFun' -> IO NominalDiffTime) 30 3 10
-  print vals
+main = print h
+  where
+    h = Thresh.iteratedMajFun 3 2
 
 
 main11 :: IO ()

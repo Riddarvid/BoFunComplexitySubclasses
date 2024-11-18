@@ -35,10 +35,14 @@ type SubFun f = f (Iterated' f)
 data Iterated' f = Const Bool | Id | Iterated' (SubFun f)
   deriving (Generic)
 
+instance (Show (SubFun f)) => Show (Iterated' f) where
+  show :: Iterated' f -> String
+  show (Const v)     = "const " ++ show v
+  show Id            = "id"
+  show (Iterated' f) = show f
+
 iterId :: Iterated' f
 iterId = Id
-
-deriving instance Show (SubFun f) => Show (Iterated' f)
 
 instance (NFData (SubFun f)) => NFData (Iterated' f)
 
