@@ -1,23 +1,24 @@
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE InstanceSigs           #-}
-{-# LANGUAGE MultiWayIf             #-}
-{-# LANGUAGE TemplateHaskell        #-}
-{-# LANGUAGE UndecidableInstances   #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE FunctionalDependencies     #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE MultiWayIf                 #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE UndecidableInstances       #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Replace case with maybe" #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
-{-# LANGUAGE DeriveGeneric          #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Subclasses.Threshold (
   ThresholdFun,
-  LiftedThresholdFun,
+  ThresholdFun',
   majFun,
   iteratedMajFun,
   allNAryITFs
 ) where
 
-import           Data.Function.Memoize (deriveMemoizable)
+import           Data.Function.Memoize (Memoizable, deriveMemoizable)
 import qualified Data.MultiSet         as MultiSet
 import           Prelude               hiding (negate, sum, (+), (-))
 
@@ -31,14 +32,15 @@ import           Control.Enumerable    (Shareable, Shared, Sized (aconcat, pay),
                                         share)
 import           Data.MultiSet         (MultiSet)
 import           GHC.Generics          (Generic)
-import           Subclasses.Iterated   (Iterated (Id, Iterated), IteratedSymm,
-                                        iterateSymmFun)
-import           Subclasses.Lifted     (LiftedSymmetric, liftFunSymm)
+import           Subclasses.Iterated   (Iterated, iterId, iterateFun,
+                                        toIterated)
+import           Subclasses.Lifted     (Lifted, toLifted)
 import           Test.Feat             (Enumerable (enumerate))
 import           Test.QuickCheck       (chooseInt)
 import           Test.QuickCheck.Gen   (Gen)
 import           Type.Reflection       (Typeable)
-import           Utils                 (Square, enumerateMultiSet, partitions)
+import           Utils                 (Square, enumerateMultiSet, naturals,
+                                        partitions)
 
 --------------- Threshold ----------------------------------------
 
@@ -88,7 +90,7 @@ instance BoFun ThresholdFun () where
   variables :: ThresholdFun -> [()]
   variables f = case isConst f of
     Just _  -> []
-    Nothing -> [()]
+    Nothing -> replicate (thresholdFunArity f) ()
   setBit :: ((), Bool) -> ThresholdFun -> ThresholdFun
   setBit (_, v) (ThresholdFun th) = ThresholdFun $ reduceThreshold v th
 
@@ -99,13 +101,22 @@ instance Constable ThresholdFun where
 thresholdFunArity :: ThresholdFun -> Int
 thresholdFunArity (ThresholdFun t) = thresholdArity t
 
+newtype ThresholdFun' = ThresholdFun' ThresholdFun
+  deriving (Memoizable, NFData)
+
+instance BoFun ThresholdFun' Int where
+  isConst :: ThresholdFun' -> Maybe Bool
+  isConst (ThresholdFun' f) = isConst f
+  variables :: ThresholdFun' -> [Int]
+  variables (ThresholdFun' f) = take (thresholdFunArity f) naturals
+  setBit :: (Int, Bool) -> ThresholdFun' -> ThresholdFun'
+  setBit (_, v) (ThresholdFun' f) = ThresholdFun' $ setBit ((), v) f
+
 ----------------- Lifted Threshold Function ------------------
 
-type LiftedThresholdFun = LiftedSymmetric ThresholdFun
-
 -- | A thresholding function with copies of a single subfunction.
-thresholdFunReplicate :: (Ord f) => ThresholdFun -> f -> LiftedThresholdFun f
-thresholdFunReplicate t u = liftFunSymm t $ MultiSet.fromOccurList [(u, thresholdFunArity t)]
+thresholdFunReplicate :: (BoFun f i) => ThresholdFun -> f -> Lifted ThresholdFun' f
+thresholdFunReplicate f g = toLifted (ThresholdFun' f) $ replicate (thresholdFunArity f) g
 
 -------------- Examples ------------------------------------
 
@@ -114,8 +125,8 @@ majFun bits = ThresholdFun $ Threshold (n, n)
   where
     n = (bits `div` 2) + 1
 
-iteratedMajFun :: Int -> Int -> IteratedSymm ThresholdFun
-iteratedMajFun bits = iterateSymmFun bits (majFun bits)
+iteratedMajFun :: Int -> Int -> Iterated ThresholdFun'
+iteratedMajFun bits = iterateFun bits (ThresholdFun' $ majFun bits)
 
 -------------- Generation of ITFs ---------------------------------------
 
@@ -133,45 +144,45 @@ generateThreshold arity = do
 --------------- Enumeration -----------------------------
 -- Is not really used for much right now.
 
-enumerateNAry :: (Typeable f, Sized f) =>Int -> Shareable f ThresholdFun
-enumerateNAry arity = aconcat $
-  [pure $ ThresholdFun $ Threshold (nt, arity + 1 - nt) | nt <- [0 .. arity + 1]]
+-- enumerateNAry :: (Typeable f, Sized f) =>Int -> Shareable f ThresholdFun
+-- enumerateNAry arity = aconcat $
+--   [pure $ ThresholdFun $ Threshold (nt, arity + 1 - nt) | nt <- [0 .. arity + 1]]
 
--- We iterate over the number of subfunctions
-instance (Enumerable g, Ord g) => Enumerable (LiftedThresholdFun g) where
-  enumerate :: (Typeable f, Sized f) => Shared f (LiftedThresholdFun g)
-  -- enumerate = datatype [c2 LiftedThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
-  enumerate = share $ go 0
-    where
-      go nSubFuns = pay $ enumerateThresholdFun nSubFuns <|> go (nSubFuns + 1)
+-- -- We iterate over the number of subfunctions
+-- instance (Enumerable g, Ord g) => Enumerable (LiftedThresholdFun g) where
+--   enumerate :: (Typeable f, Sized f) => Shared f (LiftedThresholdFun g)
+--   -- enumerate = datatype [c2 LiftedThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
+--   enumerate = share $ go 0
+--     where
+--       go nSubFuns = pay $ enumerateThresholdFun nSubFuns <|> go (nSubFuns + 1)
 
--- TODO-NEW: Tydligare namn
-enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (LiftedThresholdFun g)
-enumerateThresholdFun nSubFuns = liftFunSymm <$> tupleF <*> multisetF
-  where
-    tupleF = ThresholdFun <$> enumerateThresholds nSubFuns
-    multisetF = enumerateMultiSet nSubFuns
+-- -- TODO-NEW: Tydligare namn
+-- enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (LiftedThresholdFun g)
+-- enumerateThresholdFun nSubFuns = toLifted <$> tupleF <*> multisetF
+--   where
+--     tupleF = ThresholdFun <$> enumerateThresholds nSubFuns
+--     multisetF = enumerateMultiSet nSubFuns
 
--- Tuples are free
-enumerateThresholds :: (Typeable f, Sized f) => Int -> Shareable f Threshold
-enumerateThresholds nSubFuns = aconcat $ [pure $ Threshold (nt, nSubFuns + 1 - nt) | nt <- [0 .. nSubFuns + 1]]
+-- -- Tuples are free
+-- enumerateThresholds :: (Typeable f, Sized f) => Int -> Shareable f Threshold
+-- enumerateThresholds nSubFuns = aconcat $ [pure $ Threshold (nt, nSubFuns + 1 - nt) | nt <- [0 .. nSubFuns + 1]]
 
 --------------- Exhaustive generation ------------------------------
 
 -- Gives all possible representations of n-bit ITFs, except for the ones with
 -- 0-ary functions as their subfunctions, as this would lead to an infinite
 -- number of representations.
-allNAryITFs :: Int -> [IteratedSymm ThresholdFun]
+allNAryITFs :: Int -> [Iterated ThresholdFun']
 allNAryITFs = (map nAryITFEnum' [0 ..] !!)
   where
     nAryITFEnum' 0 =
       [mkConst False, mkConst True]
     nAryITFEnum' 1 =
-      [mkConst False, mkConst True, Id]
+      [mkConst False, mkConst True, iterId]
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns
-      return $ Iterated $ liftFunSymm (ThresholdFun threshold') subFuns
+      return $ toIterated (ThresholdFun' $ ThresholdFun threshold') subFuns
 
 -- Gives all the thresholds satisfying the following properties:
 -- 0 <= tn <= n + 1
@@ -185,9 +196,9 @@ allThresholds n = do
 -- Generates all possible partitions of positive integers that add up to n.
 -- The member elements of these partions represent the arities of the subfunctions.
 -- For each arity, we then generate all possible subFunctions.
-allSubFunCombinations :: Int -> [(MultiSet (IteratedSymm ThresholdFun), Int)]
+allSubFunCombinations :: Int -> [([Iterated ThresholdFun'], Int)]
 allSubFunCombinations n = do
   partition <- partitions n
   subFuns <- mapM allNAryITFs partition
-  return (MultiSet.fromList subFuns, length subFuns)
+  return (subFuns, length subFuns)
 

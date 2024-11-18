@@ -15,6 +15,7 @@ import           Control.Monad                        (void)
 import           Data.DecisionDiagram.BDD             (AscOrder, BDD, notB, var,
                                                        (.&&.), (.||.))
 
+import           Arity                                (ArbitraryArity (arbitraryArity))
 import qualified Data.HashSet                         as HS
 import qualified Data.Set                             as Set
 import           Data.Time                            (NominalDiffTime)
@@ -34,13 +35,14 @@ import           Subclasses.GenFun                    (GenFun (GenFun),
                                                        allGenFuns,
                                                        flipInputsGenFun)
 import           Subclasses.Id                        ()
-import           Subclasses.Iterated                  (IteratedSymm)
-import           Subclasses.IteratedInstances         ()
+import           Subclasses.Iterated                  (Iterated)
+import           Subclasses.IteratedTH                ()
 import           Subclasses.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun,
                                                        mkNCGF)
 import           Subclasses.NormalizedGenFun          (NormalizedGenFun, mkNGF)
 import qualified Subclasses.Symmetric                 as Symm
-import           Subclasses.Symmetric                 (SymmetricFun)
+import           Subclasses.Symmetric                 (SymmetricFun,
+                                                       SymmetricFun')
 import qualified Subclasses.Threshold                 as Thresh
 import           Subclasses.Threshold                 (ThresholdFun)
 import           Test.QuickCheck                      (Arbitrary (arbitrary),
@@ -52,10 +54,9 @@ import           Timing                               (measureMajs,
 
 main :: IO ()
 main = do
-  t <- measureTimeComputeMin $ Gen.majFun 11
-  print t
-  --vals <- measureRandomFuns (measureTimeComputeMin :: IteratedSymm SymmetricFun -> IO NominalDiffTime) 30 3 10
-  --print vals
+  vals <- measureRandomFuns (measureTimeComputeMin :: Iterated SymmetricFun' -> IO NominalDiffTime) 30 3 10
+  print vals
+
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

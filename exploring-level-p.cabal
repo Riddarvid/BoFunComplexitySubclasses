@@ -53,8 +53,8 @@ library
       Subclasses.GenFun
       Subclasses.Id
       Subclasses.Iterated
-      Subclasses.IteratedInstances
       Subclasses.IteratedSimplified
+      Subclasses.IteratedTH
       Subclasses.Lifted
       Subclasses.NormalizedCanonicalGenFun
       Subclasses.NormalizedGenFun

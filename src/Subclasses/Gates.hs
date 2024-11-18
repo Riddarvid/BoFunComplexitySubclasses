@@ -1,29 +1,34 @@
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE InstanceSigs          #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE UndecidableInstances       #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use tuple-section" #-}
-{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TemplateHaskell            #-}
 module Subclasses.Gates (
   Gate,
+  Gate',
   andG,
   orG,
   notG,
   var
 ) where
 import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Data.Function.Memoize (deriveMemoizable)
-import qualified Data.MultiSet         as MultiSet
-import qualified Subclasses.Iterated   as Iter
-import           Subclasses.Iterated   (Iterated (Iterated), IteratedSymm)
-import           Subclasses.Lifted     (liftFunSymm)
+import           Control.DeepSeq       (NFData)
+import           Data.Function.Memoize (Memoizable, deriveMemoizable)
+import           GHC.Generics          (Generic)
+import           Subclasses.Iterated   (Iterated, iterId, toIterated)
 import           Test.QuickCheck       (Arbitrary, Gen, arbitrary, elements)
+import           Utils                 (naturals)
 
 data Gate = And | Or | Not | Id | Const Bool
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
 
 $(deriveMemoizable ''Gate)
+
+instance NFData Gate
 
 instance BoFun Gate () where
   isConst :: Gate -> Maybe Bool
@@ -50,21 +55,37 @@ instance Arbitrary Gate where
   arbitrary :: Gen Gate
   arbitrary = elements [And, Or, Not, Id, Const False, Const True]
 
+arityGate :: Gate -> Int
+arityGate And       = 2
+arityGate Or        = 2
+arityGate Not       = 1
+arityGate Id        = 1
+arityGate (Const _) = 0
+
+newtype Gate' = Gate' Gate
+  deriving (Memoizable, NFData)
+
+instance BoFun Gate' Int where
+  isConst :: Gate' -> Maybe Bool
+  isConst (Gate' f) = isConst f
+  variables :: Gate' -> [Int]
+  variables (Gate' f) = take (arityGate f) naturals
+  setBit :: (Int, Bool) -> Gate' -> Gate'
+  setBit (_, v) (Gate' f) = Gate' $ setBit ((), v) f
+
 -------------- Iterated gates -------------------------
 
-gateHelper :: Gate -> [IteratedSymm Gate] -> IteratedSymm Gate
-gateHelper g subGates = Iterated g'
-  where
-    g' = liftFunSymm g $ MultiSet.fromList subGates
+gateHelper :: Gate -> [Iterated Gate'] -> Iterated Gate'
+gateHelper g = toIterated (Gate' g)
 
-andG :: IteratedSymm Gate -> IteratedSymm Gate -> IteratedSymm Gate
+andG :: Iterated Gate' -> Iterated Gate' -> Iterated Gate'
 andG g1 g2 = gateHelper And [g1, g2]
 
-orG :: IteratedSymm Gate -> IteratedSymm Gate -> IteratedSymm Gate
+orG :: Iterated Gate' -> Iterated Gate' -> Iterated Gate'
 orG g1 g2 = gateHelper Or [g1, g2]
 
-notG :: IteratedSymm Gate -> IteratedSymm Gate
+notG :: Iterated Gate' -> Iterated Gate'
 notG g1 = gateHelper Not [g1]
 
-var :: IteratedSymm Gate
-var = Iter.Id
+var :: Iterated Gate'
+var = iterId

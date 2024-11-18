@@ -15,10 +15,10 @@ import           Data.List.NonEmpty          (NonEmpty)
 import qualified Data.List.NonEmpty          as NE
 import           Subclasses.GenFun           (GenFun (GenFun), constGF,
                                               toGenFun)
-import           Subclasses.Iterated         (IteratedSymm)
+import           Subclasses.Iterated         (Iterated)
 import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
 import           Subclasses.Symmetric        (SymmetricFun, mkSymmetricFun)
-import           Subclasses.Threshold        (ThresholdFun, allNAryITFs)
+import           Subclasses.Threshold        (ThresholdFun', allNAryITFs)
 import           Utils                       (permutations)
 
 --------------- Basic symmetric ---------------------
@@ -58,11 +58,11 @@ toResult bdd inputs
 
 -- Very inefficient, does not use the structure of the function, rather, it
 -- generates all possible functions and filters out the correct ones.
-ngfToIteratedThresholdFun :: NormalizedGenFun -> [IteratedSymm ThresholdFun]
+ngfToIteratedThresholdFun :: NormalizedGenFun -> [Iterated ThresholdFun']
 ngfToIteratedThresholdFun gf =
   filter (areEquivalent gf) $ allNAryITFs (ngfArity gf)
 
-areEquivalent :: NormalizedGenFun -> IteratedSymm ThresholdFun -> Bool
+areEquivalent :: NormalizedGenFun -> Iterated ThresholdFun' -> Bool
 areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 
 ------------------- From BoFun to Algor -----------------------------

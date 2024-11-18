@@ -1,12 +1,14 @@
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE InstanceSigs          #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE UndecidableInstances       #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Subclasses.Symmetric (
   SymmetricFun,
+  SymmetricFun',
   mkSymmetricFun,
   arity,
   majFun,
@@ -24,10 +26,11 @@ import qualified Data.List.NonEmpty    as NE
 import           Data.Sequence         (Seq (Empty, (:<|), (:|>)))
 import qualified Data.Sequence         as Seq
 import           GHC.Generics          (Generic)
-import           Subclasses.Iterated   (IteratedSymm, iterateSymmFun)
+import           Subclasses.Iterated   (Iterated, iterateFun)
 import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt, sized,
                                         vector)
 import           Test.QuickCheck.Gen   (Gen)
+import           Utils                 (naturals)
 
 --------- Ranges -----------------------------
 
@@ -95,7 +98,7 @@ instance BoFun SymmetricFun () where
     _                  -> Nothing
   variables :: SymmetricFun -> [()]
   variables f@(SymmetricFun _) = case isConst f of
-    Nothing -> [()]
+    Nothing -> replicate (arity f) ()
     Just _  -> []
   setBit :: ((), Bool) -> SymmetricFun -> SymmetricFun
   setBit (_, val) (SymmetricFun rv) = SymmetricFun rv'
@@ -106,6 +109,17 @@ instance Constable SymmetricFun where
   mkConst :: Bool -> SymmetricFun
   mkConst val = SymmetricFun (val, Seq.singleton 1)
 
+newtype SymmetricFun' = SymmetricFun' SymmetricFun
+  deriving (Memoizable, NFData, ArbitraryArity)
+
+instance BoFun SymmetricFun' Int where
+  isConst :: SymmetricFun' -> Maybe Bool
+  isConst (SymmetricFun' f) = isConst f
+  variables :: SymmetricFun' -> [Int]
+  variables (SymmetricFun' f) = take (arity f) naturals
+  setBit :: (Int, Bool) -> SymmetricFun' -> SymmetricFun'
+  setBit (_, v) (SymmetricFun' f) = SymmetricFun' $ setBit ((), v) f
+
 ----------------- Examples -----------------------
 
 majFun :: Int -> SymmetricFun
@@ -113,8 +127,8 @@ majFun bits = SymmetricFun (False, Seq.fromList [n, n])
   where
     n = (bits `div` 2) + 1
 
-iteratedMajFun :: Int -> Int -> IteratedSymm SymmetricFun
-iteratedMajFun bits = iterateSymmFun bits (majFun bits)
+iteratedMajFun :: Int -> Int -> Iterated SymmetricFun'
+iteratedMajFun bits = iterateFun bits (SymmetricFun' $ majFun bits)
 
 -------------------- Enumeration ------------------------
 
