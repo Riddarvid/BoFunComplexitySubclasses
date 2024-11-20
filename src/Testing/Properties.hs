@@ -17,8 +17,7 @@ module Testing.Properties (
   propCriticalSwitches
 ) where
 import           Algebraic                   (Algebraic, signAtAlgebraic,
-                                              signAtRational, toAlgebraic,
-                                              toPWAlgebraic)
+                                              signAtRational, toAlgebraic)
 import           Algorithm.GenAlg            (genAlgThinMemoPoly)
 import           Algorithm.GenAlgPW          (computeMin, computeMin')
 import           BDD.BDDInstances            ()
@@ -28,7 +27,7 @@ import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
 import           DSLsofMath.PSDS             (Poly, degree)
 import           Exploration.Critical        (Critical (Saddle),
-                                              findCritcalPointsPoly)
+                                              criticalPointsInPiece)
 import           Exploration.Eval            (evalNonSymmetric, evalSymmetric)
 import           Exploration.Translations    (genToBasicSymmetricNaive)
 import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
@@ -230,12 +229,12 @@ propRationalSign r p = s1 === s2
 propMaxNumCritical :: Algebraic -> Poly Rational -> Algebraic -> Property
 propMaxNumCritical low p high = degree p > 0 && low < high ==> property $ length criticals < degree p
   where
-    criticals = findCritcalPointsPoly (toPWAlgebraic low) p (toPWAlgebraic high)
+    criticals = criticalPointsInPiece low p high
 
 propCriticalSwitches :: Algebraic -> Poly Rational -> Algebraic -> Property
 propCriticalSwitches low p high = degree p > 0 && low < high ==> within 1000000 $ property $ correctSwitches $ map snd criticals
   where
-    criticals = findCritcalPointsPoly (toPWAlgebraic low) p (toPWAlgebraic high)
+    criticals = criticalPointsInPiece low p high
 
 correctSwitches :: [Critical] -> Bool
 correctSwitches [] = True

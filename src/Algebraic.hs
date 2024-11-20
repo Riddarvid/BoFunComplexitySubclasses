@@ -12,23 +12,25 @@ module Algebraic (
   signAtAlgebraic,
   signAtRational
 ) where
-import           Control.Monad      (replicateM)
-import           Data.List          (nub, sort)
+import           Data.Maybe         (catMaybes)
 import           Data.Ratio         ((%))
 import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
-                                     MulGroup ((/)), Multiplicative (..),
-                                     product, two, (-))
+                                     MulGroup ((/)), Multiplicative (..), two,
+                                     (-))
 import           DSLsofMath.PSDS    (Poly (P), evalP, gcdP)
 import           Poly.PiecewisePoly (Separation)
 import qualified Poly.PiecewisePoly as PW
+import           Poly.PolyInstances ()
 import           Poly.Utils         (isRoot, numRootsInInterval,
                                      removeDoubleRoots)
 import           Prelude            hiding (negate, product, sum, (*), (+), (-),
                                      (/))
-import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, chooseInt)
+import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, chooseInt,
+                                     oneof)
 import           Utils              (Sign (..))
 
 data Algebraic = Algebraic AlgRep | Rational Rational
+  deriving (Show)
 
 -- The interval is (a, b)
 data AlgRep = AlgRep (Poly Rational) (Rational, Rational)
@@ -36,15 +38,17 @@ data AlgRep = AlgRep (Poly Rational) (Rational, Rational)
 
 instance Eq Algebraic where
   (==) :: Algebraic -> Algebraic -> Bool
-  (==) = undefined
-{-instance Eq Algebraic where
-  (==) :: Algebraic -> Algebraic -> Bool
-  (AlgRep p i1@(lowP, highP)) == (AlgRep q i2@(lowQ, highQ))
-    | lowP <= lowQ && highQ <= highP = numRootsInInterval r i2 == 1
-    | lowQ <= lowP && highP <= highQ = numRootsInInterval r i1 == 1
-    | otherwise = False
+  (Rational r1) == (Rational r2)           = r1 == r2
+  (Rational r) == (Algebraic (AlgRep p (low, high))) = low < r && r < high && evalP p r == 0
+  (Algebraic (AlgRep p (low, high))) == (Rational r) = low < r && r < high && evalP p r == 0
+  (Algebraic a) == (Algebraic b)           = a == b
+
+instance Eq AlgRep where
+  (==) :: AlgRep -> AlgRep -> Bool
+  a@(AlgRep p (lowP, highP)) == b@(AlgRep q (lowQ, highQ)) =
+    overlap a b && numRootsInInterval r (min lowP lowQ, max highP highQ) == 1
     where
-      r = gcdP p q-}
+      r = gcdP p q
 
 -- 1) Shrink until either the two intervals are distinct, or one completely
 -- contains the other.
@@ -52,46 +56,72 @@ instance Eq Algebraic where
 -- 3) Otherwise, compare the distinct intervals.
 instance Ord Algebraic where
   compare :: Algebraic -> Algebraic -> Ordering
-  compare a b = case compareDistinct a b of
-    Nothing  -> compare (shrinkIntervalStep a) (shrinkIntervalStep b)
-    Just res -> res
+  compare a b
+    | a == b = EQ
+    | otherwise = compare' a b
 
-compareDistinct = undefined
-{-
+instance Ord AlgRep where
+  compare :: AlgRep -> AlgRep -> Ordering
+  compare a b = compare (Algebraic a) (Algebraic b)
+
+compare' :: Algebraic -> Algebraic -> Ordering
+compare' a b = case compareDistinct a b of
+  Just res -> res
+  Nothing  ->  compare' (shrinkIntervalStep a) (shrinkIntervalStep b)
+
 compareDistinct :: Algebraic -> Algebraic -> Maybe Ordering
-compareDistinct a@(AlgRep _ (lowP, highP)) b@(AlgRep _ (lowQ, highQ))
+compareDistinct (Rational r1) (Rational r2) = Just $ compare r1 r2
+compareDistinct (Rational r) (Algebraic (AlgRep _ (low, high)))
+  | r <= low  = Just LT
+  | r >= high = Just GT
+  | otherwise = Nothing
+compareDistinct (Algebraic (AlgRep _ (low, high))) (Rational r)
+  | r <= low  = Just GT
+  | r >= high = Just LT
+  | otherwise = Nothing
+compareDistinct (Algebraic a) (Algebraic b) = compareDistinctAlgReps a b
+
+compareDistinctAlgReps :: AlgRep -> AlgRep -> Maybe Ordering
+compareDistinctAlgReps (AlgRep _ (lowP, highP)) (AlgRep _ (lowQ, highQ))
   | highP <= lowQ = Just LT
   | highQ <= lowP = Just GT
-  | a == b = Just EQ
-  | otherwise = Nothing-}
+  | otherwise = Nothing
+
+overlap :: AlgRep -> AlgRep -> Bool
+overlap a b = case compareDistinctAlgReps a b of
+  Nothing -> True
+  _       -> False
 
 ------------------ QuickCheck -------------------------------------------------
 
+instance Arbitrary Algebraic where
+  arbitrary :: Gen Algebraic
+  arbitrary = oneof [Algebraic <$> arbitrary, Rational <$> arbitrary]
+
+-- Currently, this instance only generates rational numbers, which is not ideal.
 instance Arbitrary AlgRep where
   arbitrary :: Gen AlgRep
   arbitrary = do
-    n <- chooseInt (1, 2)
-    (polys, roots) <- unzip <$> replicateM n genRootPoly
-    let poly = removeDoubleRoots $ product polys
-    int <- chooseInterval $ nub $ sort roots
-    return $ AlgRep poly int
+    p <- removeDoubleRoots <$> arbitrary
+    case genInterval p of
+      Nothing          -> arbitrary
+      Just intervalGen -> AlgRep p <$> intervalGen
 
--- roots must be sorted and nubbed
-chooseInterval :: [Rational] -> Gen (Rational, Rational)
-chooseInterval roots = do
-  i <- chooseInt (0, length roots - 1)
-  let root = roots !! i
-  let leftRoot = if i == 0 then root - 100 else roots !! (i - 1)
-  let rightRoot = if i == length roots - 1 then root + 100 else roots !! (i + 1)
-  let low = leftRoot + (root - leftRoot) * (1 % 10)
-  let high = rightRoot - (rightRoot - root) * (1 % 10)
-  return (low, high)
+genInterval :: Poly Rational -> Maybe (Gen (Rational, Rational))
+genInterval p = genInterval' p (-999999999, 999999999)
 
--- Generates a first degree polynomial with a root in n
-genRootPoly :: (Arbitrary a, AddGroup a, Multiplicative a) => Gen (Poly a, a)
-genRootPoly = do
-  n <- arbitrary
-  return (P [negate n, one], n)
+-- The interval must contain at least one root
+genInterval' :: Poly Rational -> (Rational, Rational) -> Maybe (Gen (Rational, Rational))
+genInterval' p interval@(low, high)
+  | nRoots == 0 = Nothing
+  | nRoots == 1 = Just $ return interval
+  | otherwise = Just $ oneof gens
+  where
+    gens = catMaybes [leftGen, rightGen]
+    leftGen = genInterval' p (low, mid)
+    rightGen = genInterval' p (mid, high)
+    nRoots = numRootsInInterval p interval
+    mid = (low + high) / 2
 
 -------------------------- Conversions to/from algebraic -------------------------
 

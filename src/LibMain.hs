@@ -27,8 +27,7 @@ import           Exploration.Comparisons              (mainBenchMaj,
                                                        measureTimeComputeMin',
                                                        measureTimeGenAlg)
 import           Exploration.Critical                 (Critical (Maximum),
-                                                       CriticalPoint,
-                                                       findCritcalPointsPoly)
+                                                       CriticalPoint)
 import           Exploration.Filters                  (criticalPred, degreePred)
 import           Poly.PiecewisePoly                   (BothPW (BothPW),
                                                        PiecewisePoly,
@@ -101,7 +100,7 @@ main5 = void $ evaluate $ force $ computeMin $ Gen.majFun 11
 
 main2 :: IO ()
 main2 = do
-  let with2 = filter (criticalPred (nMax 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
+  let with2 = filter (criticalPred (nMax 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 2 :: [BothPW Rational])
   let unique = Set.toList $ Set.fromList with2
   mapM_ (putStrLn . desmosShowPW) unique
   print $ length unique
