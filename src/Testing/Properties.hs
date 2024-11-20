@@ -13,10 +13,12 @@ module Testing.Properties (
   propRepsCorrect,
   propIterRepsCorrect,
   propRationalSign,
-  IterInput
+  propMaxNumCritical,
+  propCriticalSwitches
 ) where
-import           Algebraic                   (signAtAlgebraic, signAtRational,
-                                              toAlgebraic)
+import           Algebraic                   (Algebraic, signAtAlgebraic,
+                                              signAtRational, toAlgebraic,
+                                              toPWAlgebraic)
 import           Algorithm.GenAlg            (genAlgThinMemoPoly)
 import           Algorithm.GenAlgPW          (computeMin, computeMin')
 import           BDD.BDDInstances            ()
@@ -24,7 +26,9 @@ import           BoFun                       (BoFun (variables))
 import           Data.List                   (sort)
 import           Data.Ratio                  ((%))
 import qualified Data.Set                    as Set
-import           DSLsofMath.PSDS             (Poly)
+import           DSLsofMath.PSDS             (Poly, degree)
+import           Exploration.Critical        (Critical (Saddle),
+                                              findCritcalPointsPoly)
 import           Exploration.Eval            (evalNonSymmetric, evalSymmetric)
 import           Exploration.Translations    (genToBasicSymmetricNaive)
 import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
@@ -38,9 +42,10 @@ import qualified Subclasses.Symmetric        as Symm
 import           Subclasses.Symmetric        (SymmetricFun)
 import qualified Subclasses.Threshold        as Thresh
 import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
-                                              Property, chooseInt, conjoin,
-                                              elements, sized, vector, (=/=),
-                                              (===))
+                                              Property, Testable (property),
+                                              chooseInt, conjoin, elements,
+                                              sized, vector, within, (=/=),
+                                              (===), (==>))
 import           Test.QuickCheck.Gen         (Gen)
 
 ----------------- Types --------------------------------------
@@ -221,3 +226,22 @@ propRationalSign r p = s1 === s2
     x = toAlgebraic r
     s1 = signAtRational r p
     s2 = signAtAlgebraic x p
+
+propMaxNumCritical :: Algebraic -> Poly Rational -> Algebraic -> Property
+propMaxNumCritical low p high = degree p > 0 && low < high ==> property $ length criticals < degree p
+  where
+    criticals = findCritcalPointsPoly (toPWAlgebraic low) p (toPWAlgebraic high)
+
+propCriticalSwitches :: Algebraic -> Poly Rational -> Algebraic -> Property
+propCriticalSwitches low p high = degree p > 0 && low < high ==> within 1000000 $ property $ correctSwitches $ map snd criticals
+  where
+    criticals = findCritcalPointsPoly (toPWAlgebraic low) p (toPWAlgebraic high)
+
+correctSwitches :: [Critical] -> Bool
+correctSwitches [] = True
+correctSwitches (Saddle : xs) = correctSwitches xs
+correctSwitches (extreme : xs) = case xs' of
+  []            -> True
+  (next : xs'') -> (extreme /= next) && correctSwitches (next : xs'')
+  where
+    xs' = dropWhile (== Saddle) xs

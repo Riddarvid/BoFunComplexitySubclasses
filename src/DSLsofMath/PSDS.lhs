@@ -328,6 +328,9 @@ isZero = isZeroL . unP
 
 isZeroL :: (Eq a, Additive a) => [a] -> Bool
 isZeroL = Prelude.all (zero==)
+
+isConstP :: (Eq a, Additive a) => Poly a -> Bool
+isConstP p = degree p == 0
 \end{code}
 
 \begin{code}

@@ -17,17 +17,24 @@ import           Data.DecisionDiagram.BDD             (AscOrder, BDD, notB, var,
 
 import           Arity                                (ArbitraryArity (arbitraryArity))
 import qualified Data.HashSet                         as HS
+import           Data.Ratio                           ((%))
 import qualified Data.Set                             as Set
 import           Data.Time                            (NominalDiffTime)
 import           DSLsofMath.Algebra                   (AddGroup, MulGroup)
+import           DSLsofMath.PSDS                      (Poly (P))
 import           Exploration.Comparisons              (mainBenchMaj,
                                                        measureTimeComputeMin,
                                                        measureTimeComputeMin',
                                                        measureTimeGenAlg)
-import           Exploration.Filters                  (degreePred, maximaPred)
+import           Exploration.Critical                 (Critical (Maximum),
+                                                       CriticalPoint,
+                                                       findCritcalPointsPoly)
+import           Exploration.Filters                  (criticalPred, degreePred)
 import           Poly.PiecewisePoly                   (BothPW (BothPW),
-                                                       PiecewisePoly)
-import           Poly.Utils                           (minDegree)
+                                                       PiecewisePoly,
+                                                       Separation' (Algebraic))
+import           Poly.Utils                           (minDegree,
+                                                       numRootsInInterval)
 import           Prelude                              hiding ((*), (+))
 import           Subclasses.CanonicalGenFun           (CanonicalGenFun, mkCGF)
 import qualified Subclasses.GenFun                    as Gen
@@ -55,9 +62,7 @@ import           Timing                               (measureMajs,
                                                        measureRandomFuns)
 
 main :: IO ()
-main = print h
-  where
-    h = Thresh.iteratedMajFun 3 2
+main = main2
 
 
 main11 :: IO ()
@@ -96,16 +101,20 @@ main5 = void $ evaluate $ force $ computeMin $ Gen.majFun 11
 
 main2 :: IO ()
 main2 = do
-  let with2 = filter (maximaPred (>= 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
+  let with2 = filter (criticalPred (nMax 2)) $ map (\(BothPW pw _) -> pw) (genAllBoths 4 :: [BothPW Rational])
   let unique = Set.toList $ Set.fromList with2
   mapM_ (putStrLn . desmosShowPW) unique
   print $ length unique
 
+nMax :: Int -> [CriticalPoint] -> Bool
+nMax n points = length (filter (\(_, t) -> t == Maximum) points) == n
+
+{-
 findSimplest :: (AddGroup a, MulGroup a, Real a, Show a) => [BothPW a]
 findSimplest = filter (toBoth (degreePred (== minDegree'))) allWith2maxima
   where
     minDegree' = minDegree $ map (\(BothPW pw _) -> pw) allWith2maxima
-    allWith2maxima = filter (toBoth (maximaPred (== 2))) $ genAllBoths 4
+    allWith2maxima = filter (toBoth (criticalPred (== 2))) $ genAllBoths 4-}
 
 toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw

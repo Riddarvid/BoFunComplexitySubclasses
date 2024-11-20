@@ -1,0 +1,1 @@
+- Hur tung är root counting kontra polynomevaluering? Vi vill använda detta i våra Algebraic numbers.

@@ -5,9 +5,11 @@ import           Test.QuickCheck    (Args (maxSize, maxSuccess), Testable,
                                      quickCheckWith, stdArgs)
 import           Testing.Properties (propComputeMin'Correct,
                                      propComputeMinCorrect, propConversionSymm,
+                                     propCriticalSwitches,
                                      propFlipInputComplexity,
                                      propFlipOutputComplexity,
                                      propFlipOutputCorrect, propIterRepsCorrect,
+                                     propMaxNumCritical,
                                      propNormalizedComplexity,
                                      propNormalizedCorrectVars,
                                      propRationalSign, propRepsCorrect)
@@ -29,7 +31,9 @@ allProps = [
   Check propFlipInputComplexity stdArgs'{maxSize = 5},
   Check propConversionSymm stdArgs'{maxSize = 10},
   Check propComputeMinCorrect stdArgs'{maxSize = 5},
-  Check propComputeMin'Correct stdArgs'{maxSize = 5, maxSuccess = 1000}
+  Check propComputeMin'Correct stdArgs'{maxSize = 5},
+  Check propMaxNumCritical stdArgs'{maxSize = 10},
+  Check propCriticalSwitches stdArgs'{maxSize = 10}
   ]
 
 testAll :: IO ()
