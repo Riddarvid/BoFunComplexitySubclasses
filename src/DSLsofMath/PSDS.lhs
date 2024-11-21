@@ -1,5 +1,4 @@
 \begin{code}
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE ConstraintKinds #-}
@@ -7,11 +6,11 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module DSLsofMath.PSDS where
 import Prelude (Int, Double,
-                Show, String, 
+                Show, String,
                 Ord, Ordering, (<), (<=), (>=), compare,
                 Eq, Bool, (==), (/=), (&&), otherwise, snd,
                 error, (.),
-                (++), zipWith, map, null, head, tail, init, last, take, reverse, length, replicate)
+                (++), zipWith, map, null, head, tail, init, last, take, reverse, length, replicate, (||))
 import qualified Prelude
 import DSLsofMath.FunExp
 import DSLsofMath.Algebra (Additive((+),zero), AddGroup(negate), (-),
@@ -330,7 +329,9 @@ isZeroL :: (Eq a, Additive a) => [a] -> Bool
 isZeroL = Prelude.all (zero==)
 
 isConstP :: (Eq a, Additive a) => Poly a -> Bool
-isConstP p = degree p == 0
+isConstP p = deg == 0 || deg == (-1)
+  where
+    deg = degree p
 \end{code}
 
 \begin{code}

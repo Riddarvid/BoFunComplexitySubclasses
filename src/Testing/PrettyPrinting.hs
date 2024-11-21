@@ -19,7 +19,7 @@ desmosPrintPW :: PiecewisePoly Rational -> IO ()
 desmosPrintPW = putStrLn . desmosShowPW
 
 desmosShowPW :: PiecewisePoly Rational -> String
-desmosShowPW pw = unlines $ zipWith desmosShowP (map (:[]) ['p' ..]) (pieces pw)
+desmosShowPW pw = unlines $ zipWith desmosShowP (map (:[]) ['a' ..]) (pieces pw)
 
 desmosShowP :: String -> Poly Rational -> String
 desmosShowP name (P coeffs) = desmosShowL name coeffs

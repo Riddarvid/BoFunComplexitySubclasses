@@ -1,1 +1,3 @@
 - Hur tung är root counting kontra polynomevaluering? Vi vill använda detta i våra Algebraic numbers.
+- När vi letar extrempunkter för en PW, hur borde vi hantera x=0 och x=1?
+- Hur ska vi göra om pieces bildar ett "tak" där taket har lutning 0? Är det ett maxima?

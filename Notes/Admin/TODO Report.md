@@ -20,3 +20,6 @@
 - Kör en ctrl+f och ersätt subfunction med sub-function
 - Fixa biblography (upper case, too long links)
 
+## Idéer
+
+- Använd short-circuiting av boolean expressions som mer relaterbart exempel

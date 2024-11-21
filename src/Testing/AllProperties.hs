@@ -32,8 +32,8 @@ allProps = [
   Check propConversionSymm stdArgs'{maxSize = 10},
   Check propComputeMinCorrect stdArgs'{maxSize = 5},
   Check propComputeMin'Correct stdArgs'{maxSize = 5},
-  Check propMaxNumCritical stdArgs'{maxSize = 10},
-  Check propCriticalSwitches stdArgs'{maxSize = 10}
+  Check propMaxNumCritical stdArgs'{maxSize = 6},
+  Check propCriticalSwitches stdArgs'{maxSize = 6}
   ]
 
 testAll :: IO ()

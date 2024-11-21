@@ -9,8 +9,7 @@ import           Algebraic          (AlgRep (AlgRep),
                                      Algebraic (Algebraic, Rational),
                                      fromPWSeparation, shrinkIntervalStep,
                                      signAtAlgebraic, signAtRational)
-import           Debug.Trace        (trace, traceShow)
-import           DSLsofMath.PSDS    (Poly, derP)
+import           DSLsofMath.PSDS    (Poly, derP, isConstP)
 import           Poly.PiecewisePoly (PiecewisePoly, linearizePW, showPW)
 import           Poly.Utils         (numRootsInInterval)
 import           Utils              (Sign (..))
@@ -25,6 +24,8 @@ type CriticalPoint = (Algebraic, Critical)
 -- Two types of critical points:
 -- 1) Points between pieces
 -- 2) Points in the pieces
+-- One could also argue that the points at the end of the interval (0,1) are of interest,
+-- but we have decided not to handle them here.
 findCritcalPointsPW :: PiecewisePoly Rational -> [CriticalPoint]
 findCritcalPointsPW pw = midPoints
   where
@@ -59,8 +60,11 @@ criticalPointBetweenPieces p1 s p2 = case criticalType' s1 s2 of
 ------------ In polynomials ------------------------
 
 criticalPointsInPiece :: Algebraic -> Poly Rational -> Algebraic -> [CriticalPoint]
-criticalPointsInPiece a1 _ a2
-  | a1 >= a2 = traceShow (a1, a2, compare a1 a2) $ error "a1 must be < a2"
+criticalPointsInPiece a1 p a2
+  | a1 >= a2 = error "a1 must be < a2"
+  | isConstP p = [] -- In reality, every point in the domain is a critical point for a constant
+                    -- function. However, we have chosen to return an empty list in this case,
+                    -- as it is more practical to us.
 criticalPointsInPiece a1 p a2 = criticalPointsInPiece' r1 p r2
   where
     (r1, r2) = findRationalEndpoints a1 p a2
@@ -80,13 +84,14 @@ findBoth p' a b
 
 findBoth' :: Poly Rational -> Algebraic -> Algebraic -> (Rational, Rational)
 findBoth' p' a b
+  -- | traceShow (numSmall, numLarge, diff) False = undefined
   | numLarge - numSmall == diff = small
   | otherwise = findBoth' p' a' b'
   where
     small = smallInterval a b
     numSmall = numRootsInInterval p' small
     numLarge = numRootsInInterval p' $ largeInterval a b
-    diff = numRootsAtEndpoints p' a b
+    diff = expectedDiff p' a + expectedDiff p' b
     a' = shrinkIntervalStep a
     b' = shrinkIntervalStep b
 
@@ -107,8 +112,10 @@ algMax :: Algebraic -> Rational
 algMax (Rational r)                     = r
 algMax (Algebraic (AlgRep _ (_, high))) = high
 
-numRootsAtEndpoints :: Poly Rational -> Algebraic -> Algebraic -> Int
-numRootsAtEndpoints p' a b = length $ filter (== Zero) [signAtAlgebraic a p', signAtAlgebraic b p']
+expectedDiff :: Poly Rational -> Algebraic -> Int
+expectedDiff p' a = case a of
+  Rational _  -> 0
+  Algebraic _ -> if signAtAlgebraic a p' == Zero then 1 else 0
 
 ---------------- The actual counting ----------------------
 
@@ -116,12 +123,11 @@ criticalPointsInPiece' :: Rational -> Poly Rational -> Rational -> [CriticalPoin
 criticalPointsInPiece' _low p = go _low
   where
     p' = derP p
-    go low high = case n of
+    go low high = case numRootsInInterval p' (low, high) of
       0 -> []
       1 -> [(Algebraic $ AlgRep p' (low, high), criticalType low p' high)]
-      _ -> criticalPointsInPiece' low p mid ++ criticalPointsInPiece' mid p high
+      _ -> go low mid ++ go mid high
       where
-        n = numRootsInInterval p' (low, high)
         mid = (low + high) / 2
 
 

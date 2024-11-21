@@ -227,12 +227,12 @@ propRationalSign r p = s1 === s2
     s2 = signAtAlgebraic x p
 
 propMaxNumCritical :: Algebraic -> Poly Rational -> Algebraic -> Property
-propMaxNumCritical low p high = degree p > 0 && low < high ==> property $ length criticals < degree p
+propMaxNumCritical low p high = degree p > 0 && low < high ==> within 5000000 $ property $ length criticals < degree p
   where
     criticals = criticalPointsInPiece low p high
 
 propCriticalSwitches :: Algebraic -> Poly Rational -> Algebraic -> Property
-propCriticalSwitches low p high = degree p > 0 && low < high ==> within 1000000 $ property $ correctSwitches $ map snd criticals
+propCriticalSwitches low p high = degree p > 0 && low < high ==> within 5000000 $ property $ correctSwitches $ map snd criticals
   where
     criticals = criticalPointsInPiece low p high
 

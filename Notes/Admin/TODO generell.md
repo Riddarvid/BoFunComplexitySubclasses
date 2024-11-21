@@ -3,6 +3,9 @@
 - Bestäm vad vi vill mäta och presentera i resultatdelen, även hur vi vill presentera det.
 - Fixa hasMaximum så att den även kollar inom polynomet.
 - Jämför olika instanser av 2-level iterated majority
+- Minor TODO: Specifik generator för props om critical points
+- Eventuellt: Kolla på funktioner med konstant komplexitet
+	- För dessa finns en definitivt snabbast evalueringsordning
 ## Svåra grejer
 
  - Räkning av funktioner

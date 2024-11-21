@@ -3,6 +3,7 @@
 - Gå igenom properties igen, se till att de beter sig korrekt. Uppdatera sedan rapporten för att reflektera detta.
 - Fixa hasMaximum
 - Snygg printing av iterated functions (och övriga)
+	- Skilj på Show och PrettyShow
 ## Homework
 
 - Till måndag: https://simon.peytonjones.org/great-research-paper/
