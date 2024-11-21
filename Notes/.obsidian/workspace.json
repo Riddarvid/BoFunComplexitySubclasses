@@ -20,34 +20,6 @@
               "icon": "lucide-file",
               "title": "TODO för veckan"
             }
-          },
-          {
-            "id": "2c0c8b393ddee0e7",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Admin/TODO Report.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "TODO Report"
-            }
-          },
-          {
-            "id": "415e3e41ed1d9e37",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Admin/Log.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Log"
-            }
           }
         ]
       }
@@ -192,11 +164,13 @@
   },
   "active": "71e7181bed081195",
   "lastOpenFiles": [
-    "Admin/TODO Report.md",
     "Admin/Frågor till nästa möte.md",
-    "Admin/TODO generell.md",
+    "Admin/TODO Report.md",
     "Admin/Log.md",
+    "Admin/Plan sista veckorna.md",
+    "Admin/TODO generell.md",
     "Admin/TODO för veckan.md",
+    "General knowledge/How to write a great report.md",
     "Report/Storyboard.md",
     "General knowledge/Texter för vår egen förståelse/Vår förståelse av PWs.md",
     "Frågor till Christian.md",
@@ -220,8 +194,6 @@
     "Exploration of classes/Egenskaper hos boolska funktioner.md",
     "General knowledge/Exploration of classes/Analysis of classes.md",
     "Results/Data/Benchmarking - old.md",
-    "Results/Data/Runtime table.md",
-    "Results/Data/randomFuns.md",
     "Results/Data",
     "Results/What to improve",
     "General knowledge",

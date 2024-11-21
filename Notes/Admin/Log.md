@@ -228,3 +228,8 @@ How to write a great research paper:
 - Refactor Lifted
 - Add property for IterRepCorrectness
 - Började implementera pretty printing av funktioner
+
+## 21/11
+
+- Buggfixar rörande Critical Points
+- Planering av de sista veckorna

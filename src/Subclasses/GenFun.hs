@@ -25,7 +25,8 @@ module Subclasses.GenFun (
 ) where
 import           Algorithm.Algor           (Algor (..))
 import           Arity                     (ArbitraryArity (arbitraryArity))
-import           BDD.BDD                   (BDDa, bddFromOutputVector)
+import           BDD.BDD                   (BDDa, allNAryBDDs,
+                                            bddFromOutputVector)
 import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
 import           BoFun                     (BoFun (..), shrinkFun)
@@ -34,8 +35,6 @@ import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
                                             notB, restrict, support, true)
 import           Data.Function.Memoize     (deriveMemoizable)
 import           Data.Hashable             (Hashable)
-import           Data.HashSet              (HashSet)
-import qualified Data.HashSet              as HS
 import qualified Data.IntSet               as IS
 import           GHC.Generics              (Generic)
 import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
@@ -124,16 +123,20 @@ toGenFun' varN arity f = case isConst f of
       (GenFun subBDDF _) = toGenFun' (varN + 1) (arity - 1) $ setBit (i, False) f
       (GenFun subBDDT _) = toGenFun' (varN + 1) (arity - 1) $ setBit (i, True) f
 
-allGenFuns :: Int -> HashSet GenFun
-allGenFuns = (map allGenFuns' [0 ..] !!)
+{-
+allGenFunReps :: Int -> HashSet GenFun
+allGenFunReps = (map allGenFunReps' [0 ..] !!)
   where
-    allGenFuns' n
+    allGenFunReps' n
       | n == 0 = HS.fromList [falseG 0, trueG 0]
       | otherwise = HS.fromList [GenFun (pic n a1 a2) n | a1 <- subBDDs, a2 <- subBDDs]
       where
         n' = n - 1
-        subFuns = HS.toList $ allGenFuns n'
-        subBDDs = map (\(GenFun bdd _) -> bdd) subFuns
+        subFuns = HS.toList $ allGenFunReps n'
+        subBDDs = map (\(GenFun bdd _) -> bdd) subFuns-}
+
+allGenFuns :: Int -> [GenFun]
+allGenFuns n = map (`GenFun` n) $ allNAryBDDs n
 
 --------------- Exported ----------------------------
 

@@ -1,9 +1,17 @@
-- Mät tidsskillnad mellan Iterated och IteratedSymm. 
-	- Byt även namn (specifikt IteratedSymm).
+
+## Kod
+
+- Hög prio
+	- Undersök criterion, sätt upp de strukturer vi behöver
+	- Sista cleanup innan vi lämnar in
+- Låg prio, kan skippas
+	- Pretty printing av funktioner
+
+## Mätningar
+
 - Bestäm vad vi vill mäta och presentera i resultatdelen, även hur vi vill presentera det.
-- Fixa hasMaximum så att den även kollar inom polynomet.
-- Jämför olika instanser av 2-level iterated majority
-- Minor TODO: Specifik generator för props om critical points
+- Mät egenskaper hos de klasser vi har undersökt
+- Utforska iterated majority mer, just nu har vi mycket flat maj
 - Eventuellt: Kolla på funktioner med konstant komplexitet
 	- För dessa finns en definitivt snabbast evalueringsordning
 ## Svåra grejer
@@ -18,13 +26,6 @@
 	- Ny idé om generering: Följer egentligen approach 1. Rewrite rules:
 		- Om vi har en lifted function som är konstant, kan denna bytas ut mot motsvarande 0-bitarsfunktion som är konstant, och därmed inte lyft över något.
 		- Om vi har lyft id-funktionen, är detta ekvivalent med den underliggande funktionen, och man kan alltså kapa ett lager.
-- Conversions till/från olika klasser
-	- Just nu har vi enkla conversions
-		- GenFun to SymmetricFun - kollar om en funktion är symmetrisk och konverterar till SymmetricFun-implementation.
-		- NGF to Iterated ThresholdFun - genererar alla n-bits ITFs och kollar sedan vilka som representerar samma funktion som input-NGFen.
-		- boFunToGenFun konverterar från BoFun till GenFun. Denna riktning är generellt sett enkel.
-	- Conversions från GenFun till övrigt är i regel svårt. Patrik har föreslagit att vi baserar översättningen på rewrite rules eller i övrigt utgår från struktur.
-
 ## Future work
 
 - Effektivare polynomberäkningar
@@ -32,3 +33,9 @@
 		- Man bör i så fall först räkna hur ofta samma transformation utförs.
 - Fler subclasses implementerade
 - Använd rewrite rules för normalisering av exempelvis lifted functions.
+- Conversions till/från olika klasser
+	- Just nu har vi enkla conversions
+		- GenFun to SymmetricFun - kollar om en funktion är symmetrisk och konverterar till SymmetricFun-implementation.
+		- NGF to Iterated ThresholdFun - genererar alla n-bits ITFs och kollar sedan vilka som representerar samma funktion som input-NGFen.
+		- boFunToGenFun konverterar från BoFun till GenFun. Denna riktning är generellt sett enkel.
+	- Conversions från GenFun till övrigt är i regel svårt. Patrik har föreslagit att vi baserar översättningen på rewrite rules eller i övrigt utgår från struktur.

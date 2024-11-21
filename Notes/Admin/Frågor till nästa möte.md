@@ -1,3 +1,7 @@
 - Hur tung är root counting kontra polynomevaluering? Vi vill använda detta i våra Algebraic numbers.
 - När vi letar extrempunkter för en PW, hur borde vi hantera x=0 och x=1?
 - Hur ska vi göra om pieces bildar ett "tak" där taket har lutning 0? Är det ett maxima?
+- Om det skulle vara så att vi inte får till våra bevis, kan man hänvisa till testning istället?
+- Vi har haft svårt med att räkna antalet itererade funktioner. Är det okej att stryka det som sektion i koden och istället nämna kort att det inte är så stor andel av funktioner som är symmetriska eller threshold functions?
+- Hur ska vi göra med de egenskaper vi har hittat men som vi bestämt oss för att inte använda, typ invertering av inputs ger mirroring av komplexitet?
+- Har vi tillräckligt med källor?

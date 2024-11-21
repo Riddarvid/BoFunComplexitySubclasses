@@ -105,7 +105,7 @@ main5 = void $ evaluate $ force $ computeMin $ Gen.majFun 11
 main2 :: IO ()
 main2 = do
   let allFuns = allGenFuns 4
-  let comps = map (\f -> (f, computeMin f)) $ HS.toList allFuns
+  let comps = map (\f -> (f, computeMin f)) allFuns
   let with2maxima = filter (\(f, c) -> criticalPred (nMax 2) c) comps
   mapM_ (\(f, c) -> print f >> printPW c) with2maxima
   print $ length with2maxima
@@ -124,10 +124,7 @@ toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
 
 genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) => Int -> [BothPW a]
-genAllBoths n = map piecewiseBoth funs
-  where
-    funs :: [GenFun]
-    funs = HS.toList $ allGenFuns n
+genAllBoths n = map piecewiseBoth (allGenFuns n :: [GenFun])
 
 --------------- test ------------------------
 

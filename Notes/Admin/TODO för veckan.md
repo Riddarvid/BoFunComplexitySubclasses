@@ -1,21 +1,5 @@
-- Småfixer i rapporten
-- Se om vi kan använda hls2Tex för snyggare listings
-- Gå igenom properties igen, se till att de beter sig korrekt. Uppdatera sedan rapporten för att reflektera detta.
-- Fixa hasMaximum
-- Snygg printing av iterated functions (och övriga)
-	- Skilj på Show och PrettyShow
-## Homework
+- Undersök criterion
 
-- Till måndag: https://simon.peytonjones.org/great-research-paper/
-	- Page 1 är viktigast, det är där man faktiskt har läsare.
-		- Refererar vi till varje sektion, och om inte - varför?
-	- Vad är vår main idea?
-		- Borde väl vara subklasser?
-		- Men även att man kan använda hash consing för det här problemet.
-	- Tänk på det som "Nu ska jag berätta om min idé för en kompis" för att etablera en storyline.
-	- I hans talk har han en väldigt kort introduktion, som i princip bara introducerar problemet och hur vi bidrar till att lösa det.
-		- Han tycker också att man borde skippa onödiga saker, som inte inspirerar läsaren.
-	- State your contributions - det gör vi!
-		- Specifikt borde man ha saker som inte är självklara, saker som skulle kunna vara falska.
-		- Ha med forward references från contributions.
-	- Borde vi ha en dedikerad "related work"-sektion?
+## Homework typ
+
+- Kolla igenom Julias källor igen
