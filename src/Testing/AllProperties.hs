@@ -9,7 +9,7 @@ import           Testing.Properties (propComputeMin'Correct,
                                      propFlipInputComplexity,
                                      propFlipOutputComplexity,
                                      propFlipOutputCorrect, propIterRepsCorrect,
-                                     propMaxNumCritical,
+                                     propKnownCrits, propMaxNumCritical,
                                      propNormalizedComplexity,
                                      propNormalizedCorrectVars,
                                      propRationalSign, propRepsCorrect)
@@ -33,7 +33,8 @@ allProps = [
   Check propComputeMinCorrect stdArgs'{maxSize = 5},
   Check propComputeMin'Correct stdArgs'{maxSize = 5},
   Check propMaxNumCritical stdArgs'{maxSize = 6},
-  Check propCriticalSwitches stdArgs'{maxSize = 6}
+  Check propCriticalSwitches stdArgs'{maxSize = 6},
+  Check propKnownCrits stdArgs'
   ]
 
 testAll :: IO ()

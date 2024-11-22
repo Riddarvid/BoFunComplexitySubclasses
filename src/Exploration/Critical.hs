@@ -10,7 +10,7 @@ import           Algebraic          (AlgRep (AlgRep),
                                      fromPWSeparation, shrinkIntervalStep,
                                      signAtAlgebraic, signAtRational)
 import           DSLsofMath.PSDS    (Poly, derP, isConstP)
-import           Poly.PiecewisePoly (PiecewisePoly, linearizePW, showPW)
+import           Poly.PiecewisePoly (PiecewisePoly, linearizePW)
 import           Poly.Utils         (numRootsInInterval)
 import           Utils              (Sign (..))
 

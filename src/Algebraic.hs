@@ -13,7 +13,6 @@ module Algebraic (
   signAtRational
 ) where
 import           Data.Maybe         (catMaybes)
-import           Data.Ratio         ((%))
 import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
                                      MulGroup ((/)), Multiplicative (..), two,
                                      (-))
@@ -25,8 +24,7 @@ import           Poly.Utils         (isRoot, numRootsInInterval,
                                      removeDoubleRoots)
 import           Prelude            hiding (negate, product, sum, (*), (+), (-),
                                      (/))
-import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, chooseInt,
-                                     oneof)
+import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, oneof)
 import           Utils              (Sign (..))
 
 data Algebraic = Algebraic AlgRep | Rational Rational

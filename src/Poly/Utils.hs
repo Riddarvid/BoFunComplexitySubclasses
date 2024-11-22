@@ -7,7 +7,7 @@ module Poly.Utils (
   removeDoubleRoots,
   isRoot
 ) where
-import           DSLsofMath.Algebra   (AddGroup, Additive (zero, (+)), MulGroup,
+import           DSLsofMath.Algebra   (AddGroup, Additive (zero), MulGroup,
                                        Multiplicative, product, (-))
 import           DSLsofMath.PSDS      (Poly, degree, evalP, isZero, yun)
 import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly,

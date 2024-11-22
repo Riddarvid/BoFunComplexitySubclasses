@@ -6,7 +6,6 @@ module Exploration.Filters (
   criticalPred
 ) where
 import           Control.Arrow        ((>>>))
-import           Debug.Trace          (traceShowId)
 import           DSLsofMath.Algebra   (AddGroup, MulGroup)
 import           Exploration.Critical (CriticalPoint, findCritcalPointsPW)
 import           Poly.PiecewisePoly   (PiecewisePoly)
