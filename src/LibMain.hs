@@ -4,72 +4,34 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg                            (genAlgThinMemo,
-                                                              genAlgThinMemoPoly,
-                                                              piecewiseBoth)
-import           Algorithm.GenAlgPW                          (computeMin,
-                                                              computeMin')
-import           BDD.BDD                                     (BDDa,
-                                                              normalizeBDD)
-import           Control.DeepSeq                             (force)
-import           Control.Exception                           (evaluate)
-import           Control.Monad                               (void)
-import           Data.DecisionDiagram.BDD                    (AscOrder, BDD,
-                                                              notB, var, (.&&.),
-                                                              (.||.))
+import           Algorithm.GenAlg               (piecewiseBoth)
+import           Algorithm.GenAlgPW             (computeMin)
+import           BDD.BDD                        (BDDa, normalizeBDD)
+import           Control.DeepSeq                (force)
+import           Control.Exception              (evaluate)
+import           Control.Monad                  (void)
+import           Data.DecisionDiagram.BDD       (AscOrder, BDD, notB, var,
+                                                 (.&&.), (.||.))
 
-import           Algebraic                                   (Algebraic (Rational))
-import           Arity                                       (ArbitraryArity (arbitraryArity))
-import qualified Data.HashSet                                as HS
-import           Data.Ratio                                  ((%))
-import qualified Data.Set                                    as Set
-import           Data.Time                                   (NominalDiffTime)
-import           Debug.Trace                                 (traceShow)
-import           DSLsofMath.Algebra                          (AddGroup,
-                                                              MulGroup)
-import           DSLsofMath.PSDS                             (Poly (P))
-import           Exploration.Comparisons                     (mainBenchMaj,
-                                                              measureTimeComputeMin,
-                                                              measureTimeComputeMin',
-                                                              measureTimeGenAlg)
-import           Exploration.Critical                        (Critical (Maximum),
-                                                              CriticalPoint,
-                                                              criticalPointsInPiece)
-import           Exploration.Filters                         (criticalPred,
-                                                              degreePred)
-import           Poly.PiecewisePoly                          (BothPW (BothPW),
-                                                              PiecewisePoly,
-                                                              Separation' (Algebraic),
-                                                              printPW)
-import           Poly.Utils                                  (minDegree,
-                                                              numRootsInInterval)
-import           Prelude                                     hiding ((*), (+))
-import           Subclasses.GenFun.CanonicalGenFun           (CanonicalGenFun,
-                                                              mkCGF)
-import qualified Subclasses.GenFun.GenFun                    as Gen
-import           Subclasses.GenFun.GenFun                    (GenFun (GenFun),
-                                                              allGenFuns,
-                                                              flipInputsGenFun)
-import           Subclasses.GenFun.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun,
-                                                              mkNCGF)
-import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun,
-                                                              mkNGF)
-import           Subclasses.Iterated.Iterated                (Iterated)
-import           Subclasses.Iterated.IteratedTH              ()
-import           Subclasses.Lifted                           (toLifted)
-import qualified Subclasses.Symmetric                        as Symm
-import           Subclasses.Symmetric                        (SymmetricFun,
-                                                              SymmetricFun')
-import qualified Subclasses.Threshold                        as Thresh
-import           Subclasses.Threshold                        (ThresholdFun,
-                                                              ThresholdFun' (ThresholdFun'))
-import           Test.QuickCheck                             (Arbitrary (arbitrary),
-                                                              generate)
-import           Testing.PrettyPrinting                      (PrettyBoFun (prettyPrint),
-                                                              desmosPrintPW,
-                                                              desmosShowPW)
-import           Timing                                      (measureMajs,
-                                                              measureRandomFuns)
+import           DSLsofMath.Algebra             (AddGroup, MulGroup)
+import           Exploration.Comparisons        (mainBenchMaj,
+                                                 measureTimeComputeMin)
+import           Exploration.Critical           (Critical (Maximum),
+                                                 CriticalPoint)
+import           Exploration.Filters            (criticalPred)
+import           Poly.PiecewisePoly             (BothPW (BothPW), PiecewisePoly,
+                                                 printPW)
+import           Prelude                        hiding ((*), (+))
+import qualified Subclasses.GenFun.GenFun       as Gen
+import           Subclasses.GenFun.GenFun       (GenFun (GenFun), allGenFuns,
+                                                 flipInputsGenFun)
+import           Subclasses.Iterated.IteratedTH ()
+import           Subclasses.Lifted              ()
+import qualified Subclasses.Threshold           as Thresh
+import           Test.QuickCheck                (Arbitrary (arbitrary),
+                                                 generate)
+import           Testing.PrettyPrinting         (PrettyBoFun (prettyPrint),
+                                                 desmosPrintPW)
 
 main :: IO ()
 main = prettyPrint $ Thresh.iteratedMajFun 3 3
@@ -113,7 +75,7 @@ main2 :: IO ()
 main2 = do
   let allFuns = allGenFuns 4
   let comps = map (\f -> (f, computeMin f)) allFuns
-  let with2maxima = filter (\(f, c) -> criticalPred (nMax 2) c) comps
+  let with2maxima = filter (\(_, c) -> criticalPred (nMax 2) c) comps
   mapM_ (\(f, c) -> print f >> printPW c) with2maxima
   print $ length with2maxima
 
