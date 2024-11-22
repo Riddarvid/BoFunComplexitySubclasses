@@ -1,7 +1,7 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-module Subclasses.One (
+module UnusedSubclasses.One (
   One,
   mkOne
 ) where

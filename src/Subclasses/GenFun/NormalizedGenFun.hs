@@ -2,7 +2,7 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-module Subclasses.NormalizedGenFun (
+module Subclasses.GenFun.NormalizedGenFun (
   NormalizedGenFun,
   mkNGF,
   ngfBDD,
@@ -17,7 +17,7 @@ import           Data.DecisionDiagram.BDD (AscOrder, BDD)
 import           Data.Function.Memoize    (deriveMemoizable)
 import           Data.Hashable            (Hashable)
 import           GHC.Generics             (Generic)
-import           Subclasses.GenFun        (GenFun (GenFun))
+import           Subclasses.GenFun.GenFun (GenFun (GenFun))
 import           Test.QuickCheck          (Gen)
 
 newtype NormalizedGenFun = NormalizedGenFun GenFun

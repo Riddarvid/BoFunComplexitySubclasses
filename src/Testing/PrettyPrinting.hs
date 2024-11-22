@@ -4,7 +4,8 @@
 module Testing.PrettyPrinting (
   desmosPrintPW,
   desmosShowPW,
-  desmosShowP
+  desmosShowP,
+  PrettyBoFun(..)
 ) where
 -- Contains functions for showing polynomials in a way that can be easily copied into
 -- the graphical calculator desmos.
@@ -56,3 +57,9 @@ desmosShowRational d n = term
   term
     | b == 1 = if a == 1 && d /= 0 then "" else show a
     | otherwise = show a ++ "/" ++ show b
+
+class PrettyBoFun f where
+  prettyShow :: f -> String
+
+  prettyPrint :: f -> IO ()
+  prettyPrint = putStrLn . prettyShow

@@ -10,24 +10,21 @@ module Exploration.Comparisons (
   measureTimeComputeMin',
   measureTimeGenAlg
 ) where
-import           Algorithm.GenAlg      (genAlgThinMemo, genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW    (computeMin, computeMin')
-import           BoFun                 (BoFun)
-import           Control.DeepSeq       (NFData, force)
-import           Control.Exception     (evaluate)
-import           Control.Monad         (forM, void)
-import           Criterion             (Benchmark, bench, bgroup, nf)
-import           Criterion.Main        (defaultMain)
-import           Data.Function.Memoize (Memoizable)
-import           Data.Hashable         (Hashable)
-import           Data.Set              (Set)
-import           Data.Time             (NominalDiffTime, diffUTCTime,
-                                        getCurrentTime)
-import           DSLsofMath.PSDS       (Poly)
-import qualified Subclasses.GenFun     as Gen
-import           Subclasses.Id         ()
-import qualified Subclasses.Symmetric  as Symm
-import qualified Subclasses.Threshold  as Thresh
+import           Algorithm.GenAlg         (genAlgThinMemoPoly)
+import           Algorithm.GenAlgPW       (computeMin, computeMin')
+import           BoFun                    (BoFun)
+import           Control.DeepSeq          (NFData, force)
+import           Control.Exception        (evaluate)
+import           Control.Monad            (forM, void)
+import           Criterion                (Benchmark, bench, bgroup, nf)
+import           Criterion.Main           (defaultMain)
+import           Data.Function.Memoize    (Memoizable)
+import           Data.Hashable            (Hashable)
+import           Data.Time                (NominalDiffTime, diffUTCTime,
+                                           getCurrentTime)
+import qualified Subclasses.GenFun.GenFun as Gen
+import qualified Subclasses.Symmetric     as Symm
+import qualified Subclasses.Threshold     as Thresh
 
 -- Running a single evaluation of the complexity of a function and measuring the time it takes
 

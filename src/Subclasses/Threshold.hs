@@ -10,29 +10,32 @@
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE PatternSynonyms            #-}
 module Subclasses.Threshold (
-  ThresholdFun,
-  ThresholdFun'(ThresholdFun'),
+  Threshold(Threshold),
+  ThresholdFun(ThresholdFun),
+  NonSymmThresholdFun(NonSymmThresholdFun),
   majFun,
   iteratedMajFun,
   allNAryITFs
 ) where
 
-import           Data.Function.Memoize (Memoizable, deriveMemoizable)
-import           Prelude               hiding (negate, sum, (+), (-))
+import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
+import           Prelude                      hiding (negate, sum, (+), (-))
 
-import           DSLsofMath.Algebra    (Additive (..), (-))
+import           DSLsofMath.Algebra           (Additive (..), (-))
 
-import           Arity                 (ArbitraryArity (arbitraryArity))
-import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.DeepSeq       (NFData)
-import           GHC.Generics          (Generic)
-import           Subclasses.Iterated   (Iterated, iterId, iterateFun,
-                                        toIterated)
-import           Subclasses.Lifted     (Lifted, toLifted)
-import           Test.QuickCheck       (chooseInt)
-import           Test.QuickCheck.Gen   (Gen)
-import           Utils                 (Square, naturals, partitions)
+import           Arity                        (ArbitraryArity (arbitraryArity))
+import           BoFun                        (BoFun (..), Constable (mkConst))
+import           Control.DeepSeq              (NFData)
+import           GHC.Generics                 (Generic)
+import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated),
+                                               iterId, iterateFun)
+import           Subclasses.Lifted            (Lifted (Lifted))
+import           Test.QuickCheck              (chooseInt)
+import           Test.QuickCheck.Gen          (Gen)
+import           Testing.PrettyPrinting       (PrettyBoFun (prettyShow))
+import           Utils                        (Square, naturals, partitions)
 
 --------------- Threshold ----------------------------------------
 
@@ -70,13 +73,13 @@ reduceThreshold v (Threshold (nt, nf)) = if v
 ---------------------- Threshold function ----------------------------
 
 newtype ThresholdFun = ThresholdFun Threshold
-  deriving (Eq, Ord, Generic)
+  deriving (Eq, Ord, Generic, Show)
 
 $(deriveMemoizable ''ThresholdFun)
 
-instance Show ThresholdFun where
-  show :: ThresholdFun -> String
-  show f@(ThresholdFun (Threshold (nt, _))) = show arity ++ "-bit threshold function, threshold at " ++ show nt
+instance PrettyBoFun ThresholdFun where
+  prettyShow :: ThresholdFun -> String
+  prettyShow f@(ThresholdFun (Threshold (nt, _))) = show arity ++ "-bit threshold function, threshold at " ++ show nt
     where
       arity = thresholdFunArity f
 
@@ -99,26 +102,29 @@ instance Constable ThresholdFun where
 thresholdFunArity :: ThresholdFun -> Int
 thresholdFunArity (ThresholdFun t) = thresholdArity t
 
-newtype ThresholdFun' = ThresholdFun' ThresholdFun
-  deriving (Memoizable, NFData)
+newtype NonSymmThresholdFun = ThresholdFun' ThresholdFun
+  deriving (Memoizable, NFData, Show)
 
-instance Show ThresholdFun' where
-  show :: ThresholdFun' -> String
-  show (ThresholdFun' f) = show f
+pattern NonSymmThresholdFun :: Threshold -> NonSymmThresholdFun
+pattern NonSymmThresholdFun f = ThresholdFun' (ThresholdFun f)
 
-instance BoFun ThresholdFun' Int where
-  isConst :: ThresholdFun' -> Maybe Bool
+instance PrettyBoFun NonSymmThresholdFun where
+  prettyShow :: NonSymmThresholdFun -> String
+  prettyShow (ThresholdFun' f) = prettyShow f
+
+instance BoFun NonSymmThresholdFun Int where
+  isConst :: NonSymmThresholdFun -> Maybe Bool
   isConst (ThresholdFun' f) = isConst f
-  variables :: ThresholdFun' -> [Int]
+  variables :: NonSymmThresholdFun -> [Int]
   variables (ThresholdFun' f) = take (thresholdFunArity f) naturals
-  setBit :: (Int, Bool) -> ThresholdFun' -> ThresholdFun'
+  setBit :: (Int, Bool) -> NonSymmThresholdFun -> NonSymmThresholdFun
   setBit (_, v) (ThresholdFun' f) = ThresholdFun' $ setBit ((), v) f
 
 ----------------- Lifted Threshold Function ------------------
 
 -- | A thresholding function with copies of a single subfunction.
-thresholdFunReplicate :: (BoFun f i) => ThresholdFun -> f -> Lifted ThresholdFun' f
-thresholdFunReplicate f g = toLifted (ThresholdFun' f) $ replicate (thresholdFunArity f) g
+thresholdFunReplicate :: (BoFun f i) => ThresholdFun -> f -> Lifted NonSymmThresholdFun f
+thresholdFunReplicate f g = Lifted (ThresholdFun' f) $ replicate (thresholdFunArity f) g
 
 -------------- Examples ------------------------------------
 
@@ -127,7 +133,7 @@ majFun bits = ThresholdFun $ Threshold (n, n)
   where
     n = (bits `div` 2) + 1
 
-iteratedMajFun :: Int -> Int -> Iterated ThresholdFun'
+iteratedMajFun :: Int -> Int -> Iterated NonSymmThresholdFun
 iteratedMajFun bits = iterateFun bits (ThresholdFun' $ majFun bits)
 
 -------------- Generation of ITFs ---------------------------------------
@@ -174,7 +180,7 @@ generateThreshold arity = do
 -- Gives all possible representations of n-bit ITFs, except for the ones with
 -- 0-ary functions as their subfunctions, as this would lead to an infinite
 -- number of representations.
-allNAryITFs :: Int -> [Iterated ThresholdFun']
+allNAryITFs :: Int -> [Iterated NonSymmThresholdFun]
 allNAryITFs = (map nAryITFEnum' [0 ..] !!)
   where
     nAryITFEnum' 0 =
@@ -184,7 +190,7 @@ allNAryITFs = (map nAryITFEnum' [0 ..] !!)
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns
-      return $ toIterated (ThresholdFun' $ ThresholdFun threshold') subFuns
+      return $ Iterated (NonSymmThresholdFun threshold') subFuns
 
 -- Gives all the thresholds satisfying the following properties:
 -- 0 <= tn <= n + 1
@@ -198,7 +204,7 @@ allThresholds n = do
 -- Generates all possible partitions of positive integers that add up to n.
 -- The member elements of these partions represent the arities of the subfunctions.
 -- For each arity, we then generate all possible subFunctions.
-allSubFunCombinations :: Int -> [([Iterated ThresholdFun'], Int)]
+allSubFunCombinations :: Int -> [([Iterated NonSymmThresholdFun], Int)]
 allSubFunCombinations n = do
   partition <- partitions n
   subFuns <- mapM allNAryITFs partition

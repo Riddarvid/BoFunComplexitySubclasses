@@ -6,31 +6,33 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE PatternSynonyms            #-}
 module Subclasses.Symmetric (
   SymmetricFun,
-  SymmetricFun',
+  NonSymmSymmetricFun(NonSymmSymmetricFun),
   mkSymmetricFun,
   arity,
   majFun,
   iteratedMajFun
 ) where
 
-import           Arity                 (ArbitraryArity (arbitraryArity))
-import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.Arrow         ((>>>))
-import           Control.DeepSeq       (NFData)
-import           Data.Foldable         (Foldable (toList))
-import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
-import           Data.List.NonEmpty    (NonEmpty ((:|)))
-import qualified Data.List.NonEmpty    as NE
-import           Data.Sequence         (Seq (Empty, (:<|), (:|>)))
-import qualified Data.Sequence         as Seq
-import           GHC.Generics          (Generic)
-import           Subclasses.Iterated   (Iterated, iterateFun)
-import           Test.QuickCheck       (Arbitrary (arbitrary), chooseInt, sized,
-                                        vector)
-import           Test.QuickCheck.Gen   (Gen)
-import           Utils                 (naturals)
+import           Arity                        (ArbitraryArity (arbitraryArity))
+import           BoFun                        (BoFun (..), Constable (mkConst))
+import           Control.Arrow                ((>>>))
+import           Control.DeepSeq              (NFData)
+import           Data.Foldable                (Foldable (toList))
+import           Data.Function.Memoize        (Memoizable (memoize),
+                                               deriveMemoizable)
+import           Data.List.NonEmpty           (NonEmpty ((:|)))
+import qualified Data.List.NonEmpty           as NE
+import           Data.Sequence                (Seq (Empty, (:<|), (:|>)))
+import qualified Data.Sequence                as Seq
+import           GHC.Generics                 (Generic)
+import           Subclasses.Iterated.Iterated (Iterated, iterateFun)
+import           Test.QuickCheck              (Arbitrary (arbitrary), chooseInt,
+                                               sized, vector)
+import           Test.QuickCheck.Gen          (Gen)
+import           Utils                        (naturals)
 
 --------- Ranges -----------------------------
 
@@ -109,15 +111,18 @@ instance Constable SymmetricFun where
   mkConst :: Bool -> SymmetricFun
   mkConst val = SymmetricFun (val, Seq.singleton 1)
 
-newtype SymmetricFun' = SymmetricFun' SymmetricFun
+newtype NonSymmSymmetricFun = SymmetricFun' SymmetricFun
   deriving (Memoizable, NFData, ArbitraryArity)
 
-instance BoFun SymmetricFun' Int where
-  isConst :: SymmetricFun' -> Maybe Bool
+pattern NonSymmSymmetricFun :: Result -> NonSymmSymmetricFun
+pattern NonSymmSymmetricFun f = SymmetricFun' (SymmetricFun f)
+
+instance BoFun NonSymmSymmetricFun Int where
+  isConst :: NonSymmSymmetricFun -> Maybe Bool
   isConst (SymmetricFun' f) = isConst f
-  variables :: SymmetricFun' -> [Int]
+  variables :: NonSymmSymmetricFun -> [Int]
   variables (SymmetricFun' f) = take (arity f) naturals
-  setBit :: (Int, Bool) -> SymmetricFun' -> SymmetricFun'
+  setBit :: (Int, Bool) -> NonSymmSymmetricFun -> NonSymmSymmetricFun
   setBit (_, v) (SymmetricFun' f) = SymmetricFun' $ setBit ((), v) f
 
 ----------------- Examples -----------------------
@@ -127,7 +132,7 @@ majFun bits = SymmetricFun (False, Seq.fromList [n, n])
   where
     n = (bits `div` 2) + 1
 
-iteratedMajFun :: Int -> Int -> Iterated SymmetricFun'
+iteratedMajFun :: Int -> Int -> Iterated NonSymmSymmetricFun
 iteratedMajFun bits = iterateFun bits (SymmetricFun' $ majFun bits)
 
 -------------------- Enumeration ------------------------

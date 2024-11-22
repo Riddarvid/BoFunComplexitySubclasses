@@ -7,34 +7,42 @@
 {-# HLINT ignore "Use tuple-section" #-}
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE PatternSynonyms       #-}
 module Subclasses.Lifted (
-  Lifted,
-  toLifted
+  Lifted(Lifted),
 ) where
-import           Arity                 (ArbitraryArity (arbitraryArity))
-import           BoFun                 (BoFun (..))
-import           Control.Arrow         ((>>>))
-import           Control.DeepSeq       (NFData)
-import           Data.Function.Memoize (Memoizable, memoize)
-import           Data.Maybe            (fromJust)
-import           GHC.Generics          (Generic)
-import           Test.QuickCheck       (Gen)
-import           Utils                 (generatePartition, indent, naturals)
+import           Arity                  (ArbitraryArity (arbitraryArity))
+import           BoFun                  (BoFun (..))
+import           Control.Arrow          ((>>>))
+import           Control.DeepSeq        (NFData)
+import           Data.Function.Memoize  (Memoizable, memoize)
+import           Data.Maybe             (fromJust)
+import           GHC.Generics           (Generic)
+import           Test.QuickCheck        (Gen)
+import           Testing.PrettyPrinting (PrettyBoFun (prettyShow))
+import           Utils                  (generatePartition, indent, naturals)
 
 -- Invariant: g only contains non-const functions
-data Lifted f g = Lifted {
+data Lifted f g = Lifted' {
   lFun     :: f,
   lSubFuns :: [g]
-} deriving (Generic)
+} deriving (Generic, Show)
 
-instance (Show f, Show g) => Show (Lifted f g) where
-  show :: Lifted f g -> String
-  show (Lifted f gs) =
-    show f ++ "\n" ++
+pattern Lifted :: (BoFun f Int, BoFun g i) => f -> [g] -> Lifted f g
+pattern Lifted f gs <- Lifted' f gs where
+  Lifted f gs = toLifted f gs
+
+toLifted :: (BoFun f Int, BoFun g i) => f -> [g] -> Lifted f g
+toLifted f = reduceConstants . Lifted' f
+
+instance (PrettyBoFun f, PrettyBoFun g) => PrettyBoFun (Lifted f g) where
+  prettyShow :: Lifted f g -> String
+  prettyShow (Lifted' f gs) =
+    prettyShow f ++ "\n" ++
     indent (showSubFuns gs)
 
-showSubFuns :: Show g => [g] -> String
-showSubFuns = unlines . map show
+showSubFuns :: PrettyBoFun g => [g] -> String
+showSubFuns = unlines . map prettyShow
 
 instance (NFData f, NFData g) => NFData (Lifted f g)
 
@@ -42,17 +50,13 @@ instance (Memoizable f, Memoizable g) => Memoizable (Lifted f g) where
   memoize :: (Lifted f g -> v) -> Lifted f g -> v
   memoize f = destruct >>> memoize (construct >>> f)
     where
-      destruct (Lifted f' gs) = (f', gs)
-      construct (f', gs) = Lifted f' gs
-
--- TODO-NEW handle constant g's
-toLifted :: (BoFun f Int, BoFun g i) => f -> [g] -> Lifted f g
-toLifted f = reduceConstants . Lifted f
+      destruct (Lifted' f' gs) = (f', gs)
+      construct (f', gs) = Lifted' f' gs
 
 reduceConstants :: (BoFun f Int, BoFun g i) => Lifted f g -> Lifted f g
-reduceConstants (Lifted f gs) = case v of
-  Nothing      -> Lifted f gs
-  Just (i, v') -> reduceConstants $ Lifted (setBit (i, v') f) (deleteAt i gs)
+reduceConstants (Lifted' f gs) = case v of
+  Nothing      -> Lifted' f gs
+  Just (i, v') -> reduceConstants $ Lifted' (setBit (i, v') f) (deleteAt i gs)
   where
     v = firstConst $ zip naturals $ map isConst gs
 
@@ -101,7 +105,7 @@ instance (ArbitraryArity f, ArbitraryArity g) => ArbitraryArity (Lifted f g) whe
   arbitraryArity arity = do
     (gs, nSubFuns) <- generateSubFuns arity
     f <- arbitraryArity nSubFuns
-    return $ Lifted {lFun = f, lSubFuns = gs}
+    return $ Lifted' {lFun = f, lSubFuns = gs}
 
 generateSubFuns :: (ArbitraryArity f) => Int -> Gen ([f], Int)
 generateSubFuns totalArity = do

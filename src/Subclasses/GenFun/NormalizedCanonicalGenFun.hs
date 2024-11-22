@@ -2,19 +2,19 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-module Subclasses.NormalizedCanonicalGenFun (
+module Subclasses.GenFun.NormalizedCanonicalGenFun (
   NormalizedCanonicalGenFun,
   mkNCGF
 ) where
-import           Arity                       (ArbitraryArity (arbitraryArity))
-import           BoFun                       (BoFun (..))
-import           Control.DeepSeq             (NFData)
-import           Data.Function.Memoize       (deriveMemoizable)
-import           Data.Hashable               (Hashable)
-import           GHC.Generics                (Generic)
-import           Subclasses.GenFun           (GenFun, toCanonicForm)
-import           Subclasses.NormalizedGenFun (normalizeGenFun)
-import           Test.QuickCheck             (Gen)
+import           Arity                              (ArbitraryArity (arbitraryArity))
+import           BoFun                              (BoFun (..))
+import           Control.DeepSeq                    (NFData)
+import           Data.Function.Memoize              (deriveMemoizable)
+import           Data.Hashable                      (Hashable)
+import           GHC.Generics                       (Generic)
+import           Subclasses.GenFun.GenFun           (GenFun, toCanonicForm)
+import           Subclasses.GenFun.NormalizedGenFun (normalizeGenFun)
+import           Test.QuickCheck                    (Gen)
 
 newtype NormalizedCanonicalGenFun = NCGF GenFun
   deriving (Generic, Eq, Show)

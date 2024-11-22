@@ -15,13 +15,15 @@ module Subclasses.Gates (
   notG,
   var
 ) where
-import           BoFun                 (BoFun (..), Constable (mkConst))
-import           Control.DeepSeq       (NFData)
-import           Data.Function.Memoize (Memoizable, deriveMemoizable)
-import           GHC.Generics          (Generic)
-import           Subclasses.Iterated   (Iterated, iterId, toIterated)
-import           Test.QuickCheck       (Arbitrary, Gen, arbitrary, elements)
-import           Utils                 (naturals)
+import           BoFun                        (BoFun (..), Constable (mkConst))
+import           Control.DeepSeq              (NFData)
+import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
+import           GHC.Generics                 (Generic)
+import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated),
+                                               iterId)
+import           Test.QuickCheck              (Arbitrary, Gen, arbitrary,
+                                               elements)
+import           Utils                        (naturals)
 
 data Gate = And | Or | Not | Id | Const Bool
   deriving (Eq, Ord, Show, Generic)
@@ -76,7 +78,7 @@ instance BoFun Gate' Int where
 -------------- Iterated gates -------------------------
 
 gateHelper :: Gate -> [Iterated Gate'] -> Iterated Gate'
-gateHelper g = toIterated (Gate' g)
+gateHelper g = Iterated (Gate' g)
 
 andG :: Iterated Gate' -> Iterated Gate' -> Iterated Gate'
 andG g1 g2 = gateHelper And [g1, g2]

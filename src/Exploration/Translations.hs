@@ -6,20 +6,22 @@ module Exploration.Translations (
   boFunToGenFun,
   areEquivalent
 ) where
-import           BDD.BDD                     (pick)
-import           BoFun                       (BoFun (isConst, setBit, variables))
-import           Data.DecisionDiagram.BDD    (AscOrder, BDD, evaluate)
-import           Data.IntMap                 (IntMap)
-import qualified Data.IntMap                 as IM
-import           Data.List.NonEmpty          (NonEmpty)
-import qualified Data.List.NonEmpty          as NE
-import           Subclasses.GenFun           (GenFun (GenFun), constGF,
-                                              toGenFun)
-import           Subclasses.Iterated         (Iterated)
-import           Subclasses.NormalizedGenFun (NormalizedGenFun, mkNGF, ngfArity)
-import           Subclasses.Symmetric        (SymmetricFun, mkSymmetricFun)
-import           Subclasses.Threshold        (ThresholdFun', allNAryITFs)
-import           Utils                       (permutations)
+import           BDD.BDD                            (pick)
+import           BoFun                              (BoFun (isConst, setBit, variables))
+import           Data.DecisionDiagram.BDD           (AscOrder, BDD, evaluate)
+import           Data.IntMap                        (IntMap)
+import qualified Data.IntMap                        as IM
+import           Data.List.NonEmpty                 (NonEmpty)
+import qualified Data.List.NonEmpty                 as NE
+import           Subclasses.GenFun.GenFun           (GenFun (GenFun), constGF,
+                                                     toGenFun)
+import           Subclasses.GenFun.NormalizedGenFun (NormalizedGenFun, mkNGF,
+                                                     ngfArity)
+import           Subclasses.Iterated.Iterated       (Iterated)
+import           Subclasses.Symmetric               (SymmetricFun,
+                                                     mkSymmetricFun)
+import           Subclasses.Threshold               (ThresholdFun', allNAryITFs)
+import           Utils                              (permutations)
 
 --------------- Basic symmetric ---------------------
 

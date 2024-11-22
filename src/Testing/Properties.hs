@@ -17,37 +17,43 @@ module Testing.Properties (
   propCriticalSwitches,
   propKnownCrits
 ) where
-import           Algebraic                   (Algebraic (Rational),
-                                              signAtAlgebraic, signAtRational,
-                                              toAlgebraic)
-import           Algorithm.GenAlg            (genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW          (computeMin, computeMin')
-import           BDD.BDDInstances            ()
-import           BoFun                       (BoFun (variables))
-import           Data.List                   (isInfixOf, sort)
-import           Data.Ratio                  ((%))
-import qualified Data.Set                    as Set
-import           DSLsofMath.PSDS             (Poly (P), degree)
-import           Exploration.Critical        (Critical (Maximum, Minimum, Saddle),
-                                              criticalPointsInPiece)
-import           Exploration.Eval            (evalNonSymmetric, evalSymmetric)
-import           Exploration.Translations    (genToBasicSymmetricNaive)
-import           Poly.PiecewisePoly          (minPWs, pieces, piecewiseFromPoly,
-                                              propIsMirrorPW)
-import qualified Subclasses.GenFun           as Gen
-import           Subclasses.GenFun           (GenFun, eval, flipInputsGenFun,
-                                              generateGenFun, notG, toGenFun)
-import           Subclasses.Id               ()
-import           Subclasses.NormalizedGenFun (mkNGF, ngfArity)
-import qualified Subclasses.Symmetric        as Symm
-import           Subclasses.Symmetric        (SymmetricFun)
-import qualified Subclasses.Threshold        as Thresh
-import           Test.QuickCheck             (Arbitrary (arbitrary, shrink),
-                                              Property, Testable (property),
-                                              chooseInt, conjoin, elements,
-                                              sized, vector, within, (=/=),
-                                              (===), (==>))
-import           Test.QuickCheck.Gen         (Gen)
+import           Algebraic                          (Algebraic (Rational),
+                                                     signAtAlgebraic,
+                                                     signAtRational,
+                                                     toAlgebraic)
+import           Algorithm.GenAlg                   (genAlgThinMemoPoly)
+import           Algorithm.GenAlgPW                 (computeMin, computeMin')
+import           BDD.BDDInstances                   ()
+import           BoFun                              (BoFun (variables))
+import           Data.List                          (isInfixOf, sort)
+import           Data.Ratio                         ((%))
+import qualified Data.Set                           as Set
+import           DSLsofMath.PSDS                    (Poly (P), degree)
+import           Exploration.Critical               (Critical (Maximum, Minimum, Saddle),
+                                                     criticalPointsInPiece)
+import           Exploration.Eval                   (evalNonSymmetric,
+                                                     evalSymmetric)
+import           Exploration.Translations           (genToBasicSymmetricNaive)
+import           Poly.PiecewisePoly                 (minPWs, pieces,
+                                                     piecewiseFromPoly,
+                                                     propIsMirrorPW)
+import qualified Subclasses.GenFun.GenFun           as Gen
+import           Subclasses.GenFun.GenFun           (GenFun, eval,
+                                                     flipInputsGenFun,
+                                                     generateGenFun, notG,
+                                                     toGenFun)
+import           Subclasses.GenFun.NormalizedGenFun (mkNGF, ngfArity)
+import qualified Subclasses.Symmetric               as Symm
+import           Subclasses.Symmetric               (SymmetricFun)
+import qualified Subclasses.Threshold               as Thresh
+import           Test.QuickCheck                    (Arbitrary (arbitrary, shrink),
+                                                     Property,
+                                                     Testable (property),
+                                                     chooseInt, conjoin,
+                                                     elements, sized, vector,
+                                                     within, (=/=), (===),
+                                                     (==>))
+import           Test.QuickCheck.Gen                (Gen)
 
 ----------------- Types --------------------------------------
 

@@ -3,43 +3,46 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PatternSynonyms       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE UndecidableInstances  #-}
-module Subclasses.Iterated (
-  Iterated',
+module Subclasses.Iterated.Iterated (
+  Iterated'(Iterated),
   iterId,
   SubFun,
   Iterated,
-  toIterated,
   iterateFun
 ) where
-import           Arity              (AllArity (allArity),
-                                     ArbitraryArity (arbitraryArity))
-import           BoFun              (BoFun (..), Constable (mkConst))
-import           Control.DeepSeq    (NFData)
-import           Control.Enumerable (Enumerable, Shared, Sized, Typeable, c0,
-                                     c1, datatype)
-import           Data.Hashable      (Hashable)
-import           Data.Set           (Set)
-import qualified Data.Set           as Set
-import qualified DSLsofMath.Algebra as A
-import           GHC.Generics       (Generic)
-import           Subclasses.Lifted  (Lifted, toLifted)
-import           Test.Feat          (enumerate)
-import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, chooseInt,
-                                     oneof, sized)
+import           Arity                  (AllArity (allArity),
+                                         ArbitraryArity (arbitraryArity))
+import           BoFun                  (BoFun (..), Constable (mkConst))
+import           Control.DeepSeq        (NFData)
+import           Control.Enumerable     (Enumerable, Shared, Sized, Typeable,
+                                         c0, c1, datatype)
+import           Data.Hashable          (Hashable)
+import           Data.Set               (Set)
+import qualified Data.Set               as Set
+import qualified DSLsofMath.Algebra     as A
+import           GHC.Generics           (Generic)
+import           Subclasses.Lifted      (Lifted (Lifted))
+import           Test.Feat              (enumerate)
+import           Test.QuickCheck        (Arbitrary (arbitrary), Gen, chooseInt,
+                                         oneof, sized)
+import           Testing.PrettyPrinting (PrettyBoFun (prettyShow))
 
 type SubFun f = f (Iterated' f)
 
 data Iterated' f = Const Bool | Id | Iterated' (SubFun f)
   deriving (Generic)
 
-instance (Show (SubFun f)) => Show (Iterated' f) where
-  show :: Iterated' f -> String
-  show (Const v)     = "const " ++ show v
-  show Id            = "id"
-  show (Iterated' f) = show f
+deriving instance (Show (SubFun f)) => Show (Iterated' f)
+
+instance (PrettyBoFun (SubFun f)) => PrettyBoFun (Iterated' f) where
+  prettyShow :: Iterated' f -> String
+  prettyShow (Const v)     = "const " ++ show v
+  prettyShow Id            = "id"
+  prettyShow (Iterated' f) = prettyShow f
 
 iterId :: Iterated' f
 iterId = Id
@@ -130,13 +133,13 @@ instance (AllArity (SubFun f), Ord (SubFun f)) => AllArity (Iterated' f) where
 
 type Iterated f = Iterated' (Lifted f)
 
-toIterated :: (BoFun f Int) => f -> [Iterated f] -> Iterated f
-toIterated f = Iterated' . toLifted f
+pattern Iterated :: BoFun f Int => f -> [Iterated f] -> Iterated f
+pattern Iterated f gs = Iterated' (Lifted f gs)
 
 iterateFun :: (BoFun f Int) => Int -> f -> Int -> Iterated f
 iterateFun bits f = go
   where
     go 0 = Id
-    go n = toIterated f $ replicate bits subFun
+    go n = Iterated f $ replicate bits subFun
       where
         subFun = iterateFun bits f (n A.- 1)

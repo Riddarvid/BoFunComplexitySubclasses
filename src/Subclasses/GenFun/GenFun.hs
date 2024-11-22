@@ -6,7 +6,7 @@
 {-# HLINT ignore "Use list comprehension" #-}
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE FlexibleContexts      #-}
-module Subclasses.GenFun (
+module Subclasses.GenFun.GenFun (
   GenFun(GenFun),
   liftBDD,
   falseG,

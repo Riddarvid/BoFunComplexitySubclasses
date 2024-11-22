@@ -1,5 +1,5 @@
 - Undersök criterion
-- Property som kollar att andra- och tredjegradspolynom har rätt sorts extrempunkter.
+- Låg prio: Exponera vissa konstruktorer som patterns
 
 ## Homework typ
 
