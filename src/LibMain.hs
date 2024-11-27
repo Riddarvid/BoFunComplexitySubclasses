@@ -17,7 +17,8 @@ import           DSLsofMath.Algebra             (AddGroup, MulGroup)
 import           Exploration.Comparisons        (mainBenchMaj,
                                                  measureTimeComputeMin)
 import           Exploration.Critical           (Critical (Maximum),
-                                                 CriticalPoint)
+                                                 CriticalPoint,
+                                                 findCritcalPointsPW)
 import           Exploration.Filters            (criticalPred)
 import           Poly.PiecewisePoly             (BothPW (BothPW), PiecewisePoly,
                                                  printPW)
@@ -34,7 +35,7 @@ import           Testing.PrettyPrinting         (PrettyBoFun (prettyPrint),
                                                  desmosPrintPW)
 
 main :: IO ()
-main = prettyPrint $ Thresh.iteratedMajFun 3 3
+main = main2
 
 
 main11 :: IO ()
@@ -75,12 +76,17 @@ main2 :: IO ()
 main2 = do
   let allFuns = allGenFuns 4
   let comps = map (\f -> (f, computeMin f)) allFuns
-  let with2maxima = filter (\(_, c) -> criticalPred (nMax 2) c) comps
-  mapM_ (\(f, c) -> print f >> printPW c) with2maxima
-  print $ length with2maxima
+  let maxMaxima = maximum $ map (countMaxima . findCritcalPointsPW . snd) comps
+  putStrLn ("Max maxima: " ++ show maxMaxima)
+  let withMaxMaxima = filter (\(_, c) -> criticalPred (nMax maxMaxima) c) comps
+  mapM_ (\(f, c) -> print f >> printPW c) withMaxMaxima
+  print $ length withMaxMaxima
 
 nMax :: Int -> [CriticalPoint] -> Bool
-nMax n points = length (filter (\(_, t) -> t == Maximum) points) == n
+nMax n points = countMaxima points == n
+
+countMaxima :: [CriticalPoint] -> Int
+countMaxima = length . filter (\(_, t) -> t == Maximum)
 
 {-
 findSimplest :: (AddGroup a, MulGroup a, Real a, Show a) => [BothPW a]

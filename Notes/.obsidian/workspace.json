@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/Frågor till nästa möte.md",
+                "file": "Results/Data/Exploring PWs.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Frågor till nästa möte"
+              "title": "Exploring PWs"
             }
           }
         ]
@@ -164,8 +164,8 @@
   },
   "active": "71e7181bed081195",
   "lastOpenFiles": [
-    "Admin/Plan sista veckorna.md",
     "Admin/Frågor till nästa möte.md",
+    "Admin/Plan sista veckorna.md",
     "General knowledge/Saker att ta med sig från Julias thesis.md",
     "Admin/TODO generell.md",
     "Admin/TODO för veckan.md",

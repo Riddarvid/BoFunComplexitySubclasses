@@ -1,6 +1,9 @@
+{-# LANGUAGE InstanceSigs #-}
 module Exploration.Critical (
   Critical(..),
+  Location(..),
   CriticalPoint,
+  handleUncertain,
   findCritcalPointsPW,
   criticalPointBetweenPieces,
   criticalPointsInPiece
@@ -9,30 +12,148 @@ import           Algebraic          (AlgRep (AlgRep),
                                      Algebraic (Algebraic, Rational),
                                      fromPWSeparation, shrinkIntervalStep,
                                      signAtAlgebraic, signAtRational)
-import           DSLsofMath.PSDS    (Poly, derP, isConstP)
-import           Poly.PiecewisePoly (PiecewisePoly, linearizePW)
+import           Data.List          (sort)
+import           DSLsofMath.PSDS    (Poly (unP), constP, derP, evalP, isConstP)
+import           Poly.PiecewisePoly (PiecewisePoly, linearizePW, pieces)
 import           Poly.Utils         (numRootsInInterval)
 import           Utils              (Sign (..))
 
-data Critical = Maximum | Minimum | Saddle
-  deriving (Show, Eq)
+data Location = Point Algebraic | Range Algebraic Algebraic
+  deriving (Show)
 
-type CriticalPoint = (Algebraic, Critical)
+data Critical = Maximum | Minimum
+  deriving (Show, Eq, Ord)
+
+type CriticalPoint = (Location, Critical)
+
+-- UncertainCriticalPoint can represent either a fixed point with a known critical type,
+-- or a range with unknown critical type (if any). Ranges always represent constant
+-- polynomial pieces, and therefore have a constant value, which is also captured in
+-- the data type.
+data UncertainCriticalPoint = UPoint Algebraic Critical | URange Algebraic Algebraic Rational
+
+instance Eq Location where
+  (==) :: Location -> Location -> Bool
+  Point x1 == Point x2                   = x1 == x2
+  Range start1 end1 == Range start2 end2 = (start1, end1) == (start2, end2)
+  Point x1 == Range start end            = x1 == start && x1 == end
+  r@(Range _ _) == p@(Point _)           = p == r
+
+instance Ord Location where
+  (<=) :: Location -> Location -> Bool
+  Point x1 <= Point x2             = x1 <= x2
+  Range start1 _ <= Range start2 _ = start1 <= start2
+  Point x <= Range start _         = x <= start
+  Range _ end <= Point x           = end <= x
 
 ----------- Piecewise polynomials -----------------------
 
 -- Two types of critical points:
 -- 1) Points between pieces
 -- 2) Points in the pieces
--- One could also argue that the points at the end of the interval (0,1) are of interest,
--- but we have decided not to handle them here.
+-- 3) The endpoints of [0, 1]
+-- findMidPoints finds the critical points of type 1 & 2.
+-- addEndPoints handles 3.
+-- Lastly, handleUncertain takes care of identifying whether constant pieces
+-- actually represent an infinite number of maxima/minima or not.
 findCritcalPointsPW :: PiecewisePoly Rational -> [CriticalPoint]
-findCritcalPointsPW pw = midPoints
+findCritcalPointsPW pw = handleUncertain points
   where
+    points = addEndPoints (pieces pw) midPoints
     midPoints = findMidPoints pwList
     pwList = map (fmap fromPWSeparation) $ linearizePW pw
 
-findMidPoints :: [Either (Poly Rational) Algebraic] -> [CriticalPoint]
+------------- Conversion from UncertainCriticalPoints to CriticalPoints ----------
+
+handleUncertain :: [UncertainCriticalPoint] -> [CriticalPoint]
+handleUncertain [URange start end _] = [(Range start end, Maximum), (Range start end, Minimum)]
+handleUncertain uPoints = sort (ranges ++ points)
+  where
+    ranges = handleRanges uPoints
+    points = handlePoints uPoints
+
+handlePoints :: [UncertainCriticalPoint] -> [CriticalPoint]
+handlePoints [] = []
+handlePoints (x : xs) = case x of
+  URange {}  -> rest
+  UPoint a t -> (Point a, t) : rest
+  where
+    rest = handlePoints xs
+
+handleRanges :: [UncertainCriticalPoint] -> [CriticalPoint]
+handleRanges xs = handleRanges' startSign xs
+  where
+    startSign = findStartSign xs
+
+findStartSign :: [UncertainCriticalPoint] -> Critical
+findStartSign (UPoint _ t : _)                = t
+findStartSign (URange {} : UPoint _ t : _) = oppositeType t
+findStartSign (r@(URange _ _ v1) : URange _ _ v2 : xs) = case compare v1 v2 of
+  LT -> Minimum
+  GT -> Maximum
+  EQ -> findStartSign (r : xs)
+findStartSign _ = error "Should not happen"
+
+-- Antagande: Om ett element ligger först i listan är det en extrempunkt
+handleRanges' :: Critical -> [UncertainCriticalPoint] -> [CriticalPoint]
+handleRanges' _ [] = []
+handleRanges' prev [URange start end _] = [(Range start end, oppositeType prev)]
+handleRanges' _ (UPoint _ t : xs) = handleRanges' t xs
+handleRanges' prev (URange start1 end1 v1 : URange start2 end2 v2 : xs) = case compare v1 v2 of
+  EQ -> handleRanges' prev (URange start1 end2 v1 : xs)
+  LT -> case prev of
+    Maximum -> (Range start1 end1, Minimum) : handleRanges' Minimum rest
+    Minimum -> handleRanges' Minimum rest
+  GT -> case prev of
+    Minimum -> (Range start1 end1, Maximum) : handleRanges' Maximum rest
+    Maximum -> handleRanges' Maximum rest
+  where
+    rest = URange start2 end2 v2 : xs
+handleRanges' prev (URange start end _ : p@(UPoint _ t) : xs) = case (prev, t) of
+  (Maximum, Maximum) -> (Range start end, Minimum) : rest
+  (Minimum, Minimum) -> (Range start end, Maximum) : rest
+  _                  -> rest
+  where
+    rest = handleRanges' prev (p : xs)
+
+oppositeType :: Critical -> Critical
+oppositeType Maximum = Minimum
+oppositeType Minimum = Maximum
+
+---------- Identifying critical points at the endpoints of [0, 1] ----------------
+
+addEndPoints :: [Poly Rational] -> [UncertainCriticalPoint] -> [UncertainCriticalPoint]
+addEndPoints ps [] = case compare zeroVal oneVal of
+  LT -> [UPoint (Rational 0) Minimum, UPoint (Rational 1) Maximum]
+  GT -> [UPoint (Rational 0) Maximum, UPoint (Rational 1) Minimum]
+  EQ -> [URange (Rational 0) (Rational 1) zeroVal]
+  where
+    zeroVal = evalP (head ps) 0
+    oneVal = evalP (last ps) 1
+addEndPoints _ xs = addFirst $ addLast xs
+
+-- TODO-NEW fix
+addFirst :: [UncertainCriticalPoint] -> [UncertainCriticalPoint]
+addFirst [] = error "Should not happen"
+addFirst rest@(x : _) = case x of
+  URange {}        -> rest
+  UPoint _ Maximum -> UPoint endPoint Minimum : rest
+  UPoint _ Minimum -> UPoint endPoint Minimum : rest
+  where
+    endPoint = Rational 0
+
+addLast :: [UncertainCriticalPoint] -> [UncertainCriticalPoint]
+addLast [] = error "Should not happen"
+addLast xs = case last xs of
+  URange {}        -> xs
+  UPoint _ Maximum -> xs ++ [UPoint endPoint Minimum]
+  UPoint _ Minimum -> xs ++ [UPoint endPoint Maximum]
+  where
+    endPoint = Rational 1
+
+---------- Identifying critical points in or between pieces -------------
+
+findMidPoints :: [Either (Poly Rational) Algebraic] -> [UncertainCriticalPoint]
 findMidPoints [] = []
 findMidPoints [_] = []
 findMidPoints [_, _] = []
@@ -48,10 +169,10 @@ findMidPoints xs = error ("Should not happen" ++ show xs)
 ------------ Between Polynomials ------------------------
 
 -- It also makes sense to simply return a Saddle in the case of a 0-derivative
-criticalPointBetweenPieces :: Poly Rational -> Algebraic -> Poly Rational -> Maybe CriticalPoint
-criticalPointBetweenPieces p1 s p2 = case criticalType' s1 s2 of
-  Saddle -> Nothing
-  c      -> Just (s, c)
+criticalPointBetweenPieces :: Poly Rational -> Algebraic -> Poly Rational -> Maybe UncertainCriticalPoint
+criticalPointBetweenPieces p1 s p2 = do
+  c <- criticalType' s1 s2
+  return (UPoint s c)
   where
     p1' = derP p1
     p2' = derP p2
@@ -59,13 +180,12 @@ criticalPointBetweenPieces p1 s p2 = case criticalType' s1 s2 of
 
 ------------ In polynomials ------------------------
 
-criticalPointsInPiece :: Algebraic -> Poly Rational -> Algebraic -> [CriticalPoint]
-criticalPointsInPiece a1 p a2
+criticalPointsInPiece :: Algebraic -> Poly Rational -> Algebraic -> [UncertainCriticalPoint]
+criticalPointsInPiece a1 _ a2
   | a1 >= a2 = error "a1 must be < a2"
-  | isConstP p = [] -- In reality, every point in the domain is a critical point for a constant
-                    -- function. However, we have chosen to return an empty list in this case,
-                    -- as it is more practical to us.
-criticalPointsInPiece a1 p a2 = criticalPointsInPiece' r1 p r2
+criticalPointsInPiece a1 p a2 = case constP p of
+  Just v  -> [URange a1 a2 v]
+  Nothing -> criticalPointsInPiece' r1 p r2
   where
     (r1, r2) = findRationalEndpoints a1 p a2
 
@@ -119,13 +239,15 @@ expectedDiff p' a = case a of
 
 ---------------- The actual counting ----------------------
 
-criticalPointsInPiece' :: Rational -> Poly Rational -> Rational -> [CriticalPoint]
+criticalPointsInPiece' :: Rational -> Poly Rational -> Rational -> [UncertainCriticalPoint]
 criticalPointsInPiece' _low p = go _low
   where
     p' = derP p
     go low high = case numRootsInInterval p' (low, high) of
       0 -> []
-      1 -> [(Algebraic $ AlgRep p' (low, high), criticalType low p' high)]
+      1 -> case criticalType low p' high of
+        Nothing -> []
+        Just t  -> [UPoint (Algebraic $ AlgRep p' (low, high)) t]
       _ -> go low mid ++ go mid high
       where
         mid = (low + high) / 2
@@ -134,17 +256,17 @@ criticalPointsInPiece' _low p = go _low
 -------------- Utils ----------------------
 
 -- Assumes only one root in (low, high)
-criticalType :: Rational -> Poly Rational -> Rational -> Critical
+criticalType :: Rational -> Poly Rational -> Rational -> Maybe Critical
 criticalType low p' high = criticalType' sign1 sign2
   where
     sign1 = signLeft low p' high
     sign2 = signRight low p' high
 
-criticalType' :: Sign -> Sign -> Critical
+criticalType' :: Sign -> Sign -> Maybe Critical
 criticalType' s1 s2 = case (s1, s2) of
-  (Neg, Pos) -> Minimum
-  (Pos, Neg) -> Maximum
-  _          -> Saddle
+  (Neg, Pos) -> Just Minimum
+  (Pos, Neg) -> Just Maximum
+  _          -> Nothing
 
 data ShrinkDir = SLeft | SRight
 
@@ -164,3 +286,10 @@ signDirection dir low p' high
   where
     n = numRootsInInterval p' (low, high)
     mid = (low + high) / 2
+
+-- Problematic edge cases:
+-- Derivative 0 - Causes problems within a piece, we need to give a range. We also
+-- don't know whether this represents a maximum or minimum point until we consider
+-- the neighboring pieces.
+-- Also causes problems at the intersection, if one polynomial is constant, then it
+-- represents a range of points, but only if the neighbors are of the correct type.

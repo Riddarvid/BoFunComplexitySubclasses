@@ -29,8 +29,9 @@ import           Data.List                          (isInfixOf, sort)
 import           Data.Ratio                         ((%))
 import qualified Data.Set                           as Set
 import           DSLsofMath.PSDS                    (Poly (P), degree)
-import           Exploration.Critical               (Critical (Maximum, Minimum, Saddle),
-                                                     criticalPointsInPiece)
+import           Exploration.Critical               (Critical (Maximum, Minimum),
+                                                     criticalPointsInPiece,
+                                                     handleUncertain)
 import           Exploration.Eval                   (evalNonSymmetric,
                                                      evalSymmetric)
 import           Exploration.Translations           (genToBasicSymmetricNaive)
@@ -242,16 +243,13 @@ propMaxNumCritical low p high = degree p > 0 && low < high ==> within 5000000 $ 
 propCriticalSwitches :: Algebraic -> Poly Rational -> Algebraic -> Property
 propCriticalSwitches low p high = degree p > 0 && low < high ==> within 5000000 $ property $ correctSwitches $ map snd criticals
   where
-    criticals = criticalPointsInPiece low p high
+    criticals = handleUncertain $ criticalPointsInPiece low p high
 
 correctSwitches :: [Critical] -> Bool
 correctSwitches [] = True
-correctSwitches (Saddle : xs) = correctSwitches xs
-correctSwitches (extreme : xs) = case xs' of
-  []            -> True
-  (next : xs'') -> (extreme /= next) && correctSwitches (next : xs'')
-  where
-    xs' = dropWhile (== Saddle) xs
+correctSwitches (extreme : xs) = case xs of
+  []           -> True
+  (next : xs') -> (extreme /= next) && correctSwitches (next : xs')
 
 newtype CritInput = CritInput (Poly Rational)
   deriving (Show)
@@ -265,7 +263,7 @@ instance Arbitrary CritInput where
 possibleCrits :: Int -> [[Critical]]
 possibleCrits 1 = [[]]
 possibleCrits 2 = [[Minimum], [Maximum]]
-possibleCrits 3 = [[Saddle], [Minimum, Maximum]]
+possibleCrits 3 = [[], [Minimum, Maximum]]
 possibleCrits _ = error "Not yet implemented"
 
 propKnownCrits :: CritInput -> Property
@@ -273,4 +271,4 @@ propKnownCrits (CritInput p) = deg > 0 ==> any (crits `isInfixOf`) possible
   where
     deg = degree p
     possible = possibleCrits deg
-    crits = map snd $ criticalPointsInPiece (Rational (-999999999)) p (Rational 999999999)
+    crits = map snd $ handleUncertain $ criticalPointsInPiece (Rational (-999999999)) p (Rational 999999999)
