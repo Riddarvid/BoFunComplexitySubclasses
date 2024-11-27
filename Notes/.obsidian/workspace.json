@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Admin/TODO för veckan.md",
+                "file": "Admin/Frågor till nästa möte.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TODO för veckan"
+              "title": "Frågor till nästa möte"
             }
           }
         ]
@@ -164,12 +164,13 @@
   },
   "active": "71e7181bed081195",
   "lastOpenFiles": [
-    "Admin/Frågor till nästa möte.md",
-    "Admin/TODO Report.md",
-    "Admin/Log.md",
     "Admin/Plan sista veckorna.md",
+    "Admin/Frågor till nästa möte.md",
+    "General knowledge/Saker att ta med sig från Julias thesis.md",
     "Admin/TODO generell.md",
     "Admin/TODO för veckan.md",
+    "Admin/TODO Report.md",
+    "Admin/Log.md",
     "General knowledge/How to write a great report.md",
     "Report/Storyboard.md",
     "General knowledge/Texter för vår egen förståelse/Vår förståelse av PWs.md",
@@ -193,7 +194,6 @@
     "Results/Data/Benchmark comparisons - old.md",
     "Exploration of classes/Egenskaper hos boolska funktioner.md",
     "General knowledge/Exploration of classes/Analysis of classes.md",
-    "Results/Data/Benchmarking - old.md",
     "Results/Data",
     "Results/What to improve",
     "General knowledge",

@@ -2,11 +2,10 @@
 ## Kod
 
 - Hög prio
-	- Undersök criterion, sätt upp de strukturer vi behöver
+	- Sätt upp de mät-strukturer vi behöver
 	- Sista cleanup innan vi lämnar in
 - Låg prio, kan skippas
 	- Pretty printing av funktioner
-
 ## Mätningar
 
 - Bestäm vad vi vill mäta och presentera i resultatdelen, även hur vi vill presentera det.

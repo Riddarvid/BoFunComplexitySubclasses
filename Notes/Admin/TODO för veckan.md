@@ -1,5 +1,3 @@
-- Undersök criterion
-- Låg prio: Exponera vissa konstruktorer som patterns
 
 ## Homework typ
 
