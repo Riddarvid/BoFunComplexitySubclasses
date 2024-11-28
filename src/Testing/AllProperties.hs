@@ -3,7 +3,8 @@ module Testing.AllProperties (testAll) where
 
 import           Test.QuickCheck    (Args (maxSize, maxSuccess), Testable,
                                      quickCheckWith, stdArgs)
-import           Testing.Properties (propComputeMin'Correct,
+import           Testing.Properties (propAlgebraicTranslation,
+                                     propComputeMin'Correct,
                                      propComputeMinCorrect, propConversionSymm,
                                      propCriticalSwitches,
                                      propFlipInputComplexity,
@@ -22,6 +23,7 @@ stdArgs' = stdArgs{maxSuccess = 200}
 allProps :: [Check]
 allProps = [
   Check propRationalSign stdArgs'{maxSize = 5},
+  Check propAlgebraicTranslation stdArgs'{maxSize = 7},
   Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
   Check propNormalizedComplexity stdArgs'{maxSize = 5},
   Check propRepsCorrect stdArgs'{maxSize = 5},

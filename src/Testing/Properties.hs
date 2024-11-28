@@ -14,6 +14,7 @@ module Testing.Properties (
   propRepsCorrect,
   propIterRepsCorrect,
   propRationalSign,
+  propAlgebraicTranslation,
   propMaxNumCritical,
   propCriticalSwitches,
   propKnownCrits
@@ -236,6 +237,15 @@ propRationalSign r p = s1 === s2
     x = toAlgebraic r
     s1 = signAtRational r p
     s2 = signAtAlgebraic x p
+
+propAlgebraicTranslation :: Algebraic -> Rational -> Property
+propAlgebraicTranslation a r = case compare r 0 of
+  EQ -> res === EQ
+  LT -> res === LT
+  GT -> res === GT
+  where
+    a' = translateRational a r
+    res = compare a' a
 
 ----------------- Critical points ------------------------------
 
