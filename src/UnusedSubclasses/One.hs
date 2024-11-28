@@ -5,7 +5,7 @@ module UnusedSubclasses.One (
   One,
   mkOne
 ) where
-import           BoFun                 (BoFun (..))
+import           Complexity.BoFun                 (BoFun (..))
 import           Data.Function.Memoize (deriveMemoizable)
 
 -- Type representing the class of function where exactly one input gives the output 1.

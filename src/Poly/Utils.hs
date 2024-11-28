@@ -10,8 +10,7 @@ module Poly.Utils (
 import           DSLsofMath.Algebra   (AddGroup, Additive (zero), MulGroup,
                                        Multiplicative, product, (-))
 import           DSLsofMath.PSDS      (Poly, degree, evalP, isZero, yun)
-import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly,
-                                       Separation, linearizePW, pieces)
+import           Poly.PiecewisePoly   (BothPW (BothPW), PiecewisePoly, pieces)
 import           Poly.PolyCmp         (numRoots)
 import           Poly.PolynomialExtra (scaleInput, translateInput)
 import           Prelude              hiding (product, (+), (-))
@@ -20,12 +19,7 @@ findDegreeBothPW :: (Eq a, AddGroup a, MulGroup a) => BothPW a -> Int
 findDegreeBothPW (BothPW pw _) = findDegreePW pw
 
 findDegreePW :: (Eq a, AddGroup a, MulGroup a) => PiecewisePoly a -> Int
-findDegreePW pw = maximum $ map degree $ extractPolys $ linearizePW pw
-
-extractPolys :: [Either (Poly a) (Separation b)] -> [Poly a]
-extractPolys []               = []
-extractPolys (Left poly : xs) = poly : extractPolys xs
-extractPolys (_ : xs)         = extractPolys xs
+findDegreePW pw = maximum $ map degree $ pieces pw
 
 minDegree :: (Eq a, AddGroup a, MulGroup a) => [PiecewisePoly a] -> Int
 minDegree xs = minimum $ map findDegreePW xs
@@ -44,7 +38,7 @@ numRootsInInterval p _
 numRootsInInterval p (low, high) = numRoots p'
   where
     diff = high - low
-    p' = removeDoubleRoots $ scaleInput diff $ translateInput low p
+    p' = scaleInput diff $ translateInput low p
 
 -- Creates a polynomial with only single roots. The new polynomial has roots in exactly the points
 -- where the input polynomial has roots. No other guarantees are given for the new polynomial.

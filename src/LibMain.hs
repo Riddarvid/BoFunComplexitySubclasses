@@ -4,8 +4,6 @@
 module LibMain (
   main
 ) where
-import           Algorithm.GenAlg               (piecewiseBoth)
-import           Algorithm.GenAlgPW             (computeMin)
 import           BDD.BDD                        (BDDa, normalizeBDD)
 import           Control.DeepSeq                (force)
 import           Control.Exception              (evaluate)
@@ -16,17 +14,19 @@ import           Data.DecisionDiagram.BDD       (AscOrder, BDD, notB, var,
 import           Algebraic                      (AlgRep (AlgRep),
                                                  Algebraic (Algebraic, Rational),
                                                  translateRational)
+import           Complexity.Piecewise           (complexity,
+                                                 complexityAndAlgorithms)
 import           Data.Ratio                     ((%))
 import           DSLsofMath.Algebra             (AddGroup, MulGroup)
 import           DSLsofMath.PSDS                (Poly (P))
-import           Exploration.Comparisons        (mainBenchMaj,
-                                                 measureTimeComputeMin)
 import           Exploration.Critical           (Critical (Maximum),
-                                                 CriticalPoint,
+                                                 CriticalPoint, critcalPointsPW,
                                                  criticalPointsInPiece,
-                                                 findCritcalPointsPW,
-                                                 handleUncertain)
+                                                 determineUncertain)
 import           Exploration.Filters            (criticalPred)
+import           Exploration.Measurements       (measureTimePiecewiseComplexity)
+import           Exploration.PrettyPrinting     (PrettyBoFun (prettyPrint),
+                                                 desmosPrintPW)
 import           Poly.PiecewisePoly             (BothPW (BothPW), PiecewisePoly,
                                                  printPW)
 import           Poly.PolynomialExtra           (translateInput)
@@ -39,8 +39,6 @@ import           Subclasses.Lifted              ()
 import qualified Subclasses.Threshold           as Thresh
 import           Test.QuickCheck                (Arbitrary (arbitrary),
                                                  generate)
-import           Testing.PrettyPrinting         (PrettyBoFun (prettyPrint),
-                                                 desmosPrintPW)
 
 main :: IO ()
 main = do
@@ -56,17 +54,17 @@ main11 = print (and12 == and23, and12 == and23')
     (and23', _) = normalizeBDD and23
 
 main12 :: IO ()
-main12 = void $ evaluate $ force $ computeMin (Thresh.majFun 301)
+main12 = void $ evaluate $ force $ complexity (Thresh.majFun 301)
 
 main10 :: IO ()
-main10 = measureTimeComputeMin (Thresh.majFun 301) >>= print
+main10 = measureTimePiecewiseComplexity (Thresh.majFun 301) >>= print
 
 main9 :: IO ()
 main9 = do
   gf <- generate arbitrary :: IO GenFun
   let gf' = flipInputsGenFun gf
-  desmosPrintPW $ computeMin gf
-  desmosPrintPW $ computeMin gf'
+  desmosPrintPW $ complexity gf
+  desmosPrintPW $ complexity gf'
 
 tOR :: BDDa
 tOR = var 1 .||. var 2
@@ -74,19 +72,14 @@ tOR = var 1 .||. var 2
 tNAND :: BDDa
 tNAND = notB (var 1 .&&. var 2)
 
-main6 :: IO ()
-main6 = do
-  diffs <- mainBenchMaj 11
-  mapM_ print diffs
-
 main5 :: IO ()
-main5 = void $ evaluate $ force $ computeMin $ Gen.majFun 11
+main5 = void $ evaluate $ force $ complexity $ Gen.majFun 11
 
 main2 :: IO ()
 main2 = do
   let allFuns = allGenFuns 4
-  let comps = map (\f -> (f, computeMin f)) allFuns
-  let maxMaxima = maximum $ map (countMaxima . findCritcalPointsPW . snd) comps
+  let comps = map (\f -> (f, complexity f)) allFuns
+  let maxMaxima = maximum $ map (countMaxima . critcalPointsPW . snd) comps
   putStrLn ("Max maxima: " ++ show maxMaxima)
   let withMaxMaxima = filter (\(_, c) -> criticalPred (nMax maxMaxima) c) comps
   mapM_ (\(f, c) -> print f >> printPW c) withMaxMaxima
@@ -109,7 +102,7 @@ toBoth :: (PiecewisePoly a -> b) -> (BothPW a -> b)
 toBoth f (BothPW pw _) = f pw
 
 genAllBoths :: (Show a, AddGroup a, MulGroup a, Ord a) => Int -> [BothPW a]
-genAllBoths n = map piecewiseBoth (allGenFuns n :: [GenFun])
+genAllBoths n = map complexityAndAlgorithms (allGenFuns n :: [GenFun])
 
 --------------- test ------------------------
 

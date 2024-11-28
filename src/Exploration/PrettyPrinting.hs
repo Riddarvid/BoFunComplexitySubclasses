@@ -1,7 +1,7 @@
 {-# LANGUAGE ConstraintKinds      #-}
 {-# LANGUAGE RebindableSyntax     #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-module Testing.PrettyPrinting (
+module Exploration.PrettyPrinting (
   desmosPrintPW,
   desmosShowPW,
   desmosShowP,

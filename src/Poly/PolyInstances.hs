@@ -3,7 +3,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE InstanceSigs          #-}
 module Poly.PolyInstances () where
-import           Algorithm.Algor           (Algor (..))
+import           Complexity.Algor          (Algor (..))
 import           DSLsofMath.Algebra        (Additive (zero, (+)),
                                             Multiplicative (one, (*)), Ring,
                                             (-))
@@ -13,7 +13,7 @@ import           Prelude                   hiding ((*), (+), (-))
 import           Test.QuickCheck           (Arbitrary (arbitrary))
 import           Test.QuickCheck.Arbitrary (Arbitrary (shrink))
 import           Test.QuickCheck.Gen       (Gen)
-import           Thin                      (Thin (cmp))
+import           Complexity.Thin           (Thin (cmp))
 
 
 instance OrdField a => Thin (Poly a) where

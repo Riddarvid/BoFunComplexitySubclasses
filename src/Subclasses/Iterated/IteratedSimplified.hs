@@ -2,9 +2,12 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances  #-}
+
 -- Simplified version of Iterated used in the report.
+-- TODO-NEW make sure that the latest version is in the report
+
 module Subclasses.Iterated.IteratedSimplified () where
-import           BoFun (BoFun (..))
+import           Complexity.BoFun (BoFun (..))
 
 type SubFun f = f (Iterated f)
 

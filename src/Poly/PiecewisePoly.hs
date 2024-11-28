@@ -30,7 +30,7 @@ import qualified Prelude
 import           DSLsofMath.Algebra
 import           DSLsofMath.PSDS      (Poly (unP), comP, degree, evalP)
 
-import           Algorithm.Algor      (DecTree)
+import           Complexity.Algor     (DecTree)
 import           Control.DeepSeq      (NFData)
 import           Data.Either          (lefts)
 import           GHC.Generics         (Generic)
@@ -655,6 +655,7 @@ instance (AddGroup a, MulGroup a, Eq a, Show a) => Show (BothPW a) where
   show :: BothPW a -> String
   show (BothPW pw lookupPolys) = showPWAny pw ++ "\n" ++ unlines
     (map (\(poly, al) -> show poly ++ ":\t\t" ++ show al) lookupPolys)
+
 
 pieces :: (AddGroup a, MulGroup a, Eq a) => PiecewisePoly a -> [Poly a]
 pieces = lefts . linearizePW

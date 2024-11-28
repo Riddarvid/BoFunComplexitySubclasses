@@ -7,7 +7,7 @@ module Exploration.Filters (
 ) where
 import           Control.Arrow        ((>>>))
 import           DSLsofMath.Algebra   (AddGroup, MulGroup)
-import           Exploration.Critical (CriticalPoint, findCritcalPointsPW)
+import           Exploration.Critical (CriticalPoint, critcalPointsPW)
 import           Poly.PiecewisePoly   (PiecewisePoly)
 import           Poly.PolyInstances   ()
 import           Poly.Utils           (countPieces, findDegreePW)
@@ -20,4 +20,4 @@ degreePred :: (Eq a, AddGroup a, MulGroup a) => (Int -> Bool) -> (PiecewisePoly 
 degreePred p = findDegreePW >>> p
 
 criticalPred :: ([CriticalPoint] -> Bool) -> (PiecewisePoly Rational -> Bool)
-criticalPred p = findCritcalPointsPW >>> p
+criticalPred p = critcalPointsPW >>> p

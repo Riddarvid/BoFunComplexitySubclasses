@@ -1,5 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
-module Thin (
+module Complexity.Thin (
   Thin(..)
 ) where
 

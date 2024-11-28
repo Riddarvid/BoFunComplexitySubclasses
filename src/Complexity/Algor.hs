@@ -1,5 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
-module Algorithm.Algor (
+module Complexity.Algor (
   Algor(..),
   DecTree(..)
 ) where

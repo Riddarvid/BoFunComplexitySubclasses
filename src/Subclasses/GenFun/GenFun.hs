@@ -20,19 +20,18 @@ module Subclasses.GenFun.GenFun (
   iteratedFun,
   eval,
   generateGenFun,
-  toCanonicForm,
   flipInputsGenFun
 ) where
-import           Algorithm.Algor           (Algor (..))
 import           Arity                     (ArbitraryArity (arbitraryArity))
 import           BDD.BDD                   (BDDa, allNAryBDDs,
                                             bddFromOutputVector)
 import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
-import           BoFun                     (BoFun (..), shrinkFun)
+import           Complexity.Algor          (Algor (..))
+import           Complexity.BoFun          (BoFun (..), shrinkFun)
 import           Control.DeepSeq           (NFData)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), evaluate, false,
-                                            notB, restrict, support, true)
+import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
+                                            restrict, support, true)
 import           Data.Function.Memoize     (deriveMemoizable)
 import           Data.Hashable             (Hashable)
 import qualified Data.IntSet               as IS
@@ -138,7 +137,7 @@ allGenFunReps = (map allGenFunReps' [0 ..] !!)
 allGenFuns :: Int -> [GenFun]
 allGenFuns n = map (`GenFun` n) $ allNAryBDDs n
 
---------------- Exported ----------------------------
+--------------- Examples ----------------------------
 
 majFun :: Int -> GenFun
 majFun n = GenFun (BDD.majFun n) n
@@ -164,18 +163,7 @@ eval gf input = isConst $
   where
     input' = zip [1..] input
 
+---------------- Utils ------------------------------------
+
 flipInputsGenFun :: GenFun -> GenFun
 flipInputsGenFun (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n
-
----------------------------------------------------------
-
--- We have chosen to call a BDD canonical if its leftmost path reaches 0.
--- This is equivalent with the output for an input consisting only of 0s being 0.
--- Other definitions might be better.
-toCanonicForm :: GenFun -> GenFun
-toCanonicForm gf@(GenFun bdd n)
-  | inCanonicForm bdd = gf
-  | otherwise = GenFun (notB bdd) n
-
-inCanonicForm :: BDD AscOrder -> Bool
-inCanonicForm = not . evaluate (const False)

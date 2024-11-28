@@ -14,22 +14,22 @@ module Subclasses.Iterated.Iterated (
   Iterated,
   iterateFun
 ) where
-import           Arity                  (AllArity (allArity),
-                                         ArbitraryArity (arbitraryArity))
-import           BoFun                  (BoFun (..), Constable (mkConst))
-import           Control.DeepSeq        (NFData)
-import           Control.Enumerable     (Enumerable, Shared, Sized, Typeable,
-                                         c0, c1, datatype)
-import           Data.Hashable          (Hashable)
-import           Data.Set               (Set)
-import qualified Data.Set               as Set
-import qualified DSLsofMath.Algebra     as A
-import           GHC.Generics           (Generic)
-import           Subclasses.Lifted      (Lifted (Lifted))
-import           Test.Feat              (enumerate)
-import           Test.QuickCheck        (Arbitrary (arbitrary), Gen, chooseInt,
-                                         oneof, sized)
-import           Testing.PrettyPrinting (PrettyBoFun (prettyShow))
+import           Arity                      (AllArity (allArity),
+                                             ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun           (BoFun (..), Constable (mkConst))
+import           Control.DeepSeq            (NFData)
+import           Control.Enumerable         (Enumerable, Shared, Sized,
+                                             Typeable, c0, c1, datatype)
+import           Data.Hashable              (Hashable)
+import           Data.Set                   (Set)
+import qualified Data.Set                   as Set
+import qualified DSLsofMath.Algebra         as A
+import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
+import           GHC.Generics               (Generic)
+import           Subclasses.Lifted          (Lifted (Lifted))
+import           Test.Feat                  (enumerate)
+import           Test.QuickCheck            (Arbitrary (arbitrary), Gen,
+                                             chooseInt, oneof, sized)
 
 type SubFun f = f (Iterated' f)
 

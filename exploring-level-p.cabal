@@ -25,23 +25,25 @@ source-repository head
 library
   exposed-modules:
       Algebraic
-      Algorithm.Algor
-      Algorithm.GenAlg
-      Algorithm.GenAlgPW
       Archived.Algebraic
+      Archived.Counting
       Archived.MatrixBridge
       Arity
       BDD.BDD
       BDD.BDDInstances
-      BoFun
+      Complexity.Algor
+      Complexity.BoFun
+      Complexity.GenAlg
+      Complexity.Piecewise
+      Complexity.Thin
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS
-      Exploration.Comparisons
-      Exploration.Counting
       Exploration.Critical
       Exploration.Eval
       Exploration.Filters
+      Exploration.Measurements
+      Exploration.PrettyPrinting
       Exploration.Translations
       LibMain
       Poly.PiecewisePoly
@@ -61,10 +63,7 @@ library
       Subclasses.Symmetric
       Subclasses.Threshold
       Testing.AllProperties
-      Testing.PrettyPrinting
       Testing.Properties
-      Thin
-      Timing
       UnusedSubclasses.Id
       UnusedSubclasses.One
       Utils

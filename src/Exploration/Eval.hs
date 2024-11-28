@@ -1,8 +1,11 @@
+-- Code for evaluating Symmetric, as well as non-symmetric functions.
+-- Assumes that variable ordering is consistent.
+
 module Exploration.Eval (
   evalSymmetric,
   evalNonSymmetric
 ) where
-import           BoFun (BoFun (..))
+import           Complexity.BoFun (BoFun (..))
 
 evalNonSymmetric :: BoFun f i => f -> [Bool] -> Maybe Bool
 evalNonSymmetric f input = case isConst f of

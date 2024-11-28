@@ -26,15 +26,15 @@ import           Prelude                      hiding (negate, sum, (+), (-))
 import           DSLsofMath.Algebra           (Additive (..), (-))
 
 import           Arity                        (ArbitraryArity (arbitraryArity))
-import           BoFun                        (BoFun (..), Constable (mkConst))
+import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
+import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
 import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated),
                                                iterId, iterateFun)
 import           Subclasses.Lifted            (Lifted (Lifted))
 import           Test.QuickCheck              (chooseInt)
 import           Test.QuickCheck.Gen          (Gen)
-import           Testing.PrettyPrinting       (PrettyBoFun (prettyShow))
 import           Utils                        (Square, naturals, partitions)
 
 --------------- Threshold ----------------------------------------
@@ -43,7 +43,6 @@ import           Utils                        (Square, naturals, partitions)
 -- Number of inputs needed for 'True' and 'False' result, respectively.
 -- The sum of these thresholds equals the number of inputs plus one.
 -- Each threshold is non-negative.
--- TODO-NEW: Normalized version, that is, only (1,0) and (0,1) are allowed as const funs.
 newtype Threshold = Threshold (Square Int)
   deriving (Show, Eq, Ord, Generic)
 
@@ -138,7 +137,6 @@ iteratedMajFun bits = iterateFun bits (ThresholdFun' $ majFun bits)
 
 -------------- Generation of ITFs ---------------------------------------
 
--- TODO-NEW: These instances can probably be generalized and moved to Iterated
 instance ArbitraryArity ThresholdFun where
   arbitraryArity :: Int -> Gen ThresholdFun
   arbitraryArity arity = ThresholdFun <$> generateThreshold arity
@@ -164,7 +162,6 @@ generateThreshold arity = do
 --     where
 --       go nSubFuns = pay $ enumerateThresholdFun nSubFuns <|> go (nSubFuns + 1)
 
--- -- TODO-NEW: Tydligare namn
 -- enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (LiftedThresholdFun g)
 -- enumerateThresholdFun nSubFuns = toLifted <$> tupleF <*> multisetF
 --   where

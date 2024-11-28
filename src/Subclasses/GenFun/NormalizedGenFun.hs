@@ -11,7 +11,7 @@ module Subclasses.GenFun.NormalizedGenFun (
 ) where
 import           Arity                    (ArbitraryArity (arbitraryArity))
 import           BDD.BDD                  (normalizeBDD)
-import           BoFun                    (BoFun (..))
+import           Complexity.BoFun         (BoFun (..))
 import           Control.DeepSeq          (NFData)
 import           Data.DecisionDiagram.BDD (AscOrder, BDD)
 import           Data.Function.Memoize    (deriveMemoizable)

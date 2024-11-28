@@ -15,7 +15,7 @@ module Subclasses.Gates (
   notG,
   var
 ) where
-import           BoFun                        (BoFun (..), Constable (mkConst))
+import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
 import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
 import           GHC.Generics                 (Generic)

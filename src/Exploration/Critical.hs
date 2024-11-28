@@ -3,8 +3,9 @@ module Exploration.Critical (
   Critical(..),
   Location(..),
   CriticalPoint,
-  handleUncertain,
-  findCritcalPointsPW,
+  UncertainCriticalPoint(..),
+  determineUncertain,
+  critcalPointsPW,
   criticalPointBetweenPieces,
   criticalPointsInPiece
 ) where
@@ -54,20 +55,21 @@ instance Ord Location where
 -- 3) The endpoints of [0, 1]
 -- findMidPoints finds the critical points of type 1 & 2.
 -- addEndPoints handles 3.
--- Lastly, handleUncertain takes care of identifying whether constant pieces
+-- Lastly, determineUncertain takes care of identifying whether constant pieces
 -- actually represent an infinite number of maxima/minima or not.
-findCritcalPointsPW :: PiecewisePoly Rational -> [CriticalPoint]
-findCritcalPointsPW pw = handleUncertain points
+critcalPointsPW :: PiecewisePoly Rational -> [CriticalPoint]
+critcalPointsPW pw = determineUncertain points
   where
     points = addEndPoints (pieces pw) midPoints
     midPoints = findMidPoints pwList
     pwList = map (fmap fromPWSeparation) $ linearizePW pw
 
 ------------- Conversion from UncertainCriticalPoints to CriticalPoints ----------
+-- TODO-NEW explain this process
 
-handleUncertain :: [UncertainCriticalPoint] -> [CriticalPoint]
-handleUncertain [URange start end _] = [(Range start end, Maximum), (Range start end, Minimum)]
-handleUncertain uPoints = sort (ranges ++ points)
+determineUncertain :: [UncertainCriticalPoint] -> [CriticalPoint]
+determineUncertain [URange start end _] = [(Range start end, Maximum), (Range start end, Minimum)]
+determineUncertain uPoints = sort (ranges ++ points)
   where
     ranges = handleRanges uPoints
     points = handlePoints uPoints
@@ -94,7 +96,6 @@ findStartCriticalType (r@(URange _ _ v1) : URange _ _ v2 : xs) = case compare v1
   EQ -> findStartCriticalType (r : xs)
 findStartCriticalType _ = error "Should not happen"
 
--- Antagande: Om ett element ligger först i listan är det en extrempunkt
 handleRanges' :: Critical -> [UncertainCriticalPoint] -> [CriticalPoint]
 handleRanges' _ [] = []
 handleRanges' prev [URange start end _] = [(Range start end, oppositeType prev)]
@@ -116,10 +117,6 @@ handleRanges' prev (URange start end _ : p@(UPoint _ t) : xs) = case (prev, t) o
   where
     rest = handleRanges' prev (p : xs)
 
-oppositeType :: Critical -> Critical
-oppositeType Maximum = Minimum
-oppositeType Minimum = Maximum
-
 ---------- Identifying critical points at the endpoints of [0, 1] ----------------
 
 addEndPoints :: [Poly Rational] -> [UncertainCriticalPoint] -> [UncertainCriticalPoint]
@@ -132,7 +129,6 @@ addEndPoints ps [] = case compare zeroVal oneVal of
     oneVal = evalP (last ps) 1
 addEndPoints _ xs = addFirst $ addLast xs
 
--- TODO-NEW fix
 addFirst :: [UncertainCriticalPoint] -> [UncertainCriticalPoint]
 addFirst [] = error "Should not happen"
 addFirst rest@(x : _) = case x of
@@ -152,6 +148,7 @@ addLast xs = case last xs of
     endPoint = Rational 1
 
 ---------- Identifying critical points in or between pieces -------------
+-- TODO-NEW explain
 
 findMidPoints :: [Either (Poly Rational) Algebraic] -> [UncertainCriticalPoint]
 findMidPoints [] = []
@@ -168,7 +165,6 @@ findMidPoints xs = error ("Should not happen" ++ show xs)
 
 ------------ Between Polynomials ------------------------
 
--- It also makes sense to simply return a Saddle in the case of a 0-derivative
 criticalPointBetweenPieces :: Poly Rational -> Algebraic -> Poly Rational -> Maybe UncertainCriticalPoint
 criticalPointBetweenPieces p1 s p2 = do
   c <- criticalType' s1 s2
@@ -189,6 +185,19 @@ criticalPointsInPiece a1 p a2 = case constP p of
   where
     (r1, r2) = findRationalEndpoints a1 p a2
 
+criticalPointsInPiece' :: Rational -> Poly Rational -> Rational -> [UncertainCriticalPoint]
+criticalPointsInPiece' _low p = go _low
+  where
+    p' = derP p
+    go low high = case numRootsInInterval p' (low, high) of
+      0 -> []
+      1 -> case criticalType low p' high of
+        Nothing -> []
+        Just t  -> [UPoint (Algebraic $ AlgRep p' (low, high)) t]
+      _ -> go low mid ++ go mid high
+      where
+        mid = (low + high) / 2
+
 ------------------ Finding rational endpoints -------------------
 
 -- This range is exclusive
@@ -204,7 +213,6 @@ findBoth p' a b
 
 findBoth' :: Poly Rational -> Algebraic -> Algebraic -> (Rational, Rational)
 findBoth' p' a b
-  -- | traceShow (numSmall, numLarge, diff) False = undefined
   | numLarge - numSmall == diff = small
   | otherwise = findBoth' p' a' b'
   where
@@ -237,23 +245,11 @@ expectedDiff p' a = case a of
   Rational _  -> 0
   Algebraic _ -> if signAtAlgebraic a p' == Zero then 1 else 0
 
----------------- The actual counting ----------------------
-
-criticalPointsInPiece' :: Rational -> Poly Rational -> Rational -> [UncertainCriticalPoint]
-criticalPointsInPiece' _low p = go _low
-  where
-    p' = derP p
-    go low high = case numRootsInInterval p' (low, high) of
-      0 -> []
-      1 -> case criticalType low p' high of
-        Nothing -> []
-        Just t  -> [UPoint (Algebraic $ AlgRep p' (low, high)) t]
-      _ -> go low mid ++ go mid high
-      where
-        mid = (low + high) / 2
-
-
 -------------- Utils ----------------------
+
+oppositeType :: Critical -> Critical
+oppositeType Maximum = Minimum
+oppositeType Minimum = Maximum
 
 -- Assumes only one root in (low, high)
 criticalType :: Rational -> Poly Rational -> Rational -> Maybe Critical
@@ -286,10 +282,3 @@ signDirection dir low p' high
   where
     n = numRootsInInterval p' (low, high)
     mid = (low + high) / 2
-
--- Problematic edge cases:
--- Derivative 0 - Causes problems within a piece, we need to give a range. We also
--- don't know whether this represents a maximum or minimum point until we consider
--- the neighboring pieces.
--- Also causes problems at the intersection, if one polynomial is constant, then it
--- represents a range of points, but only if the neighbors are of the correct type.

@@ -11,16 +11,17 @@
 module Subclasses.Lifted (
   Lifted(Lifted),
 ) where
-import           Arity                  (ArbitraryArity (arbitraryArity))
-import           BoFun                  (BoFun (..))
-import           Control.Arrow          ((>>>))
-import           Control.DeepSeq        (NFData)
-import           Data.Function.Memoize  (Memoizable, memoize)
-import           Data.Maybe             (fromJust)
-import           GHC.Generics           (Generic)
-import           Test.QuickCheck        (Gen)
-import           Testing.PrettyPrinting (PrettyBoFun (prettyShow))
-import           Utils                  (generatePartition, indent, naturals)
+import           Arity                      (ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun           (BoFun (..))
+import           Control.Arrow              ((>>>))
+import           Control.DeepSeq            (NFData)
+import           Data.Function.Memoize      (Memoizable, memoize)
+import           Data.Maybe                 (fromJust)
+import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
+import           GHC.Generics               (Generic)
+import           Test.QuickCheck            (Gen)
+import           Utils                      (generatePartition, indent,
+                                             naturals)
 
 -- Invariant: g only contains non-const functions
 data Lifted f g = Lifted' {
@@ -65,12 +66,6 @@ firstConst [] = Nothing
 firstConst ((i, v) : vs) = case v of
   Nothing -> firstConst vs
   Just v' -> Just (i, v')
-
-
-
--- TODO-NEW Normalized version where setBit, in the case that the entire function becomes
--- constant, replaces the function with a 0-ary const function. Requires Constable.
--- newtype NormalizedLifted f g = NL (Lifted f g)
 
 instance (BoFun f Int, BoFun g j) => BoFun (Lifted f g) (Int, j) where
   isConst :: Lifted f g -> Maybe Bool
@@ -120,7 +115,6 @@ generateSubFuns totalArity = do
 
 -- instance (NFData f, NFData g) => NFData (LiftedSymmetric f g)
 
--- -- TODO-NEW handle constant g's
 -- liftFunSymm :: f -> MultiSet g -> LiftedSymmetric f g
 -- liftFunSymm = LiftedSymmetric
 -- -- Note that even though the lifted function is symmetric, and therefore has variable type (),

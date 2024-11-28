@@ -2,17 +2,24 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
+
+-- We have chosen to call a BDD canonical if its leftmost path reaches 0.
+-- This is equivalent with the output for an input consisting only of 0s being 0.
+-- Other definitions might be better.
+
 module Subclasses.GenFun.CanonicalGenFun (
   CanonicalGenFun,
-  mkCGF
+  mkCGF,
+  toCanonicForm
 ) where
 import           Arity                    (ArbitraryArity (arbitraryArity))
-import           BoFun                    (BoFun (..))
+import           Complexity.BoFun         (BoFun (..))
 import           Control.DeepSeq          (NFData)
+import           Data.DecisionDiagram.BDD (AscOrder, BDD, evaluate, notB)
 import           Data.Function.Memoize    (deriveMemoizable)
 import           Data.Hashable            (Hashable)
 import           GHC.Generics             (Generic)
-import           Subclasses.GenFun.GenFun (GenFun, toCanonicForm)
+import           Subclasses.GenFun.GenFun (GenFun (GenFun))
 import           Test.QuickCheck          (Gen)
 
 newtype CanonicalGenFun = CanonicalGenFun GenFun
@@ -37,6 +44,14 @@ instance BoFun CanonicalGenFun Int where
   variables = unlift variables
   setBit :: (Int, Bool) -> CanonicalGenFun -> CanonicalGenFun
   setBit v = CanonicalGenFun . toCanonicForm . unlift (setBit v)
+
+toCanonicForm :: GenFun -> GenFun
+toCanonicForm gf@(GenFun bdd n)
+  | inCanonicForm bdd = gf
+  | otherwise = GenFun (notB bdd) n
+
+inCanonicForm :: BDD AscOrder -> Bool
+inCanonicForm = not . evaluate (const False)
 
 -- We simply use the definition from GenFun, except we flip the result if needed.
 instance ArbitraryArity CanonicalGenFun where

@@ -17,7 +17,7 @@ module Subclasses.Symmetric (
 ) where
 
 import           Arity                        (ArbitraryArity (arbitraryArity))
-import           BoFun                        (BoFun (..), Constable (mkConst))
+import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.Arrow                ((>>>))
 import           Control.DeepSeq              (NFData)
 import           Data.Foldable                (Foldable (toList))

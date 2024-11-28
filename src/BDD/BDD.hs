@@ -3,6 +3,7 @@ module BDD.BDD (
   BDDa,
   isConst,
   pick,
+  boolToBDD,
   bddFromOutputVector,
   majFun,
   iteratedFun,

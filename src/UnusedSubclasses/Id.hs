@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module UnusedSubclasses.Id () where
-import           BoFun (BoFun (..))
+import           Complexity.BoFun (BoFun (..))
 
 {-
 * Nothing represents the identity function.

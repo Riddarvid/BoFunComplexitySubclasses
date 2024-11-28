@@ -5,11 +5,10 @@
 {-# LANGUAGE FlexibleInstances     #-}
 module BDD.BDDInstances () where
 
-import           Algorithm.Algor          (Algor (..))
-import           BDD.BDD                  (pick)
+import           BDD.BDD                  (boolToBDD, pick)
+import           Complexity.Algor         (Algor (..))
 import           Control.DeepSeq          (NFData (rnf))
-import           Data.DecisionDiagram.BDD (BDD, ItemOrder, Sig, false, inSig,
-                                           outSig, true)
+import           Data.DecisionDiagram.BDD (BDD, ItemOrder, Sig, inSig, outSig)
 import           Data.Function.Memoize    (Memoizable (memoize),
                                            deriveMemoizable)
 
@@ -24,8 +23,7 @@ memoizeBF f = memoize (f . inSig) . outSig
 
 instance ItemOrder o => Algor (BDD o) where
   res :: Bool -> BDD o
-  res False = false
-  res True  = true
+  res = boolToBDD
   pic :: Int -> BDD o -> BDD o -> BDD o
   pic = pick
 

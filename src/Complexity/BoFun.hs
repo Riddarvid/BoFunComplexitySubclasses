@@ -3,7 +3,7 @@
 {-# LANGUAGE QuantifiedConstraints  #-}
 {-# LANGUAGE RankNTypes             #-}
 {-# LANGUAGE UndecidableInstances   #-}
-module BoFun (
+module Complexity.BoFun (
   BoFun(..),
   viewConst,
   outgoing,

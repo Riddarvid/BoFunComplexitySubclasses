@@ -1,5 +1,9 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant evaluate" #-}
+
+-- This module isn't currently used very much, but it could be a starting point
+-- for diving deeper into the topic.
+
 module Exploration.Translations (
   genToBasicSymmetricNaive,
   ngfToIteratedThresholdFun,
@@ -7,7 +11,7 @@ module Exploration.Translations (
   areEquivalent
 ) where
 import           BDD.BDD                            (pick)
-import           BoFun                              (BoFun (isConst, setBit, variables))
+import           Complexity.BoFun                   (BoFun (isConst, setBit, variables))
 import           Data.DecisionDiagram.BDD           (AscOrder, BDD, evaluate)
 import           Data.IntMap                        (IntMap)
 import qualified Data.IntMap                        as IM

@@ -7,12 +7,13 @@ module Subclasses.GenFun.NormalizedCanonicalGenFun (
   mkNCGF
 ) where
 import           Arity                              (ArbitraryArity (arbitraryArity))
-import           BoFun                              (BoFun (..))
+import           Complexity.BoFun                   (BoFun (..))
 import           Control.DeepSeq                    (NFData)
 import           Data.Function.Memoize              (deriveMemoizable)
 import           Data.Hashable                      (Hashable)
 import           GHC.Generics                       (Generic)
-import           Subclasses.GenFun.GenFun           (GenFun, toCanonicForm)
+import           Subclasses.GenFun.CanonicalGenFun  (toCanonicForm)
+import           Subclasses.GenFun.GenFun           (GenFun)
 import           Subclasses.GenFun.NormalizedGenFun (normalizeGenFun)
 import           Test.QuickCheck                    (Gen)
 

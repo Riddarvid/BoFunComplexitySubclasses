@@ -24,17 +24,18 @@ import           Algebraic                          (Algebraic (Rational),
                                                      signAtRational,
                                                      toAlgebraic,
                                                      translateRational)
-import           Algorithm.GenAlg                   (genAlgThinMemoPoly)
-import           Algorithm.GenAlgPW                 (computeMin, computeMin')
 import           BDD.BDDInstances                   ()
-import           BoFun                              (BoFun (variables))
+import           Complexity.BoFun                   (BoFun (variables))
+import           Complexity.GenAlg                  (genAlgThinMemoPoly)
+import           Complexity.Piecewise               (complexity,
+                                                     explicitComplexity)
 import           Data.List                          (isInfixOf, sort)
 import           Data.Ratio                         ((%))
 import qualified Data.Set                           as Set
 import           DSLsofMath.PSDS                    (Poly (P), degree)
 import           Exploration.Critical               (Critical (Maximum, Minimum),
                                                      criticalPointsInPiece,
-                                                     handleUncertain)
+                                                     determineUncertain)
 import           Exploration.Eval                   (evalNonSymmetric,
                                                      evalSymmetric)
 import           Exploration.Translations           (genToBasicSymmetricNaive)
@@ -101,13 +102,13 @@ propFlipOutputCorrect (GenFunAndInput gf input) = eval gf input =/= eval (notG g
 
 -- The complexity should not change when inverting the output
 propFlipOutputComplexity :: GenFun -> Property
-propFlipOutputComplexity gf = computeMin gf === computeMin (notG gf)
+propFlipOutputComplexity gf = complexity gf === complexity (notG gf)
 
 -- The complexity should be mirrored in x=1/2 when inverting the inputs
 propFlipInputComplexity :: GenFun -> Property
 propFlipInputComplexity gf = propIsMirrorPW (1 % 2)
-  (computeMin gf)
-  (computeMin (flipInputsGenFun gf))
+  (complexity gf)
+  (complexity (flipInputsGenFun gf))
 
 ------------------- Normalization ------------------------------------
 
@@ -123,20 +124,20 @@ propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
 
 -- Normalization should not affect the complexity of a GenFun
 propNormalizedComplexity :: GenFun -> Property
-propNormalizedComplexity gf = computeMin gf === computeMin (mkNGF gf)
+propNormalizedComplexity gf = complexity gf === complexity (mkNGF gf)
 
 -------------------- Algorithms ----------------------------------
 -- Properties comparing the correctness of the complexity algorithms
 
--- computeMin and genAlg should yield equivalent PWs for the same function
+-- complexity and genAlg should yield equivalent PWs for the same function
 propComputeMinCorrect :: GenFun -> Property
 propComputeMinCorrect gf =
-  pieces (computeMin gf) ===
+  pieces (complexity gf) ===
   pieces (minPWs $ map piecewiseFromPoly $ Set.toList $ genAlgThinMemoPoly gf)
 
--- computeMin and computeMin' should yield the same result for the same function
+-- complexity and explicitComplexity should yield the same result for the same function
 propComputeMin'Correct :: GenFun -> Property
-propComputeMin'Correct gf = computeMin gf === computeMin' gf
+propComputeMin'Correct gf = complexity gf === explicitComplexity gf
 
 ------------------- Conversions ----------------------------
 
@@ -223,9 +224,9 @@ propRepsComplexity (IMI (IterInput bits levels)) = conjoin
     thresh === gen
   ]
   where
-    gen = computeMin $ Gen.iteratedMajFun bits levels
-    symm = computeMin $ Symm.iteratedMajFun bits levels
-    thresh = computeMin $ Thresh.iteratedMajFun bits levels-}
+    gen = complexity $ Gen.iteratedMajFun bits levels
+    symm = complexity $ Symm.iteratedMajFun bits levels
+    thresh = complexity $ Thresh.iteratedMajFun bits levels-}
 
 ------------------ Algebraic numbers --------------------------------
 
@@ -271,7 +272,7 @@ propMaxNumCritical (CLI low p high) = property $ length criticals < degree p
 propCriticalSwitches :: CritLimitInput -> Property
 propCriticalSwitches (CLI low p high) = property $ correctSwitches $ map snd criticals
   where
-    criticals = handleUncertain $ criticalPointsInPiece low p high
+    criticals = determineUncertain $ criticalPointsInPiece low p high
 
 correctSwitches :: [Critical] -> Bool
 correctSwitches [] = True
@@ -304,4 +305,4 @@ propKnownCrits (CritInput p) = property $ any (crits `isInfixOf`) possible
   where
     deg = degree p
     possible = possibleCrits deg
-    crits = map snd $ handleUncertain $ criticalPointsInPiece (Rational (-999999999)) p (Rational 999999999)
+    crits = map snd $ determineUncertain $ criticalPointsInPiece (Rational (-999999999)) p (Rational 999999999)
