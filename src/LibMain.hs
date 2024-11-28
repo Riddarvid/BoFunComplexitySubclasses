@@ -13,15 +13,23 @@ import           Control.Monad                  (void)
 import           Data.DecisionDiagram.BDD       (AscOrder, BDD, notB, var,
                                                  (.&&.), (.||.))
 
+import           Algebraic                      (AlgRep (AlgRep),
+                                                 Algebraic (Algebraic, Rational),
+                                                 translateRational)
+import           Data.Ratio                     ((%))
 import           DSLsofMath.Algebra             (AddGroup, MulGroup)
+import           DSLsofMath.PSDS                (Poly (P))
 import           Exploration.Comparisons        (mainBenchMaj,
                                                  measureTimeComputeMin)
 import           Exploration.Critical           (Critical (Maximum),
                                                  CriticalPoint,
-                                                 findCritcalPointsPW)
+                                                 criticalPointsInPiece,
+                                                 findCritcalPointsPW,
+                                                 handleUncertain)
 import           Exploration.Filters            (criticalPred)
 import           Poly.PiecewisePoly             (BothPW (BothPW), PiecewisePoly,
                                                  printPW)
+import           Poly.PolynomialExtra           (translateInput)
 import           Prelude                        hiding ((*), (+))
 import qualified Subclasses.GenFun.GenFun       as Gen
 import           Subclasses.GenFun.GenFun       (GenFun (GenFun), allGenFuns,
@@ -35,8 +43,10 @@ import           Testing.PrettyPrinting         (PrettyBoFun (prettyPrint),
                                                  desmosPrintPW)
 
 main :: IO ()
-main = main2
-
+main = do
+  let a = Algebraic $ AlgRep (P [0, 1]) (-10, 10)
+  let b = Algebraic $ AlgRep (P [0, 1, 1]) (-10, 0)
+  print $ a == b
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

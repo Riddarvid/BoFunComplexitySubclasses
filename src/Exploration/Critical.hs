@@ -13,7 +13,7 @@ import           Algebraic          (AlgRep (AlgRep),
                                      fromPWSeparation, shrinkIntervalStep,
                                      signAtAlgebraic, signAtRational)
 import           Data.List          (sort)
-import           DSLsofMath.PSDS    (Poly (unP), constP, derP, evalP, isConstP)
+import           DSLsofMath.PSDS    (Poly, constP, derP, evalP)
 import           Poly.PiecewisePoly (PiecewisePoly, linearizePW, pieces)
 import           Poly.Utils         (numRootsInInterval)
 import           Utils              (Sign (..))
@@ -83,16 +83,16 @@ handlePoints (x : xs) = case x of
 handleRanges :: [UncertainCriticalPoint] -> [CriticalPoint]
 handleRanges xs = handleRanges' startSign xs
   where
-    startSign = findStartSign xs
+    startSign = findStartCriticalType xs
 
-findStartSign :: [UncertainCriticalPoint] -> Critical
-findStartSign (UPoint _ t : _)                = t
-findStartSign (URange {} : UPoint _ t : _) = oppositeType t
-findStartSign (r@(URange _ _ v1) : URange _ _ v2 : xs) = case compare v1 v2 of
+findStartCriticalType :: [UncertainCriticalPoint] -> Critical
+findStartCriticalType (UPoint _ t : _)                = t
+findStartCriticalType (URange {} : UPoint _ t : _) = oppositeType t
+findStartCriticalType (r@(URange _ _ v1) : URange _ _ v2 : xs) = case compare v1 v2 of
   LT -> Minimum
   GT -> Maximum
-  EQ -> findStartSign (r : xs)
-findStartSign _ = error "Should not happen"
+  EQ -> findStartCriticalType (r : xs)
+findStartCriticalType _ = error "Should not happen"
 
 -- Antagande: Om ett element ligger först i listan är det en extrempunkt
 handleRanges' :: Critical -> [UncertainCriticalPoint] -> [CriticalPoint]

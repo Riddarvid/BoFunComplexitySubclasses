@@ -10,22 +10,24 @@ module Algebraic (
   toAlgebraic,
   shrinkIntervalStep,
   signAtAlgebraic,
-  signAtRational
+  signAtRational,
+  translateRational
 ) where
-import           Data.Maybe         (catMaybes)
-import           DSLsofMath.Algebra (AddGroup (..), Additive (..),
-                                     MulGroup ((/)), Multiplicative (..), two,
-                                     (-))
-import           DSLsofMath.PSDS    (Poly (P), evalP, gcdP)
-import           Poly.PiecewisePoly (Separation)
-import qualified Poly.PiecewisePoly as PW
-import           Poly.PolyInstances ()
-import           Poly.Utils         (isRoot, numRootsInInterval,
-                                     removeDoubleRoots)
-import           Prelude            hiding (negate, product, sum, (*), (+), (-),
-                                     (/))
-import           Test.QuickCheck    (Arbitrary (arbitrary), Gen, oneof)
-import           Utils              (Sign (..))
+import           Data.Maybe           (catMaybes)
+import           DSLsofMath.Algebra   (AddGroup (..), Additive (..),
+                                       MulGroup ((/)), Multiplicative (..), two,
+                                       (-))
+import           DSLsofMath.PSDS      (Poly (P), evalP, gcdP)
+import           Poly.PiecewisePoly   (Separation)
+import qualified Poly.PiecewisePoly   as PW
+import           Poly.PolyInstances   ()
+import           Poly.PolynomialExtra (genNonZeroPoly, translateInput)
+import           Poly.Utils           (isRoot, numRootsInInterval,
+                                       removeDoubleRoots)
+import           Prelude              hiding (negate, product, sum, (*), (+),
+                                       (-), (/))
+import           Test.QuickCheck      (Arbitrary (arbitrary), Gen, oneof)
+import           Utils                (Sign (..))
 
 data Algebraic = Algebraic AlgRep | Rational Rational
   deriving (Show)
@@ -44,7 +46,7 @@ instance Eq Algebraic where
 instance Eq AlgRep where
   (==) :: AlgRep -> AlgRep -> Bool
   a@(AlgRep p (lowP, highP)) == b@(AlgRep q (lowQ, highQ)) =
-    overlap a b && numRootsInInterval r (min lowP lowQ, max highP highQ) == 1
+    overlap a b && numRootsInInterval r (max lowP lowQ, min highP highQ) == 1
     where
       r = gcdP p q
 
@@ -100,7 +102,7 @@ instance Arbitrary Algebraic where
 instance Arbitrary AlgRep where
   arbitrary :: Gen AlgRep
   arbitrary = do
-    p <- removeDoubleRoots <$> arbitrary
+    p <- removeDoubleRoots <$> genNonZeroPoly
     case genInterval p of
       Nothing          -> arbitrary
       Just intervalGen -> AlgRep p <$> intervalGen
@@ -207,6 +209,13 @@ shrinkIntervalPoly' (AlgRep p int@(l, h)) = case signAtRational mid p of
   Pos  -> Algebraic $ AlgRep p (l, mid)
   where
     mid = intMid int
+
+------------ Translation with rational numbers ---------
+
+translateRational :: Algebraic -> Rational -> Algebraic
+translateRational a b = case a of
+  Rational a' -> Rational (a' + b)
+  Algebraic (AlgRep p (low, high)) -> Algebraic $ AlgRep (translateInput (-b) p) (low + b, high + b)
 
 ------------ Utils ----------------------------
 

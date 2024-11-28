@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use list comprehension" #-}
 module Testing.Properties (
+  CritLimitInput,
   propNormalizedCorrectVars,
   propNormalizedComplexity,
   propFlipOutputCorrect,
@@ -20,7 +21,8 @@ module Testing.Properties (
 import           Algebraic                          (Algebraic (Rational),
                                                      signAtAlgebraic,
                                                      signAtRational,
-                                                     toAlgebraic)
+                                                     toAlgebraic,
+                                                     translateRational)
 import           Algorithm.GenAlg                   (genAlgThinMemoPoly)
 import           Algorithm.GenAlgPW                 (computeMin, computeMin')
 import           BDD.BDDInstances                   ()
@@ -38,6 +40,7 @@ import           Exploration.Translations           (genToBasicSymmetricNaive)
 import           Poly.PiecewisePoly                 (minPWs, pieces,
                                                      piecewiseFromPoly,
                                                      propIsMirrorPW)
+import           Poly.PolynomialExtra               (genNonZeroPoly)
 import qualified Subclasses.GenFun.GenFun           as Gen
 import           Subclasses.GenFun.GenFun           (GenFun, eval,
                                                      flipInputsGenFun,
@@ -52,8 +55,7 @@ import           Test.QuickCheck                    (Arbitrary (arbitrary, shrin
                                                      Testable (property),
                                                      chooseInt, conjoin,
                                                      elements, sized, vector,
-                                                     within, (=/=), (===),
-                                                     (==>))
+                                                     (=/=), (===))
 import           Test.QuickCheck.Gen                (Gen)
 
 ----------------- Types --------------------------------------
@@ -235,13 +237,29 @@ propRationalSign r p = s1 === s2
     s1 = signAtRational r p
     s2 = signAtAlgebraic x p
 
-propMaxNumCritical :: Algebraic -> Poly Rational -> Algebraic -> Property
-propMaxNumCritical low p high = degree p > 0 && low < high ==> within 5000000 $ property $ length criticals < degree p
+----------------- Critical points ------------------------------
+
+data CritLimitInput = CLI Algebraic (Poly Rational) Algebraic
+  deriving (Show)
+
+instance Arbitrary CritLimitInput where
+  arbitrary :: Gen CritLimitInput
+  arbitrary = do
+    p <- genNonZeroPoly
+    a <- arbitrary
+    b <- arbitrary
+    let low = min a b
+    let high = max a b
+    let high' = if low == high then translateRational high 1 else high
+    return $ CLI low p high'
+
+propMaxNumCritical :: CritLimitInput -> Property
+propMaxNumCritical (CLI low p high) = property $ length criticals < degree p
   where
     criticals = criticalPointsInPiece low p high
 
-propCriticalSwitches :: Algebraic -> Poly Rational -> Algebraic -> Property
-propCriticalSwitches low p high = degree p > 0 && low < high ==> within 5000000 $ property $ correctSwitches $ map snd criticals
+propCriticalSwitches :: CritLimitInput -> Property
+propCriticalSwitches (CLI low p high) = property $ correctSwitches $ map snd criticals
   where
     criticals = handleUncertain $ criticalPointsInPiece low p high
 
@@ -257,17 +275,22 @@ newtype CritInput = CritInput (Poly Rational)
 instance Arbitrary CritInput where
   arbitrary :: Gen CritInput
   arbitrary = do
+    (P factors) <- genNonZeroPoly
     d <- chooseInt (1, 3)
-    CritInput . P <$> vector d
+    let factors' = take (d + 1) factors
+    let p' = P factors'
+    if degree p' <= 0
+      then arbitrary
+      else return $ CritInput p'
 
 possibleCrits :: Int -> [[Critical]]
 possibleCrits 1 = [[]]
 possibleCrits 2 = [[Minimum], [Maximum]]
-possibleCrits 3 = [[], [Minimum, Maximum]]
+possibleCrits 3 = [[], [Minimum, Maximum], [Maximum, Minimum]]
 possibleCrits _ = error "Not yet implemented"
 
 propKnownCrits :: CritInput -> Property
-propKnownCrits (CritInput p) = deg > 0 ==> any (crits `isInfixOf`) possible
+propKnownCrits (CritInput p) = property $ any (crits `isInfixOf`) possible
   where
     deg = degree p
     possible = possibleCrits deg

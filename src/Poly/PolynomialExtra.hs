@@ -20,12 +20,13 @@ import           DSLsofMath.Algebra (AddGroup (negate), Additive (..),
                                      Euclidean, Field, MulGroup (recip, (/)),
                                      Multiplicative (one, (*)), Ring, generator,
                                      quot, sum, two)
-import           DSLsofMath.PSDS    (Poly (..), comP, derP, factorials, gcdP,
-                                     isZero, normalPoly, scaleL, scaleP, xP,
-                                     yun)
+import           DSLsofMath.PSDS    (Poly (..), comP, degree, derP, factorials,
+                                     gcdP, isZero, normalPoly, scaleL, scaleP,
+                                     xP, yun)
 
 import           Control.DeepSeq    (NFData)
 import           GHC.Generics       (Generic)
+import           Test.QuickCheck    (Arbitrary (arbitrary), Gen)
 import           Utils              (Group (..), boolToMaybe, fromJustMonoid)
 
 
@@ -273,3 +274,9 @@ zipZero (xs, ys) = (x, y) : zipZero (xs', ys')
 
 mirrorP :: (AddGroup a, Multiplicative a) => a -> Poly a -> Poly a
 mirrorP s p = scaleInput (negate one) $ translateInput (two * s) p
+
+genNonZeroPoly :: Gen (Poly Rational)
+genNonZeroPoly = do
+  xs <- arbitrary
+  let p = P xs
+  if degree p > 0 then return p else return $ P (0 : 1 : xs)
