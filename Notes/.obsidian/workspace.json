@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Results/Data/Exploring PWs.md",
+                "file": "Admin/TODO generell.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Exploring PWs"
+              "title": "TODO generell"
             }
           }
         ]
@@ -164,11 +164,12 @@
   },
   "active": "71e7181bed081195",
   "lastOpenFiles": [
-    "Admin/Frågor till nästa möte.md",
+    "Admin/TODO för veckan.md",
     "Admin/Plan sista veckorna.md",
+    "Results/Data/Exploring PWs.md",
+    "Admin/Frågor till nästa möte.md",
     "General knowledge/Saker att ta med sig från Julias thesis.md",
     "Admin/TODO generell.md",
-    "Admin/TODO för veckan.md",
     "Admin/TODO Report.md",
     "Admin/Log.md",
     "General knowledge/How to write a great report.md",
@@ -190,7 +191,6 @@
     "General knowledge/Exploration of classes/ThresholdFuns.md",
     "Exploration of classes/Why is Symmetric maj quicker than Threshold maj.md",
     "General knowledge/Exploration of classes/Funktioner som är stängda under setBit.md",
-    "Results/Data/Exploring PWs.md",
     "Results/Data/Benchmark comparisons - old.md",
     "Exploration of classes/Egenskaper hos boolska funktioner.md",
     "General knowledge/Exploration of classes/Analysis of classes.md",

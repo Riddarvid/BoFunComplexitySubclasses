@@ -19,8 +19,8 @@ import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
 import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
 import           GHC.Generics                 (Generic)
-import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated),
-                                               iterId)
+import qualified Subclasses.Iterated.Iterated as Iter
+import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated))
 import           Test.QuickCheck              (Arbitrary, Gen, arbitrary,
                                                elements)
 import           Utils                        (naturals)
@@ -90,4 +90,4 @@ notG :: Iterated Gate' -> Iterated Gate'
 notG g1 = gateHelper Not [g1]
 
 var :: Iterated Gate'
-var = iterId
+var = Iter.Id

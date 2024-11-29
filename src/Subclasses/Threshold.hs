@@ -30,8 +30,9 @@ import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
 import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
-import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated),
-                                               iterId, iterateFun)
+import           Subclasses.Iterated.Iterated (Iterated,
+                                               Iterated' (Id, Iterated),
+                                               iterateFun)
 import           Subclasses.Lifted            (Lifted (Lifted))
 import           Test.QuickCheck              (chooseInt)
 import           Test.QuickCheck.Gen          (Gen)
@@ -183,7 +184,7 @@ allNAryITFs = (map nAryITFEnum' [0 ..] !!)
     nAryITFEnum' 0 =
       [mkConst False, mkConst True]
     nAryITFEnum' 1 =
-      [mkConst False, mkConst True, iterId]
+      [mkConst False, mkConst True, Id]
     nAryITFEnum' n = do
       (subFuns, nSubFuns) <- allSubFunCombinations n
       threshold' <- allThresholds nSubFuns

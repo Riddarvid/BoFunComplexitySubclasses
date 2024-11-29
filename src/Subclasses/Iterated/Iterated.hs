@@ -8,8 +8,7 @@
 {-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE UndecidableInstances  #-}
 module Subclasses.Iterated.Iterated (
-  Iterated'(Iterated),
-  iterId,
+  Iterated'(Const, Id, Iterated),
   SubFun,
   Iterated,
   iterateFun
@@ -43,9 +42,6 @@ instance (PrettyBoFun (SubFun f)) => PrettyBoFun (Iterated' f) where
   prettyShow (Const v)     = "const " ++ show v
   prettyShow Id            = "id"
   prettyShow (Iterated' f) = prettyShow f
-
-iterId :: Iterated' f
-iterId = Id
 
 instance (NFData (SubFun f)) => NFData (Iterated' f)
 
@@ -140,6 +136,6 @@ iterateFun :: (BoFun f Int) => Int -> f -> Int -> Iterated f
 iterateFun bits f = go
   where
     go 0 = Id
-    go n = Iterated f $ replicate bits subFun
+    go levels = Iterated f $ replicate bits subFun
       where
-        subFun = iterateFun bits f (n A.- 1)
+        subFun = iterateFun bits f (levels A.- 1)
