@@ -58,6 +58,9 @@ desmosShowRational d n = term
     | b == 1 = if a == 1 && d /= 0 then "" else show a
     | otherwise = show a ++ "/" ++ show b
 
+-- A class for pretty printing BoFuns
+-- Lifted and iterated functions use '.' to show the tree structure of the lifted functions.
+-- The tree is horizontal, each dot in a line represents moving one step deeper.
 class PrettyBoFun f where
   prettyShow :: f -> String
 

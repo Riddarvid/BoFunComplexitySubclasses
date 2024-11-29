@@ -11,6 +11,7 @@ module Subclasses.Symmetric (
   SymmetricFun,
   NonSymmSymmetricFun(NonSymmSymmetricFun),
   mkSymmetricFun,
+  mkNonSymmSymmetricFun,
   arity,
   majFun,
   iteratedMajFun
@@ -20,13 +21,15 @@ import           Arity                        (ArbitraryArity (arbitraryArity))
 import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.Arrow                ((>>>))
 import           Control.DeepSeq              (NFData)
-import           Data.Foldable                (Foldable (toList))
+import           Data.Foldable                (Foldable (foldl', toList))
 import           Data.Function.Memoize        (Memoizable (memoize),
                                                deriveMemoizable)
+import           Data.List                    (intercalate)
 import           Data.List.NonEmpty           (NonEmpty ((:|)))
 import qualified Data.List.NonEmpty           as NE
 import           Data.Sequence                (Seq (Empty, (:<|), (:|>)))
 import qualified Data.Sequence                as Seq
+import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
 import           Subclasses.Iterated.Iterated (Iterated, iterateFun)
 import           Test.QuickCheck              (Arbitrary (arbitrary), chooseInt,
@@ -39,8 +42,8 @@ import           Utils                        (naturals)
 -- A result is defined as a sequence of ints, each describing the number of False/Trues,
 -- switching value each time we encounter a new segment.
 -- A bool signifies whether we start with a sequence of Falses or Trues.
-type Range = Int
-type Result = (Bool, Seq Range)
+type Range = (Int, Int)
+type Result = (Bool, Seq Int)
 
 resultVectorFromList :: NonEmpty Bool -> Result
 resultVectorFromList res@(v :| _) = (v, Seq.fromList $ map NE.length $ NE.group res')
@@ -70,6 +73,40 @@ instance Memoizable a => Memoizable (Seq a) where
 
 newtype SymmetricFun = SymmetricFun Result
   deriving (Show, Eq, Ord, Generic)
+
+instance PrettyBoFun SymmetricFun where
+  prettyShow :: SymmetricFun -> String
+  prettyShow f = "F: " ++ showRanges fRanges ++ "; T: " ++ showRanges tRanges
+    where
+      (fRanges, tRanges) = divideRanges f
+
+showRanges :: [Range] -> String
+showRanges ranges = intercalate ", " (map showRange ranges)
+
+showRange :: Range -> String
+showRange (low, high)
+  | low == high = show low
+  | otherwise = show low ++ "-" ++ show high
+
+divideRanges :: SymmetricFun -> ([Range], [Range])
+divideRanges (SymmetricFun (startVal, lengths))
+  | startVal = (evens, odds)
+  | otherwise = (odds, evens)
+  where
+    (odds, evens) = everyOther ranges
+    ranges = snd $ foldl' addRange (0, []) lengths
+    addRange (start, ranges') length' =
+      let end = start + length' - 1
+      in (end + 1, (start, end) : ranges')
+
+everyOther :: [a] -> ([a], [a])
+everyOther = everyOther' False
+
+everyOther' :: Bool -> [a] -> ([a], [a])
+everyOther' _ [] = ([], [])
+everyOther' v (x : xs) = if v then (x : odds, evens) else (odds, x : evens)
+  where
+    (odds, evens) = everyOther' (not v) xs
 
 instance NFData SymmetricFun
 
@@ -114,8 +151,15 @@ instance Constable SymmetricFun where
 newtype NonSymmSymmetricFun = SymmetricFun' SymmetricFun
   deriving (Memoizable, NFData, ArbitraryArity)
 
+instance PrettyBoFun NonSymmSymmetricFun where
+  prettyShow :: NonSymmSymmetricFun -> String
+  prettyShow (SymmetricFun' f) = prettyShow f
+
 pattern NonSymmSymmetricFun :: Result -> NonSymmSymmetricFun
 pattern NonSymmSymmetricFun f = SymmetricFun' (SymmetricFun f)
+
+mkNonSymmSymmetricFun :: NonEmpty Bool -> NonSymmSymmetricFun
+mkNonSymmSymmetricFun = NonSymmSymmetricFun . resultVectorFromList
 
 instance BoFun NonSymmSymmetricFun Int where
   isConst :: NonSymmSymmetricFun -> Maybe Bool

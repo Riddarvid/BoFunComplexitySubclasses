@@ -16,6 +16,7 @@ import           Algebraic                      (AlgRep (AlgRep),
                                                  translateRational)
 import           Complexity.Piecewise           (complexity,
                                                  complexityAndAlgorithms)
+import           Data.List.NonEmpty             (NonEmpty ((:|)))
 import           Data.Ratio                     ((%))
 import           DSLsofMath.Algebra             (AddGroup, MulGroup)
 import           DSLsofMath.PSDS                (Poly (P))
@@ -31,20 +32,24 @@ import           Poly.PiecewisePoly             (BothPW (BothPW), PiecewisePoly,
                                                  printPW)
 import           Poly.PolynomialExtra           (translateInput)
 import           Prelude                        hiding ((*), (+))
+import           Subclasses.Gates               (iterAnd, iterOr)
 import qualified Subclasses.GenFun.GenFun       as Gen
 import           Subclasses.GenFun.GenFun       (GenFun (GenFun), allGenFuns,
-                                                 flipInputsGenFun)
+                                                 flipInputsGenFun,
+                                                 prettyPrintGenFun)
+import           Subclasses.Iterated.Iterated   (Iterated' (Id), iterateFun)
 import           Subclasses.Iterated.IteratedTH ()
 import           Subclasses.Lifted              ()
+import           Subclasses.Symmetric           (mkNonSymmSymmetricFun,
+                                                 mkSymmetricFun)
 import qualified Subclasses.Threshold           as Thresh
 import           Test.QuickCheck                (Arbitrary (arbitrary),
                                                  generate)
 
 main :: IO ()
 main = do
-  let a = Algebraic $ AlgRep (P [0, 1]) (-10, 10)
-  let b = Algebraic $ AlgRep (P [0, 1, 1]) (-10, 0)
-  print $ a == b
+  let f = Gen.iteratedMajFun 3 2
+  prettyPrintGenFun f
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

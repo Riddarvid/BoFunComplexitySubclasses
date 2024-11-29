@@ -39,8 +39,9 @@ deriving instance (Show (SubFun f)) => Show (Iterated' f)
 
 instance (PrettyBoFun (SubFun f)) => PrettyBoFun (Iterated' f) where
   prettyShow :: Iterated' f -> String
-  prettyShow (Const v)     = "const " ++ show v
-  prettyShow Id            = "id"
+  prettyShow (Const False) = "F"
+  prettyShow (Const True)  = "T"
+  prettyShow Id            = "x"
   prettyShow (Iterated' f) = prettyShow f
 
 instance (NFData (SubFun f)) => NFData (Iterated' f)

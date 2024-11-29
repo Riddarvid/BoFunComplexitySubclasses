@@ -17,6 +17,7 @@ module Subclasses.Gates (
 import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
 import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
+import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
 import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated))
 import           Test.QuickCheck              (Arbitrary, Gen, arbitrary,
@@ -27,6 +28,15 @@ data Gate = And | Or | Not | Id | Const Bool
   deriving (Eq, Ord, Show, Generic)
 
 $(deriveMemoizable ''Gate)
+
+instance PrettyBoFun Gate where
+  prettyShow :: Gate -> String
+  prettyShow And           = "∧"
+  prettyShow Or            = "∨"
+  prettyShow Not           = "¬"
+  prettyShow Id            = "x"
+  prettyShow (Const False) = "F"
+  prettyShow (Const True)  = "T"
 
 instance NFData Gate
 
@@ -64,6 +74,10 @@ arityGate (Const _) = 0
 
 newtype NonSymmGate = NonSymmGate Gate
   deriving (Memoizable, NFData)
+
+instance PrettyBoFun NonSymmGate where
+  prettyShow :: NonSymmGate -> String
+  prettyShow (NonSymmGate f) = prettyShow f
 
 instance BoFun NonSymmGate Int where
   isConst :: NonSymmGate -> Maybe Bool

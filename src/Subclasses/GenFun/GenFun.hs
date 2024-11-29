@@ -20,7 +20,9 @@ module Subclasses.GenFun.GenFun (
   iteratedFun,
   eval,
   generateGenFun,
-  flipInputsGenFun
+  flipInputsGenFun,
+  prettyShowGenFun,
+  prettyPrintGenFun
 ) where
 import           Arity                     (ArbitraryArity (arbitraryArity))
 import           BDD.BDD                   (BDDa, allNAryBDDs,
@@ -35,6 +37,9 @@ import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
 import           Data.Function.Memoize     (deriveMemoizable)
 import           Data.Hashable             (Hashable)
 import qualified Data.IntSet               as IS
+import           Data.List.NonEmpty        (NonEmpty ((:|)), append, (<|))
+import qualified Data.List.NonEmpty        as NE
+import           Data.Maybe                (fromJust)
 import           GHC.Generics              (Generic)
 import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
                                             vector)
@@ -167,3 +172,28 @@ eval gf input = isConst $
 
 flipInputsGenFun :: GenFun -> GenFun
 flipInputsGenFun (GenFun bdd n) = GenFun (BDD.flipInputs bdd) n
+
+prettyPrintGenFun :: GenFun -> IO ()
+prettyPrintGenFun = putStrLn . prettyShowGenFun
+
+prettyShowGenFun :: GenFun -> String
+prettyShowGenFun = unlines . map showRow . NE.toList . constructTruthTable
+
+showRow :: NonEmpty Bool -> String
+showRow (v :| vs) = case vs of
+  []         -> " | " ++ showBool v
+  (v' : vs') -> showBool v ++ showRow (v' :| vs')
+  where
+    showBool False = "0"
+    showBool True  = "1"
+
+constructTruthTable :: GenFun -> NonEmpty (NonEmpty Bool)
+constructTruthTable = constructTruthTable' 1
+
+constructTruthTable' :: Int -> GenFun -> NonEmpty (NonEmpty Bool)
+constructTruthTable' _ (GenFun bdd 0) = (fromJust (BDD.isConst bdd) :| []) :| []
+constructTruthTable' varN gf = append zeroTable oneTable
+  where
+    zeroTable = subTable False
+    oneTable = subTable True
+    subTable v = NE.map (v <|) $ constructTruthTable' (varN + 1) $ setBit (varN, v) gf
