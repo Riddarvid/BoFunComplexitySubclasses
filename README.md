@@ -1,6 +1,8 @@
 # exploring-level-p
 
-Link to report: <https://www.overleaf.com/read/zysfktzvrhgf#d16761>
+Associated code for the paper "Exploring level-p-complexity for subclasses of Boolean functions" by Arvid Rydberg and Selina Engberg. The paper is currently not published but a working version can be found at <https://www.overleaf.com/read/zysfktzvrhgf#d16761>
+
+The code builds upon the library presented in the paper "Level-p-complexity of Boolean Functions using Thinning, Memoization, and Polynomials" (published in JFP as [https://doi.org/10.1017/S0956796823000102](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/levelpcomplexity-of-boolean-functions-using-thinning-memoization-and-polynomials/58122B71C40F99E0D19ACD0FAFF867A9#article)) by Julia Jansson and Patrik Jansson, as well as the extensions added by Christian Sattler.
 
 ## Defininga Boolean function
 
@@ -19,13 +21,15 @@ The library exposes three separate but related algorithms for calculating the le
 
 ### Complexity.GenAlg.genAlg
 
-The genAlg function was originally presented in the paper "Level-p-complexity of Boolean Functions using Thinning, Memoization, and Polynomials" (published in JFP as doi:10.1017/S0956796823000102) by Julia Jansson and Patrik Jansson.
+The genAlg function was originally presented in the paper by Julia Jansson and Patrik Jansson.
 
 This function can be used to compute the complexity of any BoFun, and returns a Data.Set of any type belonging to the Algor typeclass. Specifically, Janson & Janson's library gives instances of Algor for polynomials and decision trees, as well as tuples of Algors.
 
 This algorithm is very general and can easily be enhanced with thinning and memoization. Shorthands for these are given in the functions genAlgMemo genAlgThinMemo, from the Complexity.GenAlg module.
 
 ### Complexity.Piecewise.complexity
+
+The complexity function was originally introduced by Christian Sattler under the name computeMin.
 
 The complexity function in the Complexit.Piecewise module hase the same behaviour as genAlg, with a few exceptions. This function is specialized to the data type PiecewisePoly, representing a piecewise polynomial. This enables an optimization compared to genAlg, as we no longer return a set of polynomials, but rather a single piecewise polynomial, resulting in more efficient comparisons.
 
@@ -82,11 +86,23 @@ As with threshold and symmetric functions, two variants of Gate exist, one optim
 
 ### General functions
 
-General functions, or just functions, are represented internally using a data structure called a binary decision diagram, or BDD. These can be constructed in a number of ways, but the simplest is to construct them using a combination of boolean expressions.
+General functions, or just functions, are represented internally using a data structure called a binary decision diagram, or BDD. A BDD can be thaought of as a compressed truth table. These can be constructed in a number of ways, but the simplest way is to construct them using a combination of boolean expressions. The library also supports creating a BDD from a mapping from Ints to Bools, representing the results for rows of a truth table. These two methods are shown here:
 
-Three variants of this function exist, corresponding to two distinct optimizations of general functions, as well as the combination of the two optimizations.
+```Haskell
+let f = x1 ^ x2
 
-TODO
+let f' = bddFromOutputVector 2 $ IntMap.fromList [(1, False), (2, False), (3, False), (4, True)]
+```
+
+f and f' are identical.
+
+Three variants of the general function representation exist, corresponding to two distinct optimizations of general functions, as well as the combination of the two optimizations.
+
+The first optimization is what we call normalization. When setting a bit of an n-bit function, this version removes any redundant variables in the BDD, and maps the remaining variables so that they only use the variables [1 .. n]. This operation does not change the complexity, which is the reason why we can do this optimization. This leads to much greater utilization of memoization, as any functions with the same normal form can now use previously computed results. This representation is found in Subclasses.GenFun.NormalizedGenFun.
+
+The second optimization is similar to the first one, but uses the fact that inverting the output of a function does not change the complexity. This means that we can define a function as being in canonical form iff an input consisting only of 0's yields 0. Otherwise, we can transform the function into canonical form by inverting the output. In testing, this optimization has not had much effect on the total time of the complexity calculations. This representation resides in Subclasses.GenFun.CanonicalGenFun.
+
+Finally, Subclasses.GenFun.NormalizedCanonicalGenFun is the combination of both optimizations.
 
 ### Combining BoFuns
 
@@ -122,4 +138,15 @@ c2 and c3 should be identical, and c1 should represent the same piecewise polyno
 
 ## Exploration of complexities
 
+The folder Exploration contains various tools useful for examining and exploring Boolean functions and their complexities. Here is a short description of each of the modules:
+
+- Critical - contains functions for determining the number of extreme points of BoFuns, specifically in the interval [0, 1].
+- Eval - contains functions for evaluating BoFuns for given inputs.
+- Filters - contains predicates useful for filtering lists of complexities.
+- Measurements - contains functionality for measuring the time it takes to compute the level-p complexity for BoFuns. The caller can specify the number of samples, as well as the number of different functions that should be tested.
+- PrettyPrinting - pretty printing of functions and polynomials.
+- Translations - functions used for translating between different representations of the same function. Very inefficient as of now.
+
 ## Testing
+
+A number of QuickCheck properties and generators can be found in Testing.Properties. These can either be run individually, or the function testAll in Testing.AllProperties can be used to run all properties.
