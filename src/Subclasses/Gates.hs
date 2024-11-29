@@ -8,18 +8,16 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TemplateHaskell            #-}
 module Subclasses.Gates (
-  Gate,
-  Gate',
-  andG,
-  orG,
-  notG,
-  var
+  Gate(And, Or, Not),
+  NonSymmGate,
+  iterAnd,
+  iterOr,
+  iterNot
 ) where
 import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
 import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
 import           GHC.Generics                 (Generic)
-import qualified Subclasses.Iterated.Iterated as Iter
 import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated))
 import           Test.QuickCheck              (Arbitrary, Gen, arbitrary,
                                                elements)
@@ -64,30 +62,27 @@ arityGate Not       = 1
 arityGate Id        = 1
 arityGate (Const _) = 0
 
-newtype Gate' = Gate' Gate
+newtype NonSymmGate = NonSymmGate Gate
   deriving (Memoizable, NFData)
 
-instance BoFun Gate' Int where
-  isConst :: Gate' -> Maybe Bool
-  isConst (Gate' f) = isConst f
-  variables :: Gate' -> [Int]
-  variables (Gate' f) = take (arityGate f) naturals
-  setBit :: (Int, Bool) -> Gate' -> Gate'
-  setBit (_, v) (Gate' f) = Gate' $ setBit ((), v) f
+instance BoFun NonSymmGate Int where
+  isConst :: NonSymmGate -> Maybe Bool
+  isConst (NonSymmGate f) = isConst f
+  variables :: NonSymmGate -> [Int]
+  variables (NonSymmGate f) = take (arityGate f) naturals
+  setBit :: (Int, Bool) -> NonSymmGate -> NonSymmGate
+  setBit (_, v) (NonSymmGate f) = NonSymmGate $ setBit ((), v) f
 
 -------------- Iterated gates -------------------------
 
-gateHelper :: Gate -> [Iterated Gate'] -> Iterated Gate'
-gateHelper g = Iterated (Gate' g)
+gateHelper :: Gate -> [Iterated NonSymmGate] -> Iterated NonSymmGate
+gateHelper g = Iterated (NonSymmGate g)
 
-andG :: Iterated Gate' -> Iterated Gate' -> Iterated Gate'
-andG g1 g2 = gateHelper And [g1, g2]
+iterAnd :: Iterated NonSymmGate -> Iterated NonSymmGate -> Iterated NonSymmGate
+iterAnd g1 g2 = gateHelper And [g1, g2]
 
-orG :: Iterated Gate' -> Iterated Gate' -> Iterated Gate'
-orG g1 g2 = gateHelper Or [g1, g2]
+iterOr :: Iterated NonSymmGate -> Iterated NonSymmGate -> Iterated NonSymmGate
+iterOr g1 g2 = gateHelper Or [g1, g2]
 
-notG :: Iterated Gate' -> Iterated Gate'
-notG g1 = gateHelper Not [g1]
-
-var :: Iterated Gate'
-var = Iter.Id
+iterNot :: Iterated NonSymmGate -> Iterated NonSymmGate
+iterNot g1 = gateHelper Not [g1]

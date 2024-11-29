@@ -46,6 +46,50 @@ A list of representations subclasses of Boolean functions can be found in the Su
 
 For general boolean functions, specific optimized data types are also defined.
 
+### Threshold functions
+
+A threshold function is a function yielding 1 when the number of 1's in the input is reached or exceeded, and 0 otherwise. Another way to look at it is that a threshold function is guaranteed to yield 0 when a certain number of 0's have been read from the input, and 1 once a certain number of 1's has been read from the input. This is the representation used internally, a tuple containing the number of 1's needed for a result of 1 (nt), and the number of 0's needed for a result of 0 (nf). A threshold function can be constructed as follows:
+
+```Haskell
+let thresholdFun = ThresholdFun $ Threshold (nt, nf)
+```
+
+From the definition, we can see that the order of input bits is not relevant to the result, meaning that the function is symmetric. Thus, it makes sense to index the variables of the function with the type (), since there is no difference between variables. However, when it comes to the concepts of lifting and iterating, introduced later in this document, we need a way to differentiate between input bits. Thus, the module also exposes a version of ThresholdFun (called NonSymmThresholdFun), which is instead indexed using Ints.
+
+Using a pattern synonym, a NonSymmThresholdFun can be constructed as follows:
+
+```Haskell
+let thresholdFun = NonSymmThresholdFun $ Threshold (nt, nf)
+```
+
+Internally, however, a NonSymmThresholdFun is just a wrapper for a ThresholdFun with a slightly modified BoFun instance.
+
+### Symmetric functions
+
+As mentioned previosly, a symmetric function is a function whose result does not depend on the order of its input bits. This means that we essentially have a mapping from number of 1's in the input to results. Since the internal representation is a bit convoluted, we instead expose the function mkSymmetric that takes a non-empty list of Bools and returns a SymmetricFun. The result if the input contains 0 1's is the first element of the list, the result if the input contains exactly 1 1 is the element at index 1 and so on. For example, a 5-bit function yielding 1 only if the number of 1's in the input is even can be constructed as follows:
+
+```Haskell
+let evenSymmetricFun = mkSymmetric (True :| [False, True, False, True, False])
+```
+
+As with threshold functions, this type of function can be indexed over (), but we also expose the type NonSymmSymmetricFun indexed over Ints, to be used together with lifitng and iterating.
+
+### Gate functions
+
+Gate functions are a fairly simple class of boolean functions. They are simply the 1- and 2-bit functions that can be represented by the Boolean operators And, Or, and Not. The gates are represented by a constructor each.
+
+As with threshold and symmetric functions, two variants of Gate exist, one optimizing using its symmetric property and one that doesn't in order to be compatible with lifting and iterating.
+
+### General functions
+
+General functions, or just functions, are represented internally using a data structure called a binary decision diagram, or BDD. These can be constructed in a number of ways, but the simplest is to construct them using a combination of boolean expressions.
+
+Three variants of this function exist, corresponding to two distinct optimizations of general functions, as well as the combination of the two optimizations.
+
+TODO
+
+### Combining BoFuns
+
 As well as these classes, the library provides a way of combining and iterating Boolean functions over eachother. These are exposed in the Subclasses.Lifted and Subclasses.Iterated.Iterated modules.
 
 Lifting a function f over a list of functions gs basically means replacing each variable of f with a subfunction from gs. For example, if a 3-bit function is lifted over a 2-bit function, a 5-bit function and a 4-bit function, the resulting function would be a 11-bit function.
@@ -75,3 +119,7 @@ let c3 = explicitComplexity maj33 :: PiecewisePoly Rational
 ```
 
 c2 and c3 should be identical, and c1 should represent the same piecewise polynomial as c2 and c3.
+
+## Exploration of complexities
+
+## Testing

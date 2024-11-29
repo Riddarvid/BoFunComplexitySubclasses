@@ -106,7 +106,7 @@ newtype NonSymmThresholdFun = ThresholdFun' ThresholdFun
   deriving (Memoizable, NFData, Show)
 
 pattern NonSymmThresholdFun :: Threshold -> NonSymmThresholdFun
-pattern NonSymmThresholdFun f = ThresholdFun' (ThresholdFun f)
+pattern NonSymmThresholdFun th = ThresholdFun' (ThresholdFun th)
 
 instance PrettyBoFun NonSymmThresholdFun where
   prettyShow :: NonSymmThresholdFun -> String
