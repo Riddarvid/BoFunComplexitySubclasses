@@ -1,12 +1,14 @@
 {-# LANGUAGE ExistentialQuantification #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use tuple-section" #-}
-{-# HLINT ignore "Use list comprehension" #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
 module Exploration.Measurements (
   measureTimeGenAlg,
   measureTimePiecewiseComplexity,
-  measureTimePiecewiseExplicitComplexity
+  measureTimePiecewiseExplicitComplexity,
+  measureFuns,
+  measureMajs,
+  measureRandom,
+  measureRandomFiveValue
 ) where
 import           Arity                    (ArbitraryArity (arbitraryArity))
 import           Complexity.BoFun         (BoFun)
@@ -69,9 +71,20 @@ medianMeasure timingFun n f = do
 
 type NDT = NominalDiffTime
 
-measureRandomFuns :: ArbitraryArity f =>
+measureRandom :: ArbitraryArity f =>
+  (f -> IO NominalDiffTime) -> Int -> Int -> IO ()
+measureRandom timingFun nFuns arity = do
+  funs <- genFuns
+  times <- mapM timingFun funs
+  let str = unlines $ map (take 6 . show) times
+  writeFile "data" str
+  where
+    genFun = generate $ arbitraryArity arity
+    genFuns = replicateM nFuns genFun
+
+measureRandomFiveValue :: ArbitraryArity f =>
   (f -> IO NominalDiffTime) -> Int -> Int -> Int -> IO (NDT, NDT, NDT, NDT, NDT)
-measureRandomFuns timingFun nFuns nSamples arity = do
+measureRandomFiveValue timingFun nFuns nSamples arity = do
   funs <- genFuns
   measureFiveValues timingFun nSamples funs
   where
@@ -84,7 +97,11 @@ measureFiveValues timingFun nSamples funs = do
   sample <- sequenceA timingActions
   return $ fiveValueSummary sample
   where
-    timingActions = map (medianMeasure timingFun nSamples) funs
+    timingActions = map printTimeId funs
+    printTimeId f = do
+      time <- medianMeasure timingFun nSamples f
+      print time
+      return time
 
 ----------- Measuring average number of nodes in a BDD --------------
 

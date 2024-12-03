@@ -4,52 +4,72 @@
 module LibMain (
   main
 ) where
-import           BDD.BDD                        (BDDa, normalizeBDD)
-import           Control.DeepSeq                (force)
-import           Control.Exception              (evaluate)
-import           Control.Monad                  (void)
-import           Data.DecisionDiagram.BDD       (AscOrder, BDD, notB, var,
-                                                 (.&&.), (.||.))
+import           BDD.BDD                                     (BDDa,
+                                                              normalizeBDD)
+import           Control.DeepSeq                             (force)
+import           Control.Exception                           (evaluate)
+import           Control.Monad                               (void)
+import           Data.DecisionDiagram.BDD                    (AscOrder, BDD,
+                                                              notB, var, (.&&.),
+                                                              (.||.))
 
-import           Algebraic                      (AlgRep (AlgRep),
-                                                 Algebraic (Algebraic, Rational),
-                                                 translateRational)
-import           Complexity.Piecewise           (complexity,
-                                                 complexityAndAlgorithms)
-import           Data.List.NonEmpty             (NonEmpty ((:|)))
-import           Data.Ratio                     ((%))
-import           DSLsofMath.Algebra             (AddGroup, MulGroup)
-import           DSLsofMath.PSDS                (Poly (P))
-import           Exploration.Critical           (Critical (Maximum),
-                                                 CriticalPoint, critcalPointsPW,
-                                                 criticalPointsInPiece,
-                                                 determineUncertain)
-import           Exploration.Filters            (criticalPred)
-import           Exploration.Measurements       (measureTimePiecewiseComplexity)
-import           Exploration.PrettyPrinting     (PrettyBoFun (prettyPrint),
-                                                 desmosPrintPW)
-import           Poly.PiecewisePoly             (BothPW (BothPW), PiecewisePoly,
-                                                 printPW)
-import           Poly.PolynomialExtra           (translateInput)
-import           Prelude                        hiding ((*), (+))
-import           Subclasses.Gates               (iterAnd, iterOr)
-import qualified Subclasses.GenFun.GenFun       as Gen
-import           Subclasses.GenFun.GenFun       (GenFun (GenFun), allGenFuns,
-                                                 flipInputsGenFun,
-                                                 prettyPrintGenFun)
-import           Subclasses.Iterated.Iterated   (Iterated' (Id), iterateFun)
-import           Subclasses.Iterated.IteratedTH ()
-import           Subclasses.Lifted              ()
-import           Subclasses.Symmetric           (mkNonSymmSymmetricFun,
-                                                 mkSymmetricFun)
-import qualified Subclasses.Threshold           as Thresh
-import           Test.QuickCheck                (Arbitrary (arbitrary),
-                                                 generate)
+import           Algebraic                                   (AlgRep (AlgRep),
+                                                              Algebraic (Algebraic, Rational),
+                                                              translateRational)
+import           Arity                                       (ArbitraryArity (arbitraryArity))
+import           Complexity.GenAlg                           (genAlgThinMemoPoly)
+import           Complexity.Piecewise                        (complexity,
+                                                              complexityAndAlgorithms)
+import           Data.List.NonEmpty                          (NonEmpty ((:|)))
+import           Data.Ratio                                  ((%))
+import           Data.Time                                   (NominalDiffTime,
+                                                              diffUTCTime,
+                                                              getCurrentTime)
+import           DSLsofMath.Algebra                          (AddGroup,
+                                                              MulGroup)
+import           DSLsofMath.PSDS                             (Poly (P))
+import           Exploration.Critical                        (Critical (Maximum),
+                                                              CriticalPoint,
+                                                              critcalPointsPW,
+                                                              criticalPointsInPiece,
+                                                              determineUncertain)
+import           Exploration.Filters                         (criticalPred)
+import           Exploration.Measurements                    (measureRandom,
+                                                              measureRandomFiveValue,
+                                                              measureTimeGenAlg,
+                                                              measureTimePiecewiseComplexity)
+import           Exploration.PrettyPrinting                  (PrettyBoFun (prettyPrint),
+                                                              desmosPrintPW)
+import           Poly.PiecewisePoly                          (BothPW (BothPW),
+                                                              PiecewisePoly,
+                                                              printPW)
+import           Poly.PolynomialExtra                        (translateInput)
+import           Prelude                                     hiding ((*), (+))
+import           Subclasses.Gates                            (iterAnd, iterOr)
+import           Subclasses.GenFun.CanonicalGenFun           (CanonicalGenFun)
+import qualified Subclasses.GenFun.GenFun                    as Gen
+import           Subclasses.GenFun.GenFun                    (GenFun (GenFun),
+                                                              allGenFuns,
+                                                              flipInputsGenFun,
+                                                              prettyPrintGenFun)
+import           Subclasses.GenFun.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun)
+import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun)
+import           Subclasses.Iterated.Iterated                (Iterated' (Id),
+                                                              iterateFun)
+import           Subclasses.Iterated.IteratedTH              ()
+import           Subclasses.Lifted                           ()
+import           Subclasses.Symmetric                        (mkNonSymmSymmetricFun,
+                                                              mkSymmetricFun)
+import qualified Subclasses.Threshold                        as Thresh
+import           Subclasses.Threshold                        (ThresholdFun (ThresholdFun))
+import           Test.QuickCheck                             (Arbitrary (arbitrary),
+                                                              generate)
 
 main :: IO ()
 main = do
-  let f = Gen.iteratedMajFun 3 2
-  prettyPrintGenFun f
+  f <- generate $ arbitraryArity 300 :: IO ThresholdFun
+  print =<< measureTimeGenAlg f
+  print =<< measureTimeGenAlg f
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')
