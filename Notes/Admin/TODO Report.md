@@ -29,3 +29,40 @@
 ## Idéer
 
 - Använd short-circuiting av boolean expressions som mer relaterbart exempel
+
+## From writing seminar: 
+
+Peer Review: 
+
+Too many subsections with short paragraphs. Lack of transition 
+- expand on the sections 
+- remove a lot of introduction sentences
+
+explain the terms more in the introductions. like in the contribution. expand on the terms. and perhaps add another example (or the maj example) in the introduction.  
+
+need more citations and sources 
+
+Flamegraphs: mostly good, but sometimes the specific functions are hard to see in the graphs. Add also some axis on the diagram
+
+Potential profiling tool: valgrind, used for c but possibly work for Haskell
+
+The representations section may need to be renamed. Perhaps it is better to be Implementations and results
+
+tables should have descriptions below. 
+
+make better listings (so they stand out more)
+- Minted
+
+
+
+Language: 
+
+use "we" a lot. Especially in the theory. 
+
+section titles - should we capitalize all the words or not? ask Patrik 
+
+we use quotation when we should use bold
+
+add more reflections in the discussion. Right now it is a lot of summary. Put that summary first and then reflections
+
+
