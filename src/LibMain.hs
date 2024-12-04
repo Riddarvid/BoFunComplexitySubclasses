@@ -6,7 +6,7 @@ module LibMain (
 ) where
 import           BDD.BDD                                     (BDDa,
                                                               normalizeBDD)
-import           Control.DeepSeq                             (force)
+import           Control.DeepSeq                             (NFData, force)
 import           Control.Exception                           (evaluate)
 import           Control.Monad                               (void)
 import           Data.DecisionDiagram.BDD                    (AscOrder, BDD,
@@ -17,9 +17,11 @@ import           Algebraic                                   (AlgRep (AlgRep),
                                                               Algebraic (Algebraic, Rational),
                                                               translateRational)
 import           Arity                                       (ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun                            (BoFun)
 import           Complexity.GenAlg                           (genAlgThinMemoPoly)
 import           Complexity.Piecewise                        (complexity,
                                                               complexityAndAlgorithms)
+import           Data.Function.Memoize                       (Memoizable)
 import           Data.List.NonEmpty                          (NonEmpty ((:|)))
 import           Data.Ratio                                  ((%))
 import           Data.Time                                   (NominalDiffTime,
@@ -34,10 +36,11 @@ import           Exploration.Critical                        (Critical (Maximum)
                                                               criticalPointsInPiece,
                                                               determineUncertain)
 import           Exploration.Filters                         (criticalPred)
-import           Exploration.Measurements                    (measureRandom,
-                                                              measureRandomFiveValue,
+import           Exploration.Measurements                    (measureSingleStdOut,
+                                                              measureSpecificStdOut,
                                                               measureTimeGenAlg,
-                                                              measureTimePiecewiseComplexity)
+                                                              measureTimePiecewiseComplexity,
+                                                              measureTimePiecewiseExplicitComplexity)
 import           Exploration.PrettyPrinting                  (PrettyBoFun (prettyPrint),
                                                               desmosPrintPW)
 import           Poly.PiecewisePoly                          (BothPW (BothPW),
@@ -62,14 +65,14 @@ import           Subclasses.Symmetric                        (mkNonSymmSymmetric
                                                               mkSymmetricFun)
 import qualified Subclasses.Threshold                        as Thresh
 import           Subclasses.Threshold                        (ThresholdFun (ThresholdFun))
+import           System.Environment                          (getArgs)
 import           Test.QuickCheck                             (Arbitrary (arbitrary),
                                                               generate)
 
 main :: IO ()
 main = do
-  f <- generate $ arbitraryArity 300 :: IO ThresholdFun
-  print =<< measureTimeGenAlg f
-  print =<< measureTimeGenAlg f
+  let f = Thresh.iteratedMajFun 3 2
+  measureTimePiecewiseComplexity f >>= print
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

@@ -8,6 +8,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Replace case with maybe" #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
+{-# OPTIONS_GHC -fno-full-laziness #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE PatternSynonyms            #-}
@@ -103,7 +104,7 @@ thresholdFunArity :: ThresholdFun -> Int
 thresholdFunArity (ThresholdFun t) = thresholdArity t
 
 newtype NonSymmThresholdFun = ThresholdFun' ThresholdFun
-  deriving (Memoizable, NFData, Show)
+  deriving (Memoizable, NFData, Show, ArbitraryArity)
 
 pattern NonSymmThresholdFun :: Threshold -> NonSymmThresholdFun
 pattern NonSymmThresholdFun th = ThresholdFun' (ThresholdFun th)

@@ -37,6 +37,7 @@ dependencies:
   - hashable
   - size-based
   - random
+  - ghc
 
 ghc-options:
   - -Wall
