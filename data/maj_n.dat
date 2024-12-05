@@ -1,0 +1,1157 @@
+----------------- genAlg --------------------------
+
+Alg: genAlg
+Function type: GenFun
+Function: maj_1
+Sample size: 5
+0.000120198
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_1
+Sample size: 5
+0.000123345
+
+Alg: genAlg
+Function type: GenFun
+Function: maj_3
+Sample size: 5
+0.000804426
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_3
+Sample size: 5
+0.001063611
+
+Alg: genAlg
+Function type: GenFun
+Function: maj_5
+Sample size: 5
+0.009905849
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_5
+Sample size: 5
+0.009588183
+
+Alg: genAlg
+Function type: GenFun
+Function: maj_7
+Sample size: 5
+0.055466775
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_7
+Sample size: 5
+0.056263734
+
+Alg: genAlg
+Function type: GenFun
+Function: maj_9
+Sample size: 5
+0.722859453
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_9
+Sample size: 5
+0.726759746
+
+Alg: genAlg
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+9.439270887
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+9.401992372
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_1
+Sample size: 5
+0.000116775
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_1
+Sample size: 5
+0.000135487
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_3
+Sample size: 5
+0.000655016
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_3
+Sample size: 5
+0.000729462
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_5
+Sample size: 5
+0.002489728
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_5
+Sample size: 5
+0.002553085
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_7
+Sample size: 5
+0.009320416
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_7
+Sample size: 5
+0.009046594
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_9
+Sample size: 5
+0.022111684
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_9
+Sample size: 5
+0.022525632
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.078199313
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.079169419
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_13
+Sample size: 5
+0.405246868
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_13
+Sample size: 5
+0.449570348
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_15
+Sample size: 5
+1.642585086
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_15
+Sample size: 5
+1.619830598
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_17
+Sample size: 5
+6.6428109
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_17
+Sample size: 5
+6.181021249
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_1
+Sample size: 5
+0.000104537
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_1
+Sample size: 5
+0.00009746
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_3
+Sample size: 5
+0.000149121
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_3
+Sample size: 5
+0.000151441
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_5
+Sample size: 5
+0.000350431
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_5
+Sample size: 5
+0.000335538
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_7
+Sample size: 5
+0.000743859
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_7
+Sample size: 5
+0.000804267
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_9
+Sample size: 5
+0.001572841
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_9
+Sample size: 5
+0.001589741
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_11
+Sample size: 5
+0.002955694
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_11
+Sample size: 5
+0.002940278
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_13
+Sample size: 5
+0.005503914
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_13
+Sample size: 5
+0.005501361
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_15
+Sample size: 5
+0.007266117
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_15
+Sample size: 5
+0.00729616
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_17
+Sample size: 5
+0.013698435
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_17
+Sample size: 5
+0.013910821
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_51
+Sample size: 5
+0.387793867
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_51
+Sample size: 5
+0.39016474
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_101
+Sample size: 5
+5.550085485
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_101
+Sample size: 5
+5.625671547
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_1
+Sample size: 5
+0.000076047
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_1
+Sample size: 5
+0.000070391
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_3
+Sample size: 5
+0.000104443
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_3
+Sample size: 5
+0.00010402
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_5
+Sample size: 5
+0.000163033
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_5
+Sample size: 5
+0.00013718
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_7
+Sample size: 5
+0.000209793
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_7
+Sample size: 5
+0.000190698
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_9
+Sample size: 5
+0.000308935
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_9
+Sample size: 5
+0.00028096
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_11
+Sample size: 5
+0.000413314
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_11
+Sample size: 5
+0.000406782
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_13
+Sample size: 5
+0.000579543
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_13
+Sample size: 5
+0.000550837
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_15
+Sample size: 5
+0.000808503
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_15
+Sample size: 5
+0.000795383
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_17
+Sample size: 5
+0.001109372
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_17
+Sample size: 5
+0.001122333
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_51
+Sample size: 5
+0.019016443
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_51
+Sample size: 5
+0.015040604
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_101
+Sample size: 5
+0.117134698
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_101
+Sample size: 5
+0.100895825
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_151
+Sample size: 5
+0.519964461
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_151
+Sample size: 5
+0.513147908
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_201
+Sample size: 5
+1.582406345
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_201
+Sample size: 5
+1.571364792
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_251
+Sample size: 5
+3.873655548
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_251
+Sample size: 5
+3.426885855
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_301
+Sample size: 5
+6.274982158
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_301
+Sample size: 5
+6.279233689
+
+---------- Piecewise complexity -----------------
+
+Alg: complexity
+Function type: GenFun
+Function: maj_1
+Sample size: 5
+0.000129015
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_1
+Sample size: 5
+0.000136916
+
+Alg: complexity
+Function type: GenFun
+Function: maj_3
+Sample size: 5
+0.000899683
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_3
+Sample size: 5
+0.001089085
+
+Alg: complexity
+Function type: GenFun
+Function: maj_5
+Sample size: 5
+0.011024842
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_5
+Sample size: 5
+0.01101458
+
+Alg: complexity
+Function type: GenFun
+Function: maj_7
+Sample size: 5
+0.073157607
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_7
+Sample size: 5
+0.072839512
+
+Alg: complexity
+Function type: GenFun
+Function: maj_9
+Sample size: 5
+0.850140632
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_9
+Sample size: 5
+0.997045674
+
+Alg: complexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+11.00907103
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+10.198018833
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_1
+Sample size: 5
+0.000134194
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_1
+Sample size: 5
+0.000162623
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_3
+Sample size: 5
+0.000764209
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_3
+Sample size: 5
+0.000875448
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_5
+Sample size: 5
+0.002834017
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_5
+Sample size: 5
+0.003005777
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_7
+Sample size: 5
+0.010210711
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_7
+Sample size: 5
+0.011371378
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_9
+Sample size: 5
+0.023435656
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_9
+Sample size: 5
+0.023644737
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.090707657
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.082761289
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_13
+Sample size: 5
+0.519939679
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_13
+Sample size: 5
+0.531894141
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_15
+Sample size: 5
+2.321323665
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_15
+Sample size: 5
+2.26909643
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_17
+Sample size: 5
+6.307277018
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_17
+Sample size: 5
+6.943775564
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_1
+Sample size: 5
+0.000112004
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_1
+Sample size: 5
+0.000107255
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_3
+Sample size: 5
+0.000422683
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_3
+Sample size: 5
+0.000247849
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_5
+Sample size: 5
+0.000922469
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_5
+Sample size: 5
+0.000705852
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_7
+Sample size: 5
+0.001908412
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_7
+Sample size: 5
+0.001948516
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_9
+Sample size: 5
+0.004675129
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_9
+Sample size: 5
+0.004758067
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_11
+Sample size: 5
+0.011782604
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_11
+Sample size: 5
+0.008923776
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_13
+Sample size: 5
+0.014311455
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_13
+Sample size: 5
+0.014399982
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_15
+Sample size: 5
+0.025815095
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_15
+Sample size: 5
+0.023363158
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_17
+Sample size: 5
+0.038588066
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_17
+Sample size: 5
+0.043041285
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_51
+Sample size: 5
+4.39362077
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_51
+Sample size: 5
+4.379017666
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_1
+Sample size: 5
+0.000099402
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_1
+Sample size: 5
+0.000091142
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_3
+Sample size: 5
+0.000146612
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_3
+Sample size: 5
+0.00013625
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_5
+Sample size: 5
+0.000198151
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_5
+Sample size: 5
+0.000201838
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_7
+Sample size: 5
+0.000286
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_7
+Sample size: 5
+0.000282484
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_9
+Sample size: 5
+0.000483744
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_9
+Sample size: 5
+0.0003854
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_11
+Sample size: 5
+0.000561872
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_11
+Sample size: 5
+0.000535546
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_13
+Sample size: 5
+0.000783673
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_13
+Sample size: 5
+0.000753382
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_15
+Sample size: 5
+0.001037706
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_15
+Sample size: 5
+0.00099926
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_17
+Sample size: 5
+0.001525134
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_17
+Sample size: 5
+0.001306732
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_51
+Sample size: 5
+0.02033572
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_51
+Sample size: 5
+0.019322718
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_101
+Sample size: 5
+0.119660734
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_101
+Sample size: 5
+0.11189976
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_151
+Sample size: 5
+0.546919774
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_151
+Sample size: 5
+0.549533608
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_201
+Sample size: 5
+1.660394298
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_201
+Sample size: 5
+1.625756154
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_251
+Sample size: 5
+3.503609873
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_251
+Sample size: 5
+3.506391973
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_301
+Sample size: 5
+6.287815033
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_301
+Sample size: 5
+6.285601487
+
+--------- explicitComplexity ---------------
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_1
+Sample size: 5
+0.000092538
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_1
+Sample size: 5
+0.000104173
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_3
+Sample size: 5
+0.000765322
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_3
+Sample size: 5
+0.000869035
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_5
+Sample size: 5
+0.007395654
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_5
+Sample size: 5
+0.007584026
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_7
+Sample size: 5
+0.033640876
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_7
+Sample size: 5
+0.033502776
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_9
+Sample size: 5
+0.186271677
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_9
+Sample size: 5
+0.187683937
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+1.350765109
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+1.355039196
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_1
+Sample size: 5
+0.000091387
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_1
+Sample size: 5
+0.000113762
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_3
+Sample size: 5
+0.000638734
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_3
+Sample size: 5
+0.000715226
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_5
+Sample size: 5
+0.002335525
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_5
+Sample size: 5
+0.002491393
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_7
+Sample size: 5
+0.006921028
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_7
+Sample size: 5
+0.006857718
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_9
+Sample size: 5
+0.011147984
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_9
+Sample size: 5
+0.010660741
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.015529003
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.015702176
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_13
+Sample size: 5
+0.027296386
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_13
+Sample size: 5
+0.027366751
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_15
+Sample size: 5
+0.050020407
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_15
+Sample size: 5
+0.049372217
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_17
+Sample size: 5
+0.089093498
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_17
+Sample size: 5
+0.089946634

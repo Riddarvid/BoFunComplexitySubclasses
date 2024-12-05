@@ -269,8 +269,8 @@ getImplicitMemoFun funTypeStr funStr = case (funTypeStr, head fun) of
   ("BothGenFun", "maj")       -> ImplicitMemoFun $ mkNCGF $ Gen.majFun majN
   ("ThresholdFun", "maj")     -> ImplicitMemoFun $ Thresh.majFun majN
   ("SymmetricFun", "maj")     -> ImplicitMemoFun $ Symm.majFun majN
-  ("IterThresholdFun", "maj") -> ImplicitMemoFun $ Thresh.iteratedMajFun 1 majN
-  ("IterSymmetricFun", "maj") -> ImplicitMemoFun $ Symm.iteratedMajFun 1 majN
+  ("IterThresholdFun", "maj") -> ImplicitMemoFun $ Thresh.iteratedMajFun majN 1
+  ("IterSymmetricFun", "maj") -> ImplicitMemoFun $ Symm.iteratedMajFun majN 1
   ("GenFun", "iterMaj")           -> ImplicitMemoFun $ Gen.iteratedMajFun iterMajBits iterMajLevels
   ("NormalizedGenFun", "iterMaj") -> ImplicitMemoFun $ mkNGF $ Gen.iteratedMajFun iterMajBits iterMajLevels
   ("CanonicalGenFun", "iterMaj")  -> ImplicitMemoFun $ mkCGF $ Gen.iteratedMajFun iterMajBits iterMajLevels
