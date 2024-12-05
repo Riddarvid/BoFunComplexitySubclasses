@@ -9,7 +9,7 @@ module Complexity.BoFun (
   outgoing,
   reachable,
   Constable(mkConst),
-  shrinkFun
+  shrinkBoFun
 ) where
 
 import qualified Data.Set as Set
@@ -35,12 +35,8 @@ outgoing u = do
 reachable :: (Ord f, BoFun f i) => f -> Set.Set f
 reachable = dfs outgoing
 
-shrinkFun :: BoFun f i => f -> [f]
-shrinkFun f = case vars of
-  []    -> []
-  vars' -> [setBit (v, val) f | v <- vars', val <- [False, True]]
-  where
-    vars = variables f
-
 class Constable f where
   mkConst :: Bool -> f
+
+shrinkBoFun :: BoFun f i => f -> [f]
+shrinkBoFun lf = concatMap (\i -> [setBit (i, False) lf, setBit (i, True) lf]) $ variables lf

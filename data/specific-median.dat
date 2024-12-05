@@ -50,39 +50,39 @@ Sample size: 5
 
 Alg: genAlg
 Function type: GenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000836625
+0.652688976
 
 Alg: genAlg
 Function type: CanonicalGenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000928671
+0.651867966
 
 Alg: genAlg
 Function type: NormalizedGenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000661852
+0.061016555
 
 Alg: genAlg
 Function type: BothGenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000736073
+0.06051835
 
 Alg: genAlg
 Function type: IterThresholdFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000106264
+0.021483054
 
 Alg: genAlg
 Function type: IterSymmetricFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000107146
+0.020083988
 
 -------------------------------------
 
@@ -138,38 +138,113 @@ Sample size: 5
 
 Alg: complexity
 Function type: GenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000938366
+0.966664211
 
 Alg: complexity
 Function type: CanonicalGenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000989174
+0.961128935
 
 Alg: complexity
 Function type: NormalizedGenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000738316
+0.097428924
 
 Alg: complexity
 Function type: BothGenFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000819642
+0.094211344
 
 Alg: complexity
 Function type: IterThresholdFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.00012526
+0.050318111
 
 Alg: complexity
 Function type: IterSymmetricFun
-Function: maj_3_2
+Function: iterMaj_3_2
 Sample size: 5
-0.000129882
+0.053427028
 
 --------------------------------------
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+1.354271346
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+1.362127982
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.015216734
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.015577532
+
+-------------------------------------
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+1.354271346
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+1.362127982
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.015216734
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.015577532
+
+  ~/pr/exploring-level-p   exploration *2 !14 ?1 ❯ python bench.py                    20s  ghc-9.4.8  15:11:09
+Alg: explicitComplexity
+Function type: GenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.577114604
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.578612003
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.062683966
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.063380128

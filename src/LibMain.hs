@@ -17,13 +17,15 @@ import           Algebraic                                   (AlgRep (AlgRep),
                                                               Algebraic (Algebraic, Rational),
                                                               translateRational)
 import           Arity                                       (ArbitraryArity (arbitraryArity))
-import           Complexity.BoFun                            (BoFun)
-import           Complexity.GenAlg                           (genAlgThinMemoPoly)
+import           Complexity.BoFun                            (BoFun (isConst, setBit, variables))
+import           Complexity.GenAlg                           (genAlg,
+                                                              genAlgThinMemoPoly)
 import           Complexity.Piecewise                        (complexity,
                                                               complexityAndAlgorithms)
 import           Data.Function.Memoize                       (Memoizable)
 import           Data.List.NonEmpty                          (NonEmpty ((:|)))
 import           Data.Ratio                                  ((%))
+import           Data.Set                                    (Set)
 import           Data.Time                                   (NominalDiffTime,
                                                               diffUTCTime,
                                                               getCurrentTime)
@@ -57,22 +59,26 @@ import           Subclasses.GenFun.GenFun                    (GenFun (GenFun),
                                                               prettyPrintGenFun)
 import           Subclasses.GenFun.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun)
 import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun)
-import           Subclasses.Iterated.Iterated                (Iterated' (Id),
+import           Subclasses.Iterated.Iterated                (Iterated,
+                                                              Iterated' (Id, Iterated),
                                                               iterateFun)
 import           Subclasses.Iterated.IteratedTH              ()
-import           Subclasses.Lifted                           ()
+import           Subclasses.Lifted                           (Lifted (Lifted))
 import           Subclasses.Symmetric                        (mkNonSymmSymmetricFun,
                                                               mkSymmetricFun)
 import qualified Subclasses.Threshold                        as Thresh
-import           Subclasses.Threshold                        (ThresholdFun (ThresholdFun))
+import           Subclasses.Threshold                        (NonSymmThresholdFun (NonSymmThresholdFun),
+                                                              Threshold (Threshold),
+                                                              ThresholdFun (ThresholdFun))
 import           System.Environment                          (getArgs)
 import           Test.QuickCheck                             (Arbitrary (arbitrary),
                                                               generate)
 
+testFun :: Iterated NonSymmThresholdFun
+testFun = Iterated (NonSymmThresholdFun (Threshold (1,1))) [Iterated (NonSymmThresholdFun (Threshold (1,2))) [Id,Id]]
+
 main :: IO ()
-main = do
-  let f = Thresh.iteratedMajFun 3 2
-  measureTimePiecewiseComplexity f >>= print
+main = measureSpecificStdOut
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

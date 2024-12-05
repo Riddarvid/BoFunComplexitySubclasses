@@ -17,6 +17,10 @@ En slutsats man verkar kunna dra från dessa diagram är att computeMin inte dir
 
 En annan slutsats är att computeMin' verkar köra en faktor 10 snabbare än computeMin, dvs fast BDD comparison har hjälpt.
 
+## Comparing threshold for same number of bits but with differently skewed thresholds
+
+Hypotes: Det tar längre tid att beräkna komplexiteten för en thresholdfun om thresholdet är långt från att uppnås.
+
 ## Box plots av random funs
 
 Vi kommer köra genererade 100 funktioner, men bara mäta varje funktion en gång.

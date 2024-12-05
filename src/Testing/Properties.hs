@@ -17,7 +17,8 @@ module Testing.Properties (
   propAlgebraicTranslation,
   propMaxNumCritical,
   propCriticalSwitches,
-  propKnownCrits
+  propKnownCrits,
+  propIteratedNoLoop
 ) where
 import           Algebraic                          (Algebraic (Rational),
                                                      signAtAlgebraic,
@@ -49,15 +50,19 @@ import           Subclasses.GenFun.GenFun           (GenFun, eval,
                                                      generateGenFun, notG,
                                                      toGenFun)
 import           Subclasses.GenFun.NormalizedGenFun (mkNGF, ngfArity)
+import           Subclasses.Iterated.Iterated       (Iterated)
+import           Subclasses.Iterated.IteratedTH     ()
+import           Subclasses.LiftedTH                ()
 import qualified Subclasses.Symmetric               as Symm
 import           Subclasses.Symmetric               (SymmetricFun)
 import qualified Subclasses.Threshold               as Thresh
+import           Subclasses.Threshold               (NonSymmThresholdFun)
 import           Test.QuickCheck                    (Arbitrary (arbitrary, shrink),
                                                      Property,
                                                      Testable (property),
                                                      chooseInt, conjoin,
-                                                     elements, sized, vector,
-                                                     (=/=), (===))
+                                                     elements, sized, total,
+                                                     vector, (=/=), (===))
 import           Test.QuickCheck.Gen                (Gen)
 
 ----------------- Types --------------------------------------
@@ -138,6 +143,9 @@ propComputeMinCorrect gf =
 -- complexity and explicitComplexity should yield the same result for the same function
 propComputeMin'Correct :: GenFun -> Property
 propComputeMin'Correct gf = complexity gf === explicitComplexity gf
+
+propIteratedNoLoop :: Iterated NonSymmThresholdFun -> Property
+propIteratedNoLoop = total . complexity
 
 ------------------- Conversions ----------------------------
 

@@ -27,7 +27,7 @@ import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
 import           GHC.Generics               (Generic)
 import           Subclasses.Lifted          (Lifted (Lifted))
 import           Test.Feat                  (enumerate)
-import           Test.QuickCheck            (Arbitrary (arbitrary), Gen,
+import           Test.QuickCheck            (Arbitrary (arbitrary, shrink), Gen,
                                              chooseInt, oneof, sized)
 
 type SubFun f = f (Iterated' f)
@@ -103,11 +103,14 @@ instance Constable (Iterated' f) where
   mkConst = Const
 
 -- Size is used to determine where the tree should end
-instance (ArbitraryArity (SubFun f)) => Arbitrary (Iterated' f) where
+instance (Arbitrary (SubFun f), ArbitraryArity (SubFun f)) => Arbitrary (Iterated' f) where
   arbitrary :: Gen (Iterated' f)
   arbitrary = sized $ \n -> do
     n' <- chooseInt (0, n)
     arbitraryArity n'
+  shrink :: Iterated' f -> [Iterated' f]
+  shrink (Iterated' f) = [Const False, Const True, Id] ++ map Iterated' (shrink f)
+  shrink _ = []
 
 instance (ArbitraryArity (SubFun f)) => ArbitraryArity (Iterated' f) where
   arbitraryArity :: Int -> Gen (Iterated' f)

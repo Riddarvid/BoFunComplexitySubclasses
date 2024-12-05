@@ -30,7 +30,7 @@ import           BDD.BDD                   (BDDa, allNAryBDDs,
 import qualified BDD.BDD                   as BDD
 import           BDD.BDDInstances          ()
 import           Complexity.Algor          (Algor (..))
-import           Complexity.BoFun          (BoFun (..), shrinkFun)
+import           Complexity.BoFun          (BoFun (..), shrinkBoFun)
 import           Control.DeepSeq           (NFData)
 import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
                                             restrict, support, true)
@@ -80,7 +80,7 @@ instance Arbitrary GenFun where
   shrink gf = case gf of
     (GenFun (Leaf _) 0) -> []
     (GenFun (Leaf _) n) -> [GenFun (Leaf v') n' | n' <- [0 .. n - 1], v' <- [False, True]]
-    _                   -> shrinkFun gf
+    _                   -> shrinkBoFun gf
 
 instance ArbitraryArity GenFun where
   arbitraryArity :: Int -> Gen GenFun

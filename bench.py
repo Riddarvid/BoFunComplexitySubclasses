@@ -34,7 +34,8 @@ def medianSpecific(alg, funType, fun, sampleSize):
 
 flatFunTypes = ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun", "ThresholdFun", "IterThresholdFun", "SymmetricFun", "IterSymmetricFun"]
 iterFunTypes = ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun", "IterThresholdFun", "IterSymmetricFun"]
+hashableTypes = ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun"]
 
-for ft in iterFunTypes:
-  print(medianSpecific('genAlg', ft, "iterMaj_3_2", 5))
+for ft in hashableTypes:
+  print(medianSpecific('explicitComplexity', ft, "iterMaj_3_2", 5))
   print()

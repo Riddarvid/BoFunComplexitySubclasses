@@ -10,7 +10,8 @@ import           Testing.Properties (propAlgebraicTranslation,
                                      propFlipInputComplexity,
                                      propFlipOutputComplexity,
                                      propFlipOutputCorrect, propIterRepsCorrect,
-                                     propKnownCrits, propMaxNumCritical,
+                                     propIteratedNoLoop, propKnownCrits,
+                                     propMaxNumCritical,
                                      propNormalizedComplexity,
                                      propNormalizedCorrectVars,
                                      propRationalSign, propRepsCorrect)
@@ -22,6 +23,7 @@ stdArgs' = stdArgs{maxSuccess = 200}
 
 allProps :: [Check]
 allProps = [
+  Check propIteratedNoLoop stdArgs'{maxSize = 10},
   Check propRationalSign stdArgs'{maxSize = 5},
   Check propAlgebraicTranslation stdArgs'{maxSize = 7},
   Check propNormalizedCorrectVars stdArgs'{maxSize = 10},

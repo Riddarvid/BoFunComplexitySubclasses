@@ -60,6 +60,7 @@ library
       Subclasses.Iterated.IteratedSimplified
       Subclasses.Iterated.IteratedTH
       Subclasses.Lifted
+      Subclasses.LiftedTH
       Subclasses.Symmetric
       Subclasses.Threshold
       Testing.AllProperties

@@ -25,7 +25,6 @@ import           Data.Time                                   (NominalDiffTime,
                                                               diffUTCTime,
                                                               getCurrentTime)
 import           Data.Vector                                 (Vector, fromList)
-import           Debug.Trace                                 (trace, traceShow)
 import           GHC.Utils.Misc                              (split)
 import           Statistics.Sample                           (meanVariance,
                                                               range)
@@ -39,6 +38,7 @@ import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun,
                                                               mkNGF)
 import           Subclasses.Iterated.Iterated                (Iterated)
 import           Subclasses.Iterated.IteratedTH              ()
+import           Subclasses.LiftedTH                         ()
 import qualified Subclasses.Symmetric                        as Symm
 import           Subclasses.Symmetric                        (NonSymmSymmetricFun,
                                                               SymmetricFun)
@@ -299,7 +299,7 @@ getExplicitMemoFun funTypeStr funStr = case (funTypeStr, head fun) of
   ("NormalizedGenFun", "iterMaj") -> ExplicitMemoFun $ mkNGF $ Gen.iteratedMajFun iterMajBits iterMajLevels
   ("CanonicalGenFun", "iterMaj")  -> ExplicitMemoFun $ mkCGF $ Gen.iteratedMajFun iterMajBits iterMajLevels
   ("BothGenFun", "iterMaj")       -> ExplicitMemoFun $ mkNCGF $ Gen.iteratedMajFun iterMajBits iterMajLevels
-  _ -> error "Invalid function"
+  _ -> error ("Invalid function: " ++ show (funTypeStr, funStr))
   where
     fun = parseFun funStr
     majN = read (fun !! 1)
