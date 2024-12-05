@@ -12,14 +12,14 @@ module Subclasses.Lifted (
   Lifted(Lifted),
 ) where
 import           Arity                      (ArbitraryArity (arbitraryArity))
-import           Complexity.BoFun           (BoFun (..))
-import           Control.Arrow              ((>>>))
+import           Complexity.BoFun           (BoFun (..), shrinkBoFun)
 import           Control.DeepSeq            (NFData)
-import           Data.Function.Memoize      (Memoizable, memoize)
 import           Data.Maybe                 (fromJust)
 import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
 import           GHC.Generics               (Generic)
-import           Test.QuickCheck            (Gen)
+import           Test.QuickCheck            (Arbitrary (shrink), Gen, chooseInt,
+                                             sized)
+import           Test.QuickCheck.Arbitrary  (arbitrary)
 import           Utils                      (generatePartition, indent,
                                              naturals)
 
@@ -47,12 +47,12 @@ showSubFuns = unlines . map prettyShow
 
 instance (NFData f, NFData g) => NFData (Lifted f g)
 
-instance (Memoizable f, Memoizable g) => Memoizable (Lifted f g) where
+{-instance (Memoizable f, Memoizable g) => Memoizable (Lifted f g) where
   memoize :: (Lifted f g -> v) -> Lifted f g -> v
   memoize f = destruct >>> memoize (construct >>> f)
     where
       destruct (Lifted' f' gs) = (f', gs)
-      construct (f', gs) = Lifted' f' gs
+      construct (f', gs) = Lifted' f' gs-}
 
 reduceConstants :: (BoFun f Int, BoFun g i) => Lifted f g -> Lifted f g
 reduceConstants (Lifted' f gs) = case v of
@@ -77,7 +77,7 @@ instance (BoFun f Int, BoFun g j) => BoFun (Lifted f g) (Int, j) where
     return (i, j)
   setBit :: ((Int, j), Bool) -> Lifted f g -> Lifted f g
   setBit ((i, j), v) lf = case isConst subFun' of
-    Nothing -> lf{lSubFuns = start ++ (subFun : end)}
+    Nothing -> lf{lSubFuns = start ++ (subFun' : end)}
     Just v' -> lf{lFun = setBit (i, v') $ lFun lf, lSubFuns = start ++ end}
     where
       (start, subFun, end) = fromJust $ splitList i $ lSubFuns lf
@@ -94,6 +94,14 @@ deleteAt :: Int -> [a] -> [a]
 deleteAt _ []       = []
 deleteAt 0 (_ : xs) = xs
 deleteAt n (_ : xs) = deleteAt (n - 1) xs
+
+instance (ArbitraryArity f, ArbitraryArity g, BoFun f Int, BoFun g j) => Arbitrary (Lifted f g) where
+  arbitrary :: Gen (Lifted f g)
+  arbitrary = sized $ \n -> do
+    n' <- chooseInt (0, n)
+    arbitraryArity n'
+  shrink :: Lifted f g -> [Lifted f g]
+  shrink = shrinkBoFun
 
 instance (ArbitraryArity f, ArbitraryArity g) => ArbitraryArity (Lifted f g) where
   arbitraryArity :: Int -> Gen (Lifted f g)
