@@ -27,7 +27,7 @@ import           Utils                      (generatePartition, indent,
 data Lifted f g = Lifted' {
   lFun     :: f,
   lSubFuns :: [g]
-} deriving (Generic, Show)
+} deriving (Generic, Show, Read)
 
 pattern Lifted :: (BoFun f Int, BoFun g i) => f -> [g] -> Lifted f g
 pattern Lifted f gs <- Lifted' f gs where

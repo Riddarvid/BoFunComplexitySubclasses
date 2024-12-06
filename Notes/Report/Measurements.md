@@ -23,7 +23,7 @@ Hypotes: Det tar längre tid att beräkna komplexiteten för en thresholdfun om 
 
 ## Box plots av random funs
 
-Vi kommer köra genererade 100 funktioner, men bara mäta varje funktion en gång.
+Vi kommer köra 100 genererade funktioner, men bara mäta varje funktion en gång.
 
 En slutsats man kan dra är att vi ser väldigt stor varians för itererade funktioner. Detta beror troligen på att en väldigt stor itererad struktur ändå kan representera en funktion med få bitar. Potentiell future work att använda typ reduction rules för att hålla ned storleken på trädet.
 

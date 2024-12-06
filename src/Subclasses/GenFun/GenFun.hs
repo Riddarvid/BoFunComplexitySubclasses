@@ -48,7 +48,7 @@ import           Utils                     (listToVarAssignment)
 
 -- The internal BDD should only ever be dependent on variables in [1..n]
 data GenFun = GenFun (BDD AscOrder) Int
-  deriving(Eq, Show, Generic)
+  deriving(Eq, Show, Generic, Read)
 
 instance Hashable GenFun
 

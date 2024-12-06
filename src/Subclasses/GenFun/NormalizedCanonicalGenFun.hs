@@ -18,7 +18,7 @@ import           Subclasses.GenFun.NormalizedGenFun (normalizeGenFun)
 import           Test.QuickCheck                    (Gen)
 
 newtype NormalizedCanonicalGenFun = NCGF GenFun
-  deriving (Generic, Eq, Show)
+  deriving (Generic, Eq, Show, Read)
 
 $(deriveMemoizable ''NormalizedCanonicalGenFun)
 

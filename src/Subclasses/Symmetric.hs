@@ -72,7 +72,7 @@ instance Memoizable a => Memoizable (Seq a) where
 --------- Symmetric Functions ---------------------
 
 newtype SymmetricFun = SymmetricFun Result
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic, Read)
 
 instance PrettyBoFun SymmetricFun where
   prettyShow :: SymmetricFun -> String
@@ -149,7 +149,7 @@ instance Constable SymmetricFun where
   mkConst val = SymmetricFun (val, Seq.singleton 1)
 
 newtype NonSymmSymmetricFun = SymmetricFun' SymmetricFun
-  deriving (Memoizable, NFData, ArbitraryArity)
+  deriving (Memoizable, NFData, ArbitraryArity, Show, Read)
 
 instance PrettyBoFun NonSymmSymmetricFun where
   prettyShow :: NonSymmSymmetricFun -> String

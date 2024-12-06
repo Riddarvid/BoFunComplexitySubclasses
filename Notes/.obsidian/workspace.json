@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Report/Measurements.md",
+                "file": "Admin/TODO Report.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Measurements"
+              "title": "TODO Report"
             }
           }
         ]
@@ -164,21 +164,21 @@
   },
   "active": "71e7181bed081195",
   "lastOpenFiles": [
-    "Report/Felaktiga mätresultat.md",
-    "Bug.md",
-    "Report/Measurements.md",
-    "General knowledge/Saker att ta med sig från Julias thesis.md",
-    "General knowledge/How to write a great report.md",
-    "Admin/Plan sista veckorna.md",
-    "General knowledge/Texter för vår egen förståelse/Memoize - Arvid.md",
-    "Admin/Frågor till nästa möte.md",
-    "Admin/TODO Report.md",
-    "Admin/Log.md",
-    "Results/Data/randomFuns.md",
     "Admin/TODO generell.md",
     "Admin/TODO för veckan.md",
-    "Results/Data/Exploring PWs.md",
+    "Admin/Plan sista veckorna.md",
+    "Admin/Log.md",
+    "Admin/Frågor till nästa möte.md",
+    "Report/Measurements.md",
     "Report/Storyboard.md",
+    "Report/Felaktiga mätresultat.md",
+    "Results/Data/randomFuns.md",
+    "Bug.md",
+    "General knowledge/Saker att ta med sig från Julias thesis.md",
+    "General knowledge/How to write a great report.md",
+    "General knowledge/Texter för vår egen förståelse/Memoize - Arvid.md",
+    "Admin/TODO Report.md",
+    "Results/Data/Exploring PWs.md",
     "General knowledge/Texter för vår egen förståelse/Vår förståelse av PWs.md",
     "Frågor till Christian.md",
     "Overall efficiency/Ideas for memoizing BDDs.md",

@@ -45,7 +45,7 @@ import           Utils                        (Square, naturals, partitions)
 -- The sum of these thresholds equals the number of inputs plus one.
 -- Each threshold is non-negative.
 newtype Threshold = Threshold (Square Int)
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic, Read)
 
 instance NFData Threshold
 
@@ -73,7 +73,7 @@ reduceThreshold v (Threshold (nt, nf)) = if v
 ---------------------- Threshold function ----------------------------
 
 newtype ThresholdFun = ThresholdFun Threshold
-  deriving (Eq, Ord, Generic, Show)
+  deriving (Eq, Ord, Generic, Show, Read)
 
 $(deriveMemoizable ''ThresholdFun)
 
@@ -103,7 +103,7 @@ thresholdFunArity :: ThresholdFun -> Int
 thresholdFunArity (ThresholdFun t) = thresholdArity t
 
 newtype NonSymmThresholdFun = ThresholdFun' ThresholdFun
-  deriving (Memoizable, NFData, Show, ArbitraryArity)
+  deriving (Memoizable, NFData, Show, ArbitraryArity, Read)
 
 pattern NonSymmThresholdFun :: Threshold -> NonSymmThresholdFun
 pattern NonSymmThresholdFun th = ThresholdFun' (ThresholdFun th)

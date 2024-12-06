@@ -23,7 +23,7 @@ import           Subclasses.GenFun.GenFun (GenFun (GenFun))
 import           Test.QuickCheck          (Gen)
 
 newtype CanonicalGenFun = CanonicalGenFun GenFun
-  deriving (Generic, Eq, Show)
+  deriving (Generic, Eq, Show, Read)
 
 $(deriveMemoizable ''CanonicalGenFun)
 

@@ -37,6 +37,8 @@ data Iterated' f = Const Bool | Id | Iterated' (SubFun f)
 
 deriving instance (Show (SubFun f)) => Show (Iterated' f)
 
+deriving instance (Read (SubFun f)) => Read (Iterated' f)
+
 instance (PrettyBoFun (SubFun f)) => PrettyBoFun (Iterated' f) where
   prettyShow :: Iterated' f -> String
   prettyShow (Const False) = "F"

@@ -2,17 +2,7 @@
 ## Kod
 
 - Hög prio
-	- Sätt upp de mät-strukturer vi behöver
 	- Sista cleanup innan vi lämnar in
-- Låg prio, kan skippas
-	- Pretty printing av funktioner
-## Mätningar
-
-- Bestäm vad vi vill mäta och presentera i resultatdelen, även hur vi vill presentera det.
-- Mät egenskaper hos de klasser vi har undersökt
-- Utforska iterated majority mer, just nu har vi mycket flat maj
-- Eventuellt: Kolla på funktioner med konstant komplexitet
-	- För dessa finns en definitivt snabbast evalueringsordning
 ## Svåra grejer
 
  - Räkning av funktioner

@@ -1,22 +1,156 @@
-All data 100 runs, no resampling
+All data 100 runs
+Data used found in data/samples.dat
 
-GenAlg
+Alg: genAlg
+Function type: GenFun
+Arity: 5
+(0.012014991, 0.0287688515, 0.036994514, 0.044532585250000006, 0.091645933)
 
-GenFun 5 (0.015162463s,0.026932931s,0.038484049s,0.0532274455s,0.099598193s)
-Canonical 5 (0.010789664s,0.032718756s,0.0466850755s,0.0644776695s,0.151337355s)
-Normalized 5 (0.005445999s,0.033971525s,0.045607964s,0.0562351735s,0.135027673s)
-Both 5 (0.01079098s,0.0274261855s,0.0423368925s,0.065086657s,0.128903214s)
+Alg: genAlg
+Function type: CanonicalGenFun
+Arity: 5
+(0.014879778, 0.027943563999999997, 0.034465803, 0.044607665500000004, 0.069417073)
 
-Threshold 5 (0.000002004s,0.000007464s,0.0000076305s,0.0000077435s,0.000282843s)
-Threshold 10 (0.000001967s,0.00000658s,0.000008643s,0.0000096765s,0.000555772s)
-Threshold 150 (0.000010162s,0.0000647575s,0.001013529s,0.005697157s,0.625997362s)
+Alg: genAlg
+Function type: NormalizedGenFun
+Arity: 5
+(0.017439712, 0.03068520725, 0.0373935695, 0.04931033975, 0.096674803)
 
-Symmetric 5
-Symmetric 10
-Symmetric 150
+Alg: genAlg
+Function type: BothGenFun
+Arity: 5
+(0.015584948, 0.03128734825, 0.036523591499999994, 0.0462887225, 0.071954259)
 
-IterThresh 5
-IterThresh 10
+Alg: genAlg
+Function type: ThresholdFun
+Arity: 10
+(6.7376e-05, 0.00018298175, 0.0003029145, 0.000348541, 0.000930642)
 
-IterSymm 5
-IterSymm 10
+Alg: genAlg
+Function type: ThresholdFun
+Arity: 15
+(6.6657e-05, 0.00038015, 0.0005843775, 0.00076798725, 0.002183446)
+
+Alg: genAlg
+Function type: ThresholdFun
+Arity: 150
+(6.9991e-05, 0.15423274799999998, 0.30721477399999997, 0.41484014625, 0.535324944)
+
+Alg: genAlg
+Function type: SymmetricFun
+Arity: 10
+(0.00029764, 0.00052103375, 0.0005840475, 0.00068530225, 0.001840183)
+
+Alg: genAlg
+Function type: SymmetricFun
+Arity: 15
+(0.001050196, 0.00139539375, 0.0015320895, 0.0017708770000000001, 0.005126687)
+
+Alg: genAlg
+Function type: SymmetricFun
+Arity: 150
+(1.525500634, 1.84010684825, 1.9685788325, 2.1084727670000003, 2.734446834)
+
+Alg: genAlg
+Function type: IterThresholdFun
+Arity: 10
+(0.000192146, 0.000321237, 0.0010652535, 0.007148749750000001, 0.268525232)
+
+Alg: genAlg
+Function type: IterThresholdFun
+Arity: 15
+(0.000282801, 0.0004301055, 0.004377209, 0.040537804999999996, 7.624217951)
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Arity: 5
+(8.5448e-05, 0.000214948, 0.0011473035, 0.003494551, 0.059715483)
+
+---------------- complexity ------------------------
+
+Alg: complexity
+Function type: GenFun
+Arity: 5
+(0.011634422, 0.01672857225, 0.017988447, 0.01913499375, 0.024075958)
+
+Alg: complexity
+Function type: CanonicalGenFun
+Arity: 5
+(0.014712157, 0.01719353975, 0.0184401425, 0.02000053625, 0.02280095)
+
+Alg: complexity
+Function type: NormalizedGenFun
+Arity: 5
+(0.008711569, 0.017665598, 0.0188221325, 0.0200040365, 0.029270342)
+
+Alg: complexity
+Function type: BothGenFun
+Arity: 5
+(0.013014903, 0.0180212425, 0.019345427, 0.020602022, 0.026691826)
+
+Alg: complexity
+Function type: ThresholdFun
+Arity: 10
+(5.3266e-05, 0.000322791, 0.000407216, 0.00045365675, 0.001137782)
+
+Alg: complexity
+Function type: ThresholdFun
+Arity: 15
+(5.2854e-05, 0.000553649, 0.000839087, 0.00110194975, 0.003083464)
+
+Alg: complexity
+Function type: ThresholdFun
+Arity: 150
+(5.2505e-05, 0.17379962675, 0.33567907350000004, 0.4554767335, 0.582514221)
+
+Alg: complexity
+Function type: SymmetricFun
+Arity: 10
+(0.000495489, 0.00062603575, 0.0006837815, 0.000768391, 0.001854849)
+
+Alg: complexity
+Function type: SymmetricFun
+Arity: 15
+(0.001259553, 0.00164601075, 0.00182339, 0.002327112, 0.005405524)
+
+Alg: complexity
+Function type: SymmetricFun
+Arity: 150
+(1.63976437, 1.92945965875, 2.043610906, 2.189330809, 3.132001598)
+
+Alg: complexity
+Function type: IterThresholdFun
+Arity: 10
+(0.000156134, 0.0002748625, 0.0010761105, 0.006356945, 0.153447054)
+
+Alg: complexity
+Function type: IterThresholdFun
+Arity: 15
+(0.000256737, 0.0003721565, 0.00375662, 0.044110702, 6.479773802)
+
+Alg: complexity
+Function type: IterSymmetricFun
+Arity: 5
+(7.7926e-05, 0.00021113175, 0.0010240035, 0.00292836325, 0.016004397)
+
+-------------- explicitComplexity --------------------
+
+Alg: explicitComplexity
+Function type: GenFun
+Arity: 5
+(0.008553251, 0.01507140775, 0.016268519500000002, 0.017719055, 0.02107578)
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Arity: 5
+(0.012771618, 0.016035849749999997, 0.017280608, 0.018735052, 0.022625964)
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Arity: 5
+(0.008356727, 0.016426729, 0.0176789805, 0.019015782250000002, 0.022785443)
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Arity: 5
+(0.010412653, 0.01686393425, 0.017873820999999998, 0.0194404725, 0.025089101)

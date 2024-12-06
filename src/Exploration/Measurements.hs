@@ -7,7 +7,9 @@ module Exploration.Measurements (
   measureTimePiecewiseExplicitComplexity,
   measureTime,
   measureSingleStdOut,
-  measureSpecificStdOut
+  measureSpecificStdOut,
+  generateSamplesToFile,
+  measureSampleStdOutArgs
 ) where
 import           Arity                                       (ArbitraryArity (arbitraryArity))
 import           Complexity.BoFun                            (BoFun)
@@ -20,7 +22,7 @@ import           Control.Monad                               (replicateM, void)
 import           Data.DecisionDiagram.BDD                    (numNodes)
 import           Data.Function.Memoize                       (Memoizable)
 import           Data.Hashable                               (Hashable)
-import           Data.List                                   (sort)
+import           Data.List                                   (find, sort)
 import           Data.Time                                   (NominalDiffTime,
                                                               diffUTCTime,
                                                               getCurrentTime)
@@ -44,7 +46,8 @@ import           Subclasses.Symmetric                        (NonSymmSymmetricFu
                                                               SymmetricFun)
 import qualified Subclasses.Threshold                        as Thresh
 import           Subclasses.Threshold                        (NonSymmThresholdFun,
-                                                              ThresholdFun)
+                                                              Threshold (Threshold),
+                                                              ThresholdFun (ThresholdFun))
 import           System.Environment                          (getArgs)
 import           Test.QuickCheck                             (generate)
 
@@ -317,3 +320,90 @@ measureExplicitComplexity' (ExplicitMemoFun f) = measureTimePiecewiseExplicitCom
 
 parseFun :: String -> [String]
 parseFun = split '_'
+
+----------- Generating and parsing test samples --------------------
+
+generateSamplesToFile :: FilePath -> Int -> [(String, Int)] -> IO ()
+generateSamplesToFile fp nSamples types = do
+  sampleStrings <- mapM (\(funType, arity) -> generateSampleString funType arity nSamples) types
+  let outString = unlines $ map showSampleString sampleStrings
+  putStr outString
+  --writeFile fp outString
+
+showSampleString :: (String, Int, String) -> String
+showSampleString (funType, arity, samples) = funType ++ ", " ++ show arity ++ "\n" ++ samples ++ "\n"
+
+generateSampleString :: String -> Int -> Int -> IO (String, Int, String)
+generateSampleString funType arity nSamples = do
+  BoFunsBox sample <- case funType of
+    "GenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [GenFun])
+    "NormalizedGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [NormalizedGenFun])
+    "CanonicalGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [CanonicalGenFun])
+    "BothGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [NormalizedCanonicalGenFun])
+    "ThresholdFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [ThresholdFun])
+    "SymmetricFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [SymmetricFun])
+    "IterThresholdFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [Iterated NonSymmThresholdFun])
+    "IterSymmetricFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [Iterated NonSymmSymmetricFun])
+    _ -> error ("Unrecognized function type: " ++ funType)
+  return (funType, arity, unlines $ map show sample)
+
+data BoFunsBox = forall f i. (Show f, BoFun f i) => BoFunsBox [f]
+
+generateSample :: ArbitraryArity f => Int -> Int -> IO [f]
+generateSample arity nSamples = genFuns
+  where
+    genFun = generate $ arbitraryArity arity
+    genFuns = replicateM nSamples genFun
+
+---------------------------------------------------
+
+measureSampleStdOutArgs :: IO ()
+measureSampleStdOutArgs = do
+  args <- getArgs
+  case args of
+    [alg, funType, funStr] -> measureSampleStdOut alg funType funStr
+    _                      -> error "Wrong number of arguments"
+
+measureSampleStdOut :: String -> String -> String -> IO ()
+measureSampleStdOut alg funType funStr = do
+  time <- case alg of
+    "genAlg"             -> measureGenAlg' sampleImplicit
+    "complexity"         -> measureComplexity' sampleImplicit
+    "explicitComplexity" -> measureExplicitComplexity' sampleExplicit
+    _                    -> error ("Unrecognized algorithm: " ++ alg)
+  putStr $ showTime time
+  where
+    sampleImplicit = readSampleImplicitMemo funType funStr
+    sampleExplicit = readSampleExplicitMemo funType funStr
+
+readSampleImplicitMemo :: String -> String -> ImplicitMemoFun
+readSampleImplicitMemo funType funStr = case funType of
+  "GenFun"           -> ImplicitMemoFun (read funStr :: GenFun)
+  "NormalizedGenFun" -> ImplicitMemoFun (read funStr :: NormalizedGenFun)
+  "CanonicalGenFun"  -> ImplicitMemoFun (read funStr :: CanonicalGenFun)
+  "BothGenFun"       -> ImplicitMemoFun (read funStr :: NormalizedCanonicalGenFun)
+  "ThresholdFun"     -> ImplicitMemoFun (read funStr :: ThresholdFun)
+  "SymmetricFun"     -> ImplicitMemoFun (read funStr :: SymmetricFun)
+  "IterThresholdFun" -> ImplicitMemoFun (read funStr :: Iterated NonSymmThresholdFun)
+  "IterSymmetricFun" -> ImplicitMemoFun (read funStr :: Iterated NonSymmSymmetricFun)
+  _                  -> error ("Unrecognized fun type: " ++ funStr)
+
+readSampleExplicitMemo :: String -> String -> ExplicitMemoFun
+readSampleExplicitMemo funType funStr = case funType of
+  "GenFun"           -> ExplicitMemoFun (read funStr :: GenFun)
+  "NormalizedGenFun" -> ExplicitMemoFun (read funStr :: NormalizedGenFun)
+  "CanonicalGenFun"  -> ExplicitMemoFun (read funStr :: CanonicalGenFun)
+  "BothGenFun"       -> ExplicitMemoFun (read funStr :: NormalizedCanonicalGenFun)
+  _                  -> error ("Unrecognized fun type: " ++ funStr)
+
+measureThresholdStdOut :: IO ()
+measureThresholdStdOut = do
+  args <- getArgs
+  case args of
+    [nt, nf] -> measureThresholdStdOut' (ThresholdFun (Threshold (read nt, read nf)))
+    _ -> error "Wrong number of arguments"
+
+measureThresholdStdOut' :: ThresholdFun -> IO ()
+measureThresholdStdOut' tf = do
+  time <- measureTimePiecewiseComplexity tf
+  putStr $ showTime time

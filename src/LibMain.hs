@@ -38,7 +38,9 @@ import           Exploration.Critical                        (Critical (Maximum)
                                                               criticalPointsInPiece,
                                                               determineUncertain)
 import           Exploration.Filters                         (criticalPred)
-import           Exploration.Measurements                    (measureSingleStdOut,
+import           Exploration.Measurements                    (generateSamplesToFile,
+                                                              measureSampleStdOutArgs,
+                                                              measureSingleStdOut,
                                                               measureSpecificStdOut,
                                                               measureTimeGenAlg,
                                                               measureTimePiecewiseComplexity,
@@ -78,7 +80,24 @@ testFun :: Iterated NonSymmThresholdFun
 testFun = Iterated (NonSymmThresholdFun (Threshold (1,1))) [Iterated (NonSymmThresholdFun (Threshold (1,2))) [Id,Id]]
 
 main :: IO ()
-main = measureSpecificStdOut
+main = measureSampleStdOutArgs
+
+genSampleData :: IO ()
+genSampleData = generateSamplesToFile "samples.dat" 100 [
+  ("GenFun", 5),
+  ("NormalizedGenFun", 5),
+  ("CanonicalGenFun", 5),
+  ("BothGenFun", 5),
+  ("ThresholdFun", 10),
+  ("ThresholdFun", 15),
+  ("ThresholdFun", 150),
+  ("SymmetricFun", 10),
+  ("SymmetricFun", 15),
+  ("SymmetricFun", 150),
+  ("IterThresholdFun", 10),
+  ("IterThresholdFun", 15),
+  ("IterSymmetricFun", 5)
+  ]
 
 main11 :: IO ()
 main11 = print (and12 == and23, and12 == and23')

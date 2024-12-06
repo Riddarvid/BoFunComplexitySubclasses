@@ -65,4 +65,4 @@ we use quotation when we should use bold
 
 add more reflections in the discussion. Right now it is a lot of summary. Put that summary first and then reflections
 
-
+Clearer flamegraphs - kanske mha. optionen minwidth? 
