@@ -9,7 +9,8 @@ module Exploration.Measurements (
   measureSingleStdOut,
   measureSpecificStdOut,
   generateSamplesToFile,
-  measureSampleStdOutArgs
+  measureSampleStdOutArgs,
+  measureThresholdStdOut
 ) where
 import           Arity                                       (ArbitraryArity (arbitraryArity))
 import           Complexity.BoFun                            (BoFun)

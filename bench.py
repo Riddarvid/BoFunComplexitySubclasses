@@ -70,11 +70,10 @@ def measureThresholdFun(nt, nf):
   return float(result.stdout.decode('utf-8'))
 
 def measureNbitThresholdfun(n):
-  results = []
   for nt in range(n + 1):
     nf = n + 1 - nt
-    results.append(measureThresholdFun(nt, nf))
-  return results
+    result = measureThresholdFun(nt, nf)
+    print(f"{nt} {result}")
 
 flatFunTypes = ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun", "ThresholdFun", "IterThresholdFun", "SymmetricFun", "IterSymmetricFun"]
 iterFunTypes = ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun", "IterThresholdFun", "IterSymmetricFun"]
@@ -96,41 +95,43 @@ hashableTypes = ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun"]
 
 # print(fiveValueFromSample('./data/samples.dat', 'genAlg', 'GenFun', 5, 100))
 
-for alg in ["complexity"]:
-  for ft in ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun"]:
-    for arity in [5]:
-      print(f"Alg: {alg}")
-      print(f"Function type: {ft}")
-      print(f"Arity: {arity}")
-      print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
-      print()
-  for ft in ["ThresholdFun", "SymmetricFun"]:
-    for arity in [10, 15, 150]:
-      print(f"Alg: {alg}")
-      print(f"Function type: {ft}")
-      print(f"Arity: {arity}")
-      print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
-      print()
-  for ft in ["IterThresholdFun"]:
-    for arity in [10, 15]:
-      print(f"Alg: {alg}")
-      print(f"Function type: {ft}")
-      print(f"Arity: {arity}")
-      print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
-      print()
-  for ft in ["IterSymmetricFun"]:
-    for arity in [5]:
-      print(f"Alg: {alg}")
-      print(f"Function type: {ft}")
-      print(f"Arity: {arity}")
-      print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
-      print()
+# for alg in ["complexity"]:
+#   for ft in ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun"]:
+#     for arity in [5]:
+#       print(f"Alg: {alg}")
+#       print(f"Function type: {ft}")
+#       print(f"Arity: {arity}")
+#       print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
+#       print()
+#   for ft in ["ThresholdFun", "SymmetricFun"]:
+#     for arity in [10, 15, 150]:
+#       print(f"Alg: {alg}")
+#       print(f"Function type: {ft}")
+#       print(f"Arity: {arity}")
+#       print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
+#       print()
+#   for ft in ["IterThresholdFun"]:
+#     for arity in [10, 15]:
+#       print(f"Alg: {alg}")
+#       print(f"Function type: {ft}")
+#       print(f"Arity: {arity}")
+#       print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
+#       print()
+#   for ft in ["IterSymmetricFun"]:
+#     for arity in [5]:
+#       print(f"Alg: {alg}")
+#       print(f"Function type: {ft}")
+#       print(f"Arity: {arity}")
+#       print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
+#       print()
 
-for alg in ["explicitComplexity"]:
-  for ft in ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun"]:
-    for arity in [5]:
-      print(f"Alg: {alg}")
-      print(f"Function type: {ft}")
-      print(f"Arity: {arity}")
-      print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
-      print()
+# for alg in ["explicitComplexity"]:
+#   for ft in ["GenFun", "CanonicalGenFun", "NormalizedGenFun", "BothGenFun"]:
+#     for arity in [5]:
+#       print(f"Alg: {alg}")
+#       print(f"Function type: {ft}")
+#       print(f"Arity: {arity}")
+#       print(fiveValueFromSample('./data/samples.dat', alg, ft, arity, 100))
+#       print()
+
+measureNbitThresholdfun(200)

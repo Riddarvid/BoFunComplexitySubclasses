@@ -42,6 +42,7 @@ import           Exploration.Measurements                    (generateSamplesToF
                                                               measureSampleStdOutArgs,
                                                               measureSingleStdOut,
                                                               measureSpecificStdOut,
+                                                              measureThresholdStdOut,
                                                               measureTimeGenAlg,
                                                               measureTimePiecewiseComplexity,
                                                               measureTimePiecewiseExplicitComplexity)
@@ -80,7 +81,7 @@ testFun :: Iterated NonSymmThresholdFun
 testFun = Iterated (NonSymmThresholdFun (Threshold (1,1))) [Iterated (NonSymmThresholdFun (Threshold (1,2))) [Id,Id]]
 
 main :: IO ()
-main = measureSampleStdOutArgs
+main = measureThresholdStdOut
 
 genSampleData :: IO ()
 genSampleData = generateSamplesToFile "samples.dat" 100 [
