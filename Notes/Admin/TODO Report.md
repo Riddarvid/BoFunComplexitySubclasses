@@ -67,7 +67,7 @@ add more reflections in the discussion. Right now it is a lot of summary. Put th
 
 
 
-FEEDBACK FROM CHRISTIAN: 
+## FEEDBACK FROM CHRISTIAN: 
 
 * The threshold functions are exactly the monotone symmetric functions.
   Do you observe this somewhere?
