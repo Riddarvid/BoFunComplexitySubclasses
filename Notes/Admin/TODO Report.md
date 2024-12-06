@@ -1,5 +1,4 @@
 - Förtydliga properties
-- Använd hls2Tex för code listings
 - Lägg in komplexiteten av IterMaj 3 3 i appendix A
 - Se om vi vill lägga till "När vi skriver effektiv eller optimerad menar vi alltid med avseende på komplexitetsberäkningar om inget annat sägs". I introduktionen någonstans?
 - Förklara de nya box-plotsen när det är dags
@@ -45,20 +44,13 @@ Flamegraphs: mostly good, but sometimes the specific functions are hard to see i
 
 Potential profiling tool: valgrind, used for c but possibly work for Haskell
 
-The representations section may need to be renamed. Perhaps it is better to be Implementations and results
-
 tables should have descriptions below. 
-
-make better listings (so they stand out more)
-- Minted
 
 
 
 Language: 
 
 use "we" a lot. Especially in the theory. 
-
-section titles - should we capitalize all the words or not? ask Patrik 
 
 we use quotation when we should use bold
 
@@ -117,11 +109,6 @@ Clearer flamegraphs - kanske mha. optionen minwidth?
   * f is a type representing boolean functions,
   * i is the set of possible variable names.
   What do the operations of the type class correspond to in terms of the represented mathematical boolean function?
-
-* The graph in Figure 2.3 does not seem to correspond to the function f you define.
-  I don't understand 0 x < 1/2.
-  Also, the function itself is called f, not f(x).
-  f(x) is the value of the function f at input x.
 
 * "needs at most 2^n bits of information": remove "at most".
 
