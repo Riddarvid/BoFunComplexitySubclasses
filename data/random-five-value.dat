@@ -21,6 +21,8 @@ Function type: BothGenFun
 Arity: 5
 (0.015584948, 0.03128734825, 0.036523591499999994, 0.0462887225, 0.071954259)
 
+----------------------------------------------------------
+
 Alg: genAlg
 Function type: ThresholdFun
 Arity: 10
@@ -87,6 +89,8 @@ Alg: complexity
 Function type: BothGenFun
 Arity: 5
 (0.013014903, 0.0180212425, 0.019345427, 0.020602022, 0.026691826)
+
+-------------------------------------------------------------
 
 Alg: complexity
 Function type: ThresholdFun
