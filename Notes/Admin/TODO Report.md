@@ -20,8 +20,7 @@
 
 ## Latex-grejer
 
-- Se till att använda macros överallt, för \T, \F, och \setBit
-- Kör en ctrl+f och ersätt subfunction med sub-function
+- Se till att använda macros överallt, för \setBit
 - Fixa biblography (upper case, too long links)
 - Referera till bilden på framsidan 
 - Alla kommentarer
