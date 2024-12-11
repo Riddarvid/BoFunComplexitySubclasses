@@ -41,7 +41,7 @@
 - Se över alla kommentarer i dokumentet.
 - Lägg in data i boxplots, förklara och referera till dem i texten. - Arvid
 - Se över properties och se att de är representativa för koden. Se även namn.
-- Skriv om Applications för att bättre matcha namn osv. - Selina
+- ~~Skriv om Applications för att bättre matcha namn osv.~~ - Selina
 	-  5.1 Förklara hur signAtAlgebraic funkar, gärna med illustration/diagram.
 		- I allmänhet är det nog konceptet shrinking som behöver förklaras
 - Se över alla ställen där vi använder math mode och se om det är mer logiskt att använda typewriter font istället.
