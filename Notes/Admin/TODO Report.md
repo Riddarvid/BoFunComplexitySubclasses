@@ -9,11 +9,11 @@
 	- I would call it (multi)composition. Mathematically, this is composition in the [multicategory](https://en.wikipedia.org/wiki/Multicategory#Examples) of sets and n-ary functions.
 - Förklara arities mha. sets istället. Detta borde hjälpa vid förklaring av multi composition.
 	- Se feedback i half-time.txt
-- Ta upp reduktion av BDDs och hur det bidrar till uniqueness.
-- Förklara BoFun-typeclassen i större utsträckning.
-	- The typeclass BoFun should be explained:
-	  * f is a type representing boolean functions,
-	  * i is the set of possible variable names. 
+- ~~Ta upp reduktion av BDDs och hur det bidrar till uniqueness.~~
+- ~~Förklara BoFun-typeclassen i större utsträckning.~~
+	- ~~The typeclass BoFun should be explained:~~
+	  * ~~f is a type representing boolean functions,~~
+	  * ~~i is the set of possible variable names.~~
 	  * What do the operations of the type class correspond to in terms of the represented mathematical boolean function?
 - Bevis - Gemensamt på onsdag
 	- Remember to introduce all the notation used in Section 2.4.
@@ -24,18 +24,18 @@
 	- Uttryck "Level-p complexity is dependent only on a function's dependent bits" som en entydig matematisk utsaga.
 	- Uttryck "The complexity of a function expressed as a BDD is not dependent on variable numbering.". Se feedback för förslag.
 - Skriv om 4.4 för att bättre matcha nuvarande kod.
-- Bättre definition av threshold functions: - Selina
-	- A more symmetric intuition for this representation is as follows. Suppose k_t bits are true and k_f bits are false. Then k_t + k_f = n, so (k_t - n_t) + (k_f - n_f) = -1. Because these are integers, exactly one of k_t - n_t and k_f - n_f must be non-negative. That is, exactly one of k_t ≥ n_t and k_f ≥ n_f is true.
+- ~~Bättre definition av threshold functions:~~ - Selina
+	- ~~A more symmetric intuition for this representation is as follows. Suppose k_t bits are true and k_f bits are false. Then k_t + k_f = n, so (k_t - n_t) + (k_f - n_f) = -1. Because these are integers, exactly one of k_t - n_t and k_f - n_f must be non-negative. That is, exactly one of k_t ≥ n_t and k_f ≥ n_f is true.~~
 - Se till att uttrycka effiktivitetsförbättringar som improvement factor, snarare än andel tidsminskning.
 - Need more citations and sources
 - Too many subsections with short paragraphs. Lack of transition - Gemensamt idag
 	- expand on the sections 
 	- remove a lot of introduction sentences
-- Explain the terms more in the introductions. like in the contribution. expand on the terms. and perhaps add another example (or the maj example) in the introduction. - Gemensamt idag
-- Tables should have descriptions below.
+- Explain the terms more in the introductions. like in the contribution. expand on the terms. ~~and perhaps add another example (or the maj example) in the introduction. - Gemensamt idag~~
+- ~~Tables should have descriptions below.~~
 - Se över hur vi använder "we" och se till att det inte blir otydligt.
-- Ha med exempel i introduktionen.
-	- Short circuiting av boolska uttryck?
+- ~~Ha med exempel i introduktionen.~~
+	- ~~Short circuiting av boolska uttryck?~~
 - Fixa bibliography (upper case, too long links)
 - Fixa bilden på framsidan, så att vi har en beskrivning av den
 - Se över alla kommentarer i dokumentet.
