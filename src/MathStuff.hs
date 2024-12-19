@@ -17,3 +17,10 @@ multiCompose f gs x = f fInput
         gInput :: BFInput (j i)
         gInput j = x (i, j)
 
+
+setBit :: Eq i => i -> Bool -> BF i -> BF i
+setBit i b f x = f fInput
+  where
+    fInput j
+      | i == j = b
+      | otherwise = x i

@@ -1,0 +1,51 @@
+The properties we want to show are only practically used in the case of NormalizedGenFuns.
+The application is that if a function f has arity I, but only depends on a subset (J) of I,
+then we can create a function with arity [1 .. n], where n = |J|. (With "the same" result as f? Maybe that's not important, only that the complexity is the same.)
+
+Our thinking so far is that we need to show two things:
+
+1) If we have a variable i in I that the f does not depend on, then we can "remove" it from I without affecting complexity. This of course also involves 
+defining a new function that yields "the same" value as f but only has I \\ i as its arity.
+2) The complexity of a function is invariant under arity bijections.
+
+-------------------------------------
+
+For both of these properties, the idea is to show that, given a probability p, the best algorithm A for evaluating f will also be the 
+best algorithm for evaluating f'. This should prove that the complexities are identical.
+
+---------------------------------------
+
+We start by looking at 1.
+
+Idéa:
+
+1) Show that A is a decision tree for f'.
+2) Show that any algorithm for evaluating f' would also be an algorithm for f.
+3) Combining 1 & 2 means that the best algorithm for evaluating f must also be the best algorithm for evaluating f' (proof by contradiction), QED.
+
+------------------------------------------
+
+We are not sure how to approach 2 and would appreciate any pointers.
+
+Maybe we could look at the tree created by applying the bijection e at any node with value Pick i _ _ and show that they must 
+have the same structure, and therefore complexity? But then we would also need to show that two decision trees with the same structure have 
+the same complexity (this should be easy however).
+
+Is there anything else we would need to prove in this step?
+
+----------------------------------------
+
+We could then use 1 & 2 to prove that the normalization step does not affect complexity.
+
+The normalization step consists of first removing any non-dependent variables, and then mapping them to the set [1 .. n].
+Since we have proved that both of these steps can be done without changing the complexity, the whole normalization step will not affect complexity.
+
+Maybe what we actually want to prove as a whole is 
+
+Given a finite set I
+and a function f with arity I, dependent on a subset J of I,
+
+a function f', with the same complexity as f, can be produced with arity [1 .. |J|]
+
+(But we're missing some statement about the result here? Or how to define f'?)
+

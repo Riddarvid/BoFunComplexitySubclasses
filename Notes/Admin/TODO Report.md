@@ -1,7 +1,7 @@
 
 ### High 
 
-- Lägg in en list of definitions - Arvid - tydligen svårt, kolla med Patrik
+- ~~Lägg in en list of definitions - Arvid - tydligen svårt, kolla med Patrik~~
 - ~~Förtydliga definitioner, se feedback: - Arvid~~
 	- ~~Definition 1 needs to be clarified instead of offloading the precise definition to later running text. For example, it does not say if the g_i all share the same input bits or have disjoint input bits (as you want). I suggest that you are precise and annotate not just f, but also the g_i and the "lifting" h with their arity.~~
 	- ~~Similarly, Definition 2 needs to be clarified. What does it mean precisely to repeatedly lift functions of the same type? Is every node an n-ary boolean function for the same n or can the n differ? If you feel that you cannot do this in this section, you can move the definition to where it makes sense. You can still informally describe the notion here, with a reference to the precise definition later on. But I think it is better to give a mathematical definition involving functions here and then later the development involving *representations* of those functions.~~
@@ -14,7 +14,7 @@
 	- ~~The typeclass BoFun should be explained:~~
 	  * ~~f is a type representing boolean functions,~~
 	  * ~~i is the set of possible variable names.~~
-	  * What do the operations of the type class correspond to in terms of the represented mathematical boolean function?
+	  * ~~What do the operations of the type class correspond to in terms of the represented mathematical boolean function?~~
 - Bevis - Gemensamt på onsdag
 	- Remember to introduce all the notation used in Section 2.4.
 	- Definiera independent istället för dependent.

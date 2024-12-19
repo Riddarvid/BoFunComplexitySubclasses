@@ -1,0 +1,7 @@
+setBit :: i -> Bool -> f -> f
+
+How should we describe the resulting f using the proposed framework?
+
+Our thinking is that the resulting function will have the domain {0,1}^(I \\ i), but how do we define this function then?
+
+We also wish to allow any operations that preserve complexity to be performed in this step, how should we describe this?
