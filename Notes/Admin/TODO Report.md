@@ -49,6 +49,7 @@
 - Skriva abstract
 - skriva acknowledgements
 - give names to the definitions included in the definition list
+- In future work: add stuff about number of functions/representations
 ### Low
 
 - Om vi har tid över kan vi försöka skapa tydligare flamegraphs. minwidth option?
