@@ -1,5 +1,5 @@
 
-### High 
+### Fixed
 
 - ~~Lägg in en list of definitions - Arvid - tydligen svårt, kolla med Patrik~~
 - ~~Förtydliga definitioner, se feedback: - Arvid~~
@@ -26,6 +26,8 @@
 - ~~Skriv om Applications för att bättre matcha namn osv.~~ - Selina
 	-  5.1 ~~Förklara hur shrinking funkar, gärna med illustration/diagram.~~
 		- ~~I allmänhet är det nog konceptet shrinking som behöver förklaras~~
+
+### Active
  
 - Bevis - Gemensamt på fredag
 	- Remember to introduce all the notation used in Section 2.4.
@@ -47,18 +49,16 @@
 - Strukturera om resultat delen. Vad vill vi få fram?
 - förklara box plots och referera till dem i texten. - Arvid
 - Se över properties och se att de är representativa för koden. Se även namn.
+- Ta upp i iterated:
+	- Här finns flera representationer av samma funktion.
+- Result - I allmänhet, gör hypoteser eller dra slutsatser om det diagrammen visar.
 
 ### Fix while reading through , Especially on final reads
+
 - Too many subsections with short paragraphs. Lack of transition - Gemensamt idag
 	- expand on the sections 
 	- remove a lot of introduction sentences
  - Se över hur vi använder "we" och se till att det inte blir otydligt.
  - Se över alla ställen där vi använder math mode och se om det är mer logiskt att använda typewriter font istället.
-### Low
-
-- Om vi har tid över kan vi försöka skapa tydligare flamegraphs. minwidth option?
-- Se över hur vi använder citationstecken
-- Ta upp i iterated:
-	- Här finns flera representationer av samma funktion.
-- I allmänhet, gör hypoteser eller dra slutsatser om det diagrammen visar.
-- Se över om vi vill lägga till saker som inte fungerade i appendix, t.ex. mirroring. Optional.
+ - Se över hur vi använder citationstecken
+ - Se till att figures osv. hamnar på rimliga ställen.

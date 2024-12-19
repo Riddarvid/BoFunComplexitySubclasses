@@ -3,6 +3,7 @@
 
 - Hög prio
 	- Sista cleanup innan vi lämnar in
+	- Byt namn på Lifted till MultiComposed
 ## Svåra grejer
 
  - Räkning av funktioner
