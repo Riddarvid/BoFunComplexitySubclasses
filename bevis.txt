@@ -1,0 +1,259 @@
+
+
+DecTree I:
+  Res b -> DecTree I
+  i : I -> DecTree (I - i) -> DecTree (I - i) -> DecTree I
+
+Min tro är att vi behöver ta med oss bijektionen som argument, eftersom vi måste ändra den från att ha typ I -> J till att ha typ (I -i) -> (J - (i2j i))
+
+
+
+Definition av independent bits:
+
+A function f : BF I does not depend on a set of variables U if it factors as f = f' . {0,1}^e, where e is an injection from I to I \\ U.
+
+
+
+Bevis 1)
+
+Vad vill vi visa?
+
+Om f faktoriseras som f = f' . {0,1}^e, where e is an injection from I to J, (dvs. den är not dependent on I \\ J)
+
+då har f och f' samma komplexitet.
+
+Detta visar vi genom att först visa att varje decision tree för f, om vi mappar om det till ett träd av J (som representerar f'), har samma cost-funktion. 
+Detta innebär att deras expected cost blir samma, vilket i sin tur betyder att komplexiteterna blir samma.
+
+Bevis 2)
+
+Vad vill vi visa?
+
+Om f faktoriseras som f = f' . {0,1}^e, where e is a bijection from I to J, 
+
+då har f och f' samma komplexitet.
+
+Dvs. om vi för varje decision tree mappar om variablerna med en bijektion, kommer komplexiteten inte ändras.
+
+Bevis 3)
+
+Slutligen  behöver vi visa att vi faktiskt kan nyttja dessa egenskaper vid normalisering av BDDs. Vi måste visa att bortplockningen av index är injektiv, och sedan att omnumreringen är bijektiv.
+Vi måste även visa att f faktoriserar på rätt sätt.
+
+
+--------------------------------------------------
+
+Bevis 1)
+
+
+
+
+
+
+
+------------------------------------
+
+Bevis 2
+
+e bijektion
+e = (i2j, j2i)
+
+Antag att vi har en funktion f : BF I som faktoriserar som f = mapBF j2i f'
+
+Pga. bijektion borde vi även ha f' = mapBF i2j f : BF J
+
+
+Vi vill visa att för varje t : DecTree(I) sådant att decTreeSemantics t == f, så är decTreeSemantics t' == f' och cost t (tup . e) == cost t' tup
+  where
+    t' = mapDT e t : DecTree(J)
+    
+
+----------------------------------------------
+
+Lemma 1: för varje t : DecTree(I) sådant att decTreeSemantics t == f, så är decTreeSemantics t' == f'
+
+Vi vill visa att:
+
+givet t : DecTree I
+decTreeSemantics (mapDT i2j t) == mapBF i2j f
+
+Induktionsbevis:
+
+Basfall:
+
+t :: DecTree I
+t = Res b
+
+f : BF I
+f = decTreeSemantics t = Res b = \itup -> b
+
+t' : DecTree J
+t' = mapDT i2j t = mapDT i2j (Res b) = Res b
+
+-- LHS
+decTreeSemantics t' : BF J
+decTreeSemantics t' = decTreeSemantics (Res b) = \jtup -> b 
+
+-- RHS
+f' = mapBF i2j f = \jtup -> f (comap i2j jtup) = \jtup -> (\itup -> b) (comap i2j jtup) | function application | \jtup -> b
+
+LHS == RHS
+
+Induktionsantagande: För träd av djup <= n gäller: decTreeSemantics t == f     =>    decTreeSemantics (mapDT i2j t) == mapBF i2j f   (med modifierad bijektion för att passa mängderna).
+
+Antag att t är ett träd med djup n + 1. Då har t0 och t1 djup <= n.
+
+t : DecTree I
+t = Pick i t0 t1
+
+f : BF I
+f = decTreeSemantics t = decTreeSemantics (Pick i t0 t1) = \itup -> if itup i then decTreeSemantics t1 itup' else decTreeSemantics t0 itup'
+  where
+    t0, t1 :: DecTree (I - i)
+    itup' :: (I - i) -> Bool
+    itup' = itup
+
+t' :: DecTree J
+t' = Pick (i2j i) t0' t1'
+  where
+    t0', t1' :: DecTree (J - (i2j i))
+    t0' = mapDT i2j t0 
+    t1' = mapDT i2j t1
+
+decTreeSemantics t' : BF J
+decTreeSemantics t' = decTreeSemantics (Pick (i2j i) (mapDT i2j t0) (mapDT i2j t1)) = \jtup -> if jtup (i2j i)
+  then decTreeSemantics (mapDT i2j t1) jtup'
+  else decTreeSemantics (mapDT i2j t0) jtup'
+  where
+    jtup' : (J - (i2j i)) -> Bool
+
+
+f' :: BF J
+f' = mapBF i2j f = \jtup -> f (comap i2j jtup) = \jtup -> (\itup -> if itup i then decTreeSemantics t1 itup' else decTreeSemantics t0 itup') (comap i2j jtup) =
+                                                   where 
+                                                     itup' : (I - i) -> Bool
+                                                     itup' = itup
+   = \jtup -> if (comap i2j jtup) i then decTreeSemantics t1 itup' else decTreeSemantics t0 itup'
+                                                   where 
+                                                     itup' : (I - i) -> Bool
+                                                     itup' = comap i2j jtup
+   = \jtup -> if jtup (i2j i) 
+  then decTreeSemantics t1 itup'
+  else decTreeSemantics t0 itup'
+
+Vi vill nu visa
+
+\jtup -> if jtup (i2j i) then decTreeSemantics t1 (comap i2j jtup) else decTreeSemantics t0 (comap i2j jtup)
+
+==
+
+\jtup -> if jtup (i2j i) then decTreeSemantics (mapDT i2j t1) jtup else decTreeSemantics (mapDT i2j t0) jtup
+
+Vi vill alltså visa 
+
+decTreeSemantics t1 (comap i2j jtup) == decTreeSemantics (mapDT i2j t1) jtup
+
+låt f1 : BF I 
+    f1 = decTreeSemantics t1
+
+LHS =
+decTreeSemantics t1 (comap i2j jtup) =
+decTreeSemantics t1 (jtup . i2j) =
+f1 (jtup . i2j)
+
+Enligt induktionsantagandet har vi
+
+decTreeSemantics (mapDT i2j t1) 
+= mapBF i2j f1
+
+RHS =
+decTreeSemantics (mapDT i2j t1) jtup = 
+(mapBF i2j f1) jtup =
+(\tup -> f1 (comap i2j tup)) jtup =
+f1 (comap i2j jtup) =
+f1 = (jtup . i2j)
+
+Vi har visat LHS == RHS och är därmed klara.
+
+
+---------------------------------------------------------
+
+Lemma 2: för varje t : DecTree(I) sådant att det representerar f och t' = (mapDT e t) : DecTree(J), så är cost t (tup . e) == cost t' tup
+
+Induktionsbevis.
+
+Basfall: 
+
+t = t' = Res b
+cost t (tup . e) == cost t' tup
+
+Induktionsantagande: För träd av djup <= n gäller cost t == cost t'.
+
+Antag att t är ett träd med djup n + 1. Då har t0 och t1 djup <= n och alltså gäller cost t0 == cost t0' och cost t1 == cost t1'.
+
+t = Pick i t0 t1
+t' = Pick (e i) t0' t1'
+  where
+    t0' = mapDT e t0
+    t1' = mapDT e t1
+
+
+
+cost t (jtup . e) = cost (Pick i t0 t1) (jtup . e) = 1 + if (jtup . e) i then cost t1 itup' else cost t0 itup'
+  where
+    itup' = (jtup . e) restricted
+
+cost t' jtup = cost (Pick (e i) t0' t1') = 1 + if jtup (e i) then cost t1' jtup' else cost t0' jtup'
+  where
+    jtup' = jtup (men med restrictad typ), dvs domänen för jtup' är mindre än den för jtup.
+
+Induktionsantagande: För små träd (med djup n) gäller cost t == cost t'.
+
+
+--------------------- Utilities -----------------------------
+
+
+The normal cost function:
+cost (Res _) _ = 0
+cost (Pick i t0 t1) tup = 1 + if tup i then cost t1 tup' else cost t0 tup'
+  where
+    tup' = tup men med restrictad domän.
+
+
+mapDT (I -> J) -> DecTree I -> DecTree J
+mapDT _ (Res b) = Res b
+mapDT i2j (Pick i t1 t2) = Pick (i2j i) (mapDT i2j' t1) (mapDT i2j' t2)
+  where
+    i2j' = ändra typen på något sätt till (I - i) -> (J - (i2j i))
+
+decTreeSemantics : DecTree(I) -> BF I
+decTreeSemantics (Res b) _ = b
+decTreeSemantics (Pick i t0 t1) tup = if tup i
+  then decTreeSemantics t1 tup'
+  else decTreeSemantics t0 tup'
+  where
+    tup' : (I - i) -> Bool
+    tup' = tup (does this work, type wise?)
+
+mapBF : (i->j) -> BF i -> BF j
+mapBF i2j f = \jtup -> f (comap i2j jtup)
+
+comap :: (i->j) -> Tup j -> Tup i
+comap i2j tup = \i -> tup (i2j i)
+comap i2j tup = tup . i2j
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -46,6 +46,7 @@ library
       Exploration.PrettyPrinting
       Exploration.Translations
       LibMain
+      MathStuff
       Poly.PiecewisePoly
       Poly.PolyCmp
       Poly.PolyInstances
