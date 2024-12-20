@@ -1,2 +1,1 @@
-- För generella concept (typ hash consing), kan vi använda wikipedia som källa? Eller ska vi leta upp någon bok som har definitionen?
-- Vi känner att vi redan har dragit många slutsatser i resultatsdelen, vad ska vi då ha i diskussionsdelen? Är det bättre att byta namn till Conclusion istället? Just nu är mycket av diskussionen "vi gjorde detta och det var bättre".
+- Hur fungerar ändring av typ i matte/Agda? Vi har en funktion av typ I -> Bool och vill använda den för att definiera en funktion av typ (I - i) -> Bool. Det borde väl alltid vara okej att minska domänen?
