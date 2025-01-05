@@ -1,1 +1,3 @@
 - Hur fungerar ändring av typ i matte/Agda? Vi har en funktion av typ I -> Bool och vill använda den för att definiera en funktion av typ (I - i) -> Bool. Det borde väl alltid vara okej att minska domänen?
+- Hur kan vi få till bra spacing etc. i math mode när vi vill ha fler-bokstäviga variabelnamn?
+- hur strukturerar man upp bevis snyggt?

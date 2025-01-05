@@ -1,8 +1,8 @@
 
 
 DecTree I:
-  Res b -> DecTree I
-  i : I -> DecTree (I - i) -> DecTree (I - i) -> DecTree I
+  res : b -> DecTree I
+  pick : (i : I) -> DecTree (I - i) -> DecTree (I - i) -> DecTree I
 
 Min tro är att vi behöver ta med oss bijektionen som argument, eftersom vi måste ändra den från att ha typ I -> J till att ha typ (I -i) -> (J - (i2j i))
 
@@ -45,9 +45,15 @@ Vi måste även visa att f faktoriserar på rätt sätt.
 
 Bevis 1)
 
+e är en injektion, dvs vi har i2j.
 
+Antag f = mapBF i2j f' : BF J
 
+där f' : BF I
 
+Vill visa att för varje t : DecTree(J) sådant att decTreeSemantics t == f, så är decTreeSemantics t' == f' och expcost t == expcost t'
+  where
+    t' = mapDT e t : DecTree(I)
 
 
 
@@ -63,10 +69,16 @@ Antag att vi har en funktion f : BF I som faktoriserar som f = mapBF j2i f'
 Pga. bijektion borde vi även ha f' = mapBF i2j f : BF J
 
 
-Vi vill visa att för varje t : DecTree(I) sådant att decTreeSemantics t == f, så är decTreeSemantics t' == f' och cost t (tup . e) == cost t' tup
+Vi vill visa att för varje t : DecTree(I) sådant att decTreeSemantics t == f, så är decTreeSemantics t' == f' och expCost t == expCost t'
   where
     t' = mapDT e t : DecTree(J)
-    
+
+Egentligen kasnke vi snarare vill visa:
+För varje t som representerar f, finns det ett träd t' som representerar f', sådant att t och t' har samma expected cost.
+Detta borde ge att f' har komplexitet <= komplexiteten för f.
+
+Om vi även lyckas visa andra riktningen, så får vi == istället för endast <=.
+
 
 ----------------------------------------------
 
@@ -212,6 +224,10 @@ Induktionsantagande: För små träd (med djup n) gäller cost t == cost t'.
 
 --------------------- Utilities -----------------------------
 
+-- Given a probability p and a dectree, gives the polynomial representing the expected cost.
+expCost : Rational -> DecTree I -> Poly Rational
+expCost _ (Res b) = 0
+expCost p (Pick i tF tT) = 1 + p * expCost tT + (1 - p) * expCost tF
 
 The normal cost function:
 cost (Res _) _ = 0
@@ -257,3 +273,239 @@ comap i2j tup = tup . i2j
 
 
 
+------------------------
+
+Vad betyder det att ha en injektiv funcktion e?
+Då måste |I| vara <= |J|
+
+I: {1, 2, 3}
+J: {1, 79, 32, 41}
+
+e : I -> J
+e 1 = 1
+e 2 = 79
+e 3 = 41
+
+e har nu gjort att vi plockar bort bit 32 från J och har mappat om övriga variabler till {1,2,3}.
+
+g = comap e g'
+
+--------------------------------
+
+Later in the paper, we will want to re-map variables. If a function can be composed as f = mapBF i2j f', where
+i2j is an injective function, then f and f' will have the same complexity. This is useful, since
+it allows us to replace any f with f' instead, leading to a normalization of functions, making it so that
+memoization can be better utilized.
+
+Proof:
+
+Antag 
+
+fj : BF J, 
+fi : BF I,
+i2j : I -> J
+
+fj = mapBF i2j fi
+
+Vi kan nu börja med att visa att vi för varje tj sådant att [tj] = fj, så kan vi skapa ett ti sådant att [ti] = fi,
+och expCost tj == expCost ti. Eftersom vi för varje tj kan skapa ti med samma exp cost har vi D_p(fi) <= D_p(fj).
+
+Sedan kan vi prova att visa att vi för varje ti sådan att [ti] = fi kan skapa ett tj sådant att [tj] = fj och 
+expcost tj == expcost ti. Då får vi D_p(fi) >= D_p(fj).
+
+Kombinerar vi dessa två får vi D_p(fi) == D_p(fj).
+
+Vi bevisar nu de två delarna:
+
+1)
+
+Givet att fj = mapBF i2j fi, visa
+
+([tj] = fj <=> [ti] = fi) och (expCost tj == expCost ti), där tj = mapDT i2j ti.
+
+Vi behöver alltså visa tre saker:
+
+1) [tj] = fj => [ti] = fi
+2) [ti] = fi => [tj] = fj
+3) expCost tj == expCost ti
+
+Bevis av 1)
+
+Antag [tj] = fj.
+
+Vi vill visa [ti] = fi.
+
+De satser vi har tillgång till är:
+- [tj] = fj (antagande)
+- tj = mapDT i2j ti (premiss)
+- fj = mapBF i2j fi (premiss)
+
+Fundering: Är det okej att utföra en injektiv operation bå båda sidor?
+
+Ja!
+
+f injektiv betyder att om f(x) == f(y) så måste x == y
+
+Vi kan alltså visa [ti] = fi genom att visa att mapBF i2j [ti] == mapBF i2j fi
+
+(Behöver även bekräfta/bevisa att mapBF i2j är injektiv då i2j är injektiv).
+
+Vi använder induktionsbevis.
+
+Basfall: tj = Res b
+Detta ger:
+fj = [tj] = [Res b] = \x -> b
+
+tj = mapDT i2j ti
+Res b = mapDT i2j ti
+Res b = ti -- Detta steg är lite osäkert.
+
+LHS = 
+mapBF i2j [ti] = {can be proved by def of mapBF. Fråga Patrik om detta är okej.}
+mapBF i2j (Res b)
+
+RHS =
+mapBF i2j fi = {def fj}
+fj
+
+-- Det är fortfarande något som inte går ihop.
+
+Bevis av 2)
+
+Antag [ti] = fi.
+
+Vill visa [tj] = fj.
+
+De satser vi har tillgång till är:
+- [ti] = fi (antagande)
+- tj = mapDT i2j ti (premiss)
+- fj = mapBF i2j fi (premiss)
+
+Basfall: ti = Res b
+Detta ger:
+fi = [ti] = [Res b] = \x -> b
+
+LHS =
+[tj] =
+[mapDT i2j ti] =
+[mapDT i2j (Res b)] =
+[Res b] =
+\x -> b
+
+RHS =
+fj =
+mapBF i2j fi =
+\jtup -> fi (comap i2j jtup) =
+\jtup -> (\x -> b) (comap i2j jtup)
+\jtup -> b = {variable substitution}
+\x -> b
+
+Induktionsantagande: Då depth(ti) <= n så gäller [ti] = fi => [tj] = fi
+
+Vill visa att Då depth(ti) = n + 1 så gäller [ti] = fi => [tj] = fi
+
+Antag depth(ti) = n + 1
+Detta innebär, enligt definitionen av depth, att ti måste ha följande form:
+ti = Pick i tif tit, där depth(tif) <= n och depth(tit) <= n.
+
+Detta ger
+
+fi = 
+[ti] =
+Pick i tif tit = 
+\tup -> if tup i
+  then decTreeSemantics tif tup
+  else decTreeSemantics tit tup
+
+tj = 
+mapDT i2j ti =
+mapDT i2j (Pick i tif tit) =
+Pick (i2j i) (mapDT i2j tif) (mapDT i2j tit)
+
+LHS =
+[tj] =
+[Pick (i2j i) (mapDT i2j tif) (mapDT i2j tit)] = 
+\jtup -> if jtup (i2j i)
+  then decTreeSemantics (mapDT i2j tif) jtup
+  else decTreeSemantics (mapDT i2j tit) jtup
+
+RHS =
+fj =
+mapBF i2j fi =
+mapBF i2j (\tup -> if tup i
+  then decTreeSemantics tif tup
+  else decTreeSemantics tit tup) =
+\jtup -> (\tup -> if tup i
+  then decTreeSemantics tif tup
+  else decTreeSemantics tit tup) (comap i2j jtup) =
+\jtup -> if (comap i2j jtup) i
+  then decTreeSemantics tif (comap i2j jtup)
+  else decTreeSemantics tit (comap i2j jtup) =
+\jtup -> if jtup (i2j i)
+  then decTreeSemantics tif (comap i2j jtup)
+  else decTreeSemantics tit (comap i2j jtup)
+
+Vi behöver nu visa
+[(mapDT i2j tif)] jtup = [tif] (comap i2j jtup)
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------
+
+g = g' . i2j
+
+g : Input av typ J
+g' : Input av typ I
+i2j injektiv funktion från I till J -> |I| <= |J| 
+
+Vi vill gå från ett DT av J till ett DT av I. Det är tillåtet att skapa ett träd med strikt lägre komplexitet.
+
+mapDTinverse :: (I -> J) -> DT J -> DT I
+mapDTinverse _ (Res b) = Res b
+mapDTinverse i2j (pick j t1 t2)
+  | j in image of i2j = pick (inverse i2j j) (mapDTinverse i2j t1) (mapDTinverse i2j t2)
+  | otherwise = mapDTinverse i2j t1
+
+Vi skulle kunna behöva ett extra bevis som säger att om j inte är i bilden av i2j så måste
+de båda sub-funktionerna vara identiska.
+
+Bevis:
+
+Givet en funktion gj = mapBFinput i2j gi och ett dt tj sådant att gj = [tj], samt en injektiv funktion i2j,
+visa att [mapDTinverse i2j tj] = gi.
+
+Visa även att mapDTinverse i2j tj har strikt lägre än eller samma kostnad som ti.
+
+Induktionsbevis.
+
+Basfall: 
+
+tj = Res b
+
+LHS =
+[mapDTinverse i2j tj] =
+[Res b] =
+\itup -> b
+
+RHS =
+gi =
+
+-------------------------------
+
+För varje BF g : BF I och varje bijektion e mellan I och J
+kommer funktionen g' = mapBF e g ha samma komplexitet som g.
+
+e . (inv e) = id
+mapBF e . mapBF (inv e) == id
+
+mapBF e bf = \inputtup -> bf (inputtup . e)
+
+
+mapBF e f inputtup = f (inputtup . e)
