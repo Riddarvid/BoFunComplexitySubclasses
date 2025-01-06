@@ -30,13 +30,8 @@
 ### Active
  
 - Bevis - Gemensamt på fredag
-	- Remember to introduce all the notation used in Section 2.4.
-	- Definiera independent istället för dependent.
-	- Grammatik: "node's": of the node
-	- Decision tree istället för valid decision tree.
-	- I lemma 2, antag godtyckligt p så blir c1 och c2 tal istället för funktioner.
-	- Uttryck "Level-p complexity is dependent only on a function's dependent bits" som en entydig matematisk utsaga.
-	- Uttryck "The complexity of a function expressed as a BDD is not dependent on variable numbering.". Se feedback för förslag.
+	- Lägg till förklaring av vad som sker i varje steg
+        - Introducera alla hjälpfunktioner
 
 - Fixa bilden på framsidan, så att vi har en beskrivning av den
 - Se över alla kommentarer i dokumentet.
@@ -46,7 +41,7 @@
 - give names to the definitions included in the definition list
 - In future work: add stuff about number of functions/representations
 - Lägg in komplexiteten av IterMaj 3 3 i appendix A
-- Strukturera om resultat delen. Vad vill vi få fram?
+- Strukturera om resultatdelen. Vad vill vi få fram?
 - förklara box plots och referera till dem i texten. - Arvid
 - Se över properties och se att de är representativa för koden. Se även namn.
 - Ta upp i iterated:
@@ -58,7 +53,6 @@
 - Too many subsections with short paragraphs. Lack of transition - Gemensamt idag
 	- expand on the sections 
 	- remove a lot of introduction sentences
- - Se över hur vi använder "we" och se till att det inte blir otydligt.
  - Se över alla ställen där vi använder math mode och se om det är mer logiskt att använda typewriter font istället.
  - Se över hur vi använder citationstecken
  - Se till att figures osv. hamnar på rimliga ställen.
