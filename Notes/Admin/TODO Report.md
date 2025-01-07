@@ -37,12 +37,12 @@
 - Se över alla kommentarer i dokumentet.
 - Need more citations and sources, Go through our citations and evaluate if they are good
 - Add more if you have any: Skriv klart diskussionen. Mindre summary, mer reflektioner.
-- Skriva abstract
+- ~~Skriva abstract~~
 - give names to the definitions included in the definition list
 - In future work: add stuff about number of functions/representations
 - Lägg in komplexiteten av IterMaj 3 3 i appendix A
-- Strukturera om resultatdelen. Vad vill vi få fram?
-- förklara box plots och referera till dem i texten. - Arvid
+- ~~Strukturera om resultatdelen. Vad vill vi få fram?~~
+- ~~förklara box plots och referera till dem i texten. - Arvid~~
 - Se över properties och se att de är representativa för koden. Se även namn.
 - Ta upp i iterated:
 	- Här finns flera representationer av samma funktion.
