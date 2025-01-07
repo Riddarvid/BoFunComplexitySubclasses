@@ -32,21 +32,24 @@
 - Bevis - Gemensamt på fredag
 	- Lägg till förklaring av vad som sker i varje steg
         - Introducera alla hjälpfunktioner
-
+	- give names to the definitions included in the definition list
+- Run code:
+  	-Lägg in komplexiteten av IterMaj 3 3 i appendix A
+  	- run for Maj 3 3, om någon tar mindre än 30 min. 
+   
 - Fixa bilden på framsidan, så att vi har en beskrivning av den
 - Se över alla kommentarer i dokumentet.
 - Need more citations and sources, Go through our citations and evaluate if they are good
-- Add more if you have any: Skriv klart diskussionen. Mindre summary, mer reflektioner.
-- ~~Skriva abstract~~
-- give names to the definitions included in the definition list
-- In future work: add stuff about number of functions/representations
-- Lägg in komplexiteten av IterMaj 3 3 i appendix A
-- ~~Strukturera om resultatdelen. Vad vill vi få fram?~~
-- ~~förklara box plots och referera till dem i texten. - Arvid~~
-- Se över properties och se att de är representativa för koden. Se även namn.
 - Ta upp i iterated:
 	- Här finns flera representationer av samma funktion.
-- Result - I allmänhet, gör hypoteser eller dra slutsatser om det diagrammen visar.
+
+- ~~Add more if you have any: Skriv klart diskussionen. Mindre summary, mer reflektioner.~~
+- ~~Skriva abstract~~
+- ~~In future work: add stuff about number of functions/representations~~
+- ~~Strukturera om resultatdelen. Vad vill vi få fram?~~
+- ~~förklara box plots och referera till dem i texten. - Arvid~~
+- ~~Se över properties och se att de är representativa för koden. Se även namn.~~
+- ~~Result - I allmänhet, gör hypoteser eller dra slutsatser om det diagrammen visar.~~
 
 ### Fix while reading through , Especially on final reads
 
