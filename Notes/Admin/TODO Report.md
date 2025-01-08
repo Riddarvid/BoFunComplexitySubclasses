@@ -36,12 +36,12 @@
 - Run code:
   	-Lägg in komplexiteten av IterMaj 3 3 i appendix A
   	- run for Maj 3 3, om någon tar mindre än 30 min. 
-   
-- Fixa bilden på framsidan, så att vi har en beskrivning av den
+- make sure critical point report text is consistent with new code
+-  ~~Fixa bilden på framsidan, så att vi har en beskrivning av den~~
 - Se över alla kommentarer i dokumentet.
 - Need more citations and sources, Go through our citations and evaluate if they are good
-- Ta upp i iterated:
-	- Här finns flera representationer av samma funktion.
+-  ~~Ta upp i iterated:~~
+	-  ~~Här finns flera representationer av samma funktion.~~
 
 - ~~Add more if you have any: Skriv klart diskussionen. Mindre summary, mer reflektioner.~~
 - ~~Skriva abstract~~
