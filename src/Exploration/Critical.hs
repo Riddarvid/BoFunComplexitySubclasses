@@ -16,7 +16,7 @@ import           Algebraic          (AlgRep (AlgRep),
 import           Data.List          (sort)
 import           DSLsofMath.PSDS    (Poly, constP, derP, evalP)
 import           Poly.PiecewisePoly (PiecewisePoly, linearizePW, pieces)
-import           Poly.Utils         (numRootsInInterval)
+import           Poly.Utils         (numRootsInInterval, removeDoubleRoots)
 import           Utils              (Sign (..))
 
 data Location = Point Algebraic | Range Algebraic Algebraic
@@ -32,6 +32,7 @@ type CriticalPoint = (Location, Critical)
 -- polynomial pieces, and therefore have a constant value, which is also captured in
 -- the data type.
 data UncertainCriticalPoint = UPoint Algebraic Critical | URange Algebraic Algebraic Rational
+  deriving (Show)
 
 instance Eq Location where
   (==) :: Location -> Location -> Bool
@@ -189,7 +190,8 @@ criticalPointsInPiece' :: Rational -> Poly Rational -> Rational -> [UncertainCri
 criticalPointsInPiece' _low p = go _low
   where
     p' = derP p
-    go low high = case numRootsInInterval p' (low, high) of
+    noDoubleRootsP' = removeDoubleRoots p'
+    go low high = case numRootsInInterval noDoubleRootsP' (low, high) of
       0 -> []
       1 -> case criticalType low p' high of
         Nothing -> []

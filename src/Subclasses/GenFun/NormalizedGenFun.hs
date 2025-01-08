@@ -9,16 +9,17 @@ module Subclasses.GenFun.NormalizedGenFun (
   ngfArity,
   normalizeGenFun
 ) where
-import           Arity                    (ArbitraryArity (arbitraryArity))
-import           BDD.BDD                  (normalizeBDD)
-import           Complexity.BoFun         (BoFun (..))
-import           Control.DeepSeq          (NFData)
-import           Data.DecisionDiagram.BDD (AscOrder, BDD)
-import           Data.Function.Memoize    (deriveMemoizable)
-import           Data.Hashable            (Hashable)
-import           GHC.Generics             (Generic)
-import           Subclasses.GenFun.GenFun (GenFun (GenFun))
-import           Test.QuickCheck          (Gen)
+import           Arity                      (ArbitraryArity (arbitraryArity))
+import           BDD.BDD                    (normalizeBDD)
+import           Complexity.BoFun           (BoFun (..))
+import           Control.DeepSeq            (NFData)
+import           Data.DecisionDiagram.BDD   (AscOrder, BDD)
+import           Data.Function.Memoize      (deriveMemoizable)
+import           Data.Hashable              (Hashable)
+import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
+import           GHC.Generics               (Generic)
+import           Subclasses.GenFun.GenFun   (GenFun (GenFun))
+import           Test.QuickCheck            (Gen)
 
 newtype NormalizedGenFun = NormalizedGenFun GenFun
   deriving (Generic, Eq, Show, Read)
@@ -64,3 +65,7 @@ instance ArbitraryArity NormalizedGenFun where
   arbitraryArity arity = do
     gf <- arbitraryArity arity
     return $ mkNGF gf
+
+instance PrettyBoFun NormalizedGenFun where
+  prettyShow :: NormalizedGenFun -> String
+  prettyShow (NormalizedGenFun f@(GenFun _ n)) = "Normalized general function with arity " ++ show n ++ "\n" ++ prettyShow f

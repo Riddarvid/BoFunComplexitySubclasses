@@ -10,7 +10,9 @@ import           Control.DeepSeq                             (NFData, force)
 import           Control.Exception                           (evaluate)
 import           Control.Monad                               (void)
 import           Data.DecisionDiagram.BDD                    (AscOrder, BDD,
-                                                              notB, var, (.&&.),
+                                                              Sig (SBranch, SLeaf),
+                                                              fromGraph, notB,
+                                                              var, (.&&.),
                                                               (.||.))
 
 import           Algebraic                                   (AlgRep (AlgRep),
@@ -22,13 +24,16 @@ import           Complexity.GenAlg                           (genAlg,
                                                               genAlgThinMemoPoly)
 import           Complexity.Piecewise                        (complexity,
                                                               complexityAndAlgorithms)
+import           Data.Foldable                               (find)
 import           Data.Function.Memoize                       (Memoizable)
 import           Data.List.NonEmpty                          (NonEmpty ((:|)))
+import           Data.Maybe                                  (fromJust)
 import           Data.Ratio                                  ((%))
 import           Data.Set                                    (Set)
 import           Data.Time                                   (NominalDiffTime,
                                                               diffUTCTime,
                                                               getCurrentTime)
+import           Debug.Trace                                 (trace, traceShow)
 import           DSLsofMath.Algebra                          (AddGroup,
                                                               MulGroup)
 import           DSLsofMath.PSDS                             (Poly (P))
@@ -46,8 +51,9 @@ import           Exploration.Measurements                    (generateSamplesToF
                                                               measureTimeGenAlg,
                                                               measureTimePiecewiseComplexity,
                                                               measureTimePiecewiseExplicitComplexity)
-import           Exploration.PrettyPrinting                  (PrettyBoFun (prettyPrint),
-                                                              desmosPrintPW)
+import           Exploration.PrettyPrinting                  (PrettyBoFun (prettyPrint, prettyShow),
+                                                              desmosPrintPW,
+                                                              desmosShowPW)
 import           Poly.PiecewisePoly                          (BothPW (BothPW),
                                                               PiecewisePoly,
                                                               printPW)
@@ -61,7 +67,8 @@ import           Subclasses.GenFun.GenFun                    (GenFun (GenFun),
                                                               flipInputsGenFun,
                                                               prettyPrintGenFun)
 import           Subclasses.GenFun.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun)
-import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun)
+import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun,
+                                                              mkNGF)
 import           Subclasses.Iterated.Iterated                (Iterated,
                                                               Iterated' (Id, Iterated),
                                                               iterateFun)
@@ -81,7 +88,9 @@ testFun :: Iterated NonSymmThresholdFun
 testFun = Iterated (NonSymmThresholdFun (Threshold (1,1))) [Iterated (NonSymmThresholdFun (Threshold (1,2))) [Id,Id]]
 
 main :: IO ()
-main = measureThresholdStdOut
+main = do
+  let funs = simplestWithNMaxima 3
+  mapM_ (\f -> prettyPrint f >> desmosPrintPW (complexity f)) funs
 
 genSampleData :: IO ()
 genSampleData = generateSamplesToFile "samples.dat" 100 [
@@ -138,6 +147,12 @@ main2 = do
   let withMaxMaxima = filter (\(_, c) -> criticalPred (nMax maxMaxima) c) comps
   mapM_ (\(f, c) -> print f >> printPW c) withMaxMaxima
   print $ length withMaxMaxima
+
+simplestWithNMaxima :: Int -> [NormalizedGenFun]
+simplestWithNMaxima n = fromJust $ find (not . null) funssWithNMaxima
+  where
+    funss = map (map mkNGF . allGenFuns) [0 ..]
+    funssWithNMaxima = map (filter (\f -> countMaxima (critcalPointsPW $ complexity f) == n)) funss
 
 nMax :: Int -> [CriticalPoint] -> Bool
 nMax n points = countMaxima points == n

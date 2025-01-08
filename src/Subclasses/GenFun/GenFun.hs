@@ -24,27 +24,28 @@ module Subclasses.GenFun.GenFun (
   prettyShowGenFun,
   prettyPrintGenFun
 ) where
-import           Arity                     (ArbitraryArity (arbitraryArity))
-import           BDD.BDD                   (BDDa, allNAryBDDs,
-                                            bddFromOutputVector)
-import qualified BDD.BDD                   as BDD
-import           BDD.BDDInstances          ()
-import           Complexity.Algor          (Algor (..))
-import           Complexity.BoFun          (BoFun (..), shrinkBoFun)
-import           Control.DeepSeq           (NFData)
-import           Data.DecisionDiagram.BDD  (AscOrder, BDD (..), false, notB,
-                                            restrict, support, true)
-import           Data.Function.Memoize     (deriveMemoizable)
-import           Data.Hashable             (Hashable)
-import qualified Data.IntSet               as IS
-import           Data.List.NonEmpty        (NonEmpty ((:|)), append, (<|))
-import qualified Data.List.NonEmpty        as NE
-import           Data.Maybe                (fromJust)
-import           GHC.Generics              (Generic)
-import           Test.QuickCheck           (Arbitrary, Gen, chooseInt, sized,
-                                            vector)
-import           Test.QuickCheck.Arbitrary (Arbitrary (..), shrink)
-import           Utils                     (listToVarAssignment)
+import           Arity                      (ArbitraryArity (arbitraryArity))
+import           BDD.BDD                    (BDDa, allNAryBDDs,
+                                             bddFromOutputVector)
+import qualified BDD.BDD                    as BDD
+import           BDD.BDDInstances           ()
+import           Complexity.Algor           (Algor (..))
+import           Complexity.BoFun           (BoFun (..), shrinkBoFun)
+import           Control.DeepSeq            (NFData)
+import           Data.DecisionDiagram.BDD   (AscOrder, BDD (..), false, notB,
+                                             restrict, support, true)
+import           Data.Function.Memoize      (deriveMemoizable)
+import           Data.Hashable              (Hashable)
+import qualified Data.IntSet                as IS
+import           Data.List.NonEmpty         (NonEmpty ((:|)), append, (<|))
+import qualified Data.List.NonEmpty         as NE
+import           Data.Maybe                 (fromJust)
+import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
+import           GHC.Generics               (Generic)
+import           Test.QuickCheck            (Arbitrary, Gen, chooseInt, sized,
+                                             vector)
+import           Test.QuickCheck.Arbitrary  (Arbitrary (..), shrink)
+import           Utils                      (listToVarAssignment)
 
 -- The internal BDD should only ever be dependent on variables in [1..n]
 data GenFun = GenFun (BDD AscOrder) Int
@@ -197,3 +198,7 @@ constructTruthTable' varN gf = append zeroTable oneTable
     zeroTable = subTable False
     oneTable = subTable True
     subTable v = NE.map (v <|) $ constructTruthTable' (varN + 1) $ setBit (varN, v) gf
+
+instance PrettyBoFun GenFun where
+  prettyShow :: GenFun -> String
+  prettyShow = prettyShowGenFun
