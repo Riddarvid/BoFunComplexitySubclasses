@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances  #-}
@@ -14,18 +15,18 @@ type MultiComposed f g = Lifted f g
 type SubFun f = MultiComposed f (Iterated f)
 data Iterated f = Const Bool | Id | Iterated (SubFun f)
 
-instance (BoFun (SubFun f) (i, [i])) => BoFun (Iterated f) [i] where
+instance BoFun f Int => BoFun (Iterated f) [Int] where
   isConst :: Iterated f -> Maybe Bool
   isConst (Const v)    = Just v
   isConst Id           = Nothing
   isConst (Iterated f) = isConst f
 
-  variables :: Iterated f -> [[i]]
+  variables :: Iterated f -> [[Int]]
   variables (Const _)    = []
   variables Id           = [[]]
   variables (Iterated f) = map (uncurry (:)) $ variables f
 
-  setBit :: ([i], Bool) -> Iterated f -> Iterated f
+  setBit :: ([Int], Bool) -> Iterated f -> Iterated f
   setBit _             (Const _)    = error "setBit on const"
   setBit ([], v)       Id           = Const v
   setBit _             Id           = error "Too many levels in path"
