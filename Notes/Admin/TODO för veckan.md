@@ -32,6 +32,7 @@
 report.
 + Ta med saker från presentationen när vi beskriver FlameGraphs
 + Fixa bevis + referera korrekt till de bevis vi har när vi pratar om normalisering.
++ Fix a better polynomial for the shrinking example
   
  While reading through it: 
   + Table of X: please unify the "font/style" of (function and type)
