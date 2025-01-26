@@ -26,18 +26,16 @@
 - ~~Skriv om Applications för att bättre matcha namn osv.~~ - Selina
 	-  5.1 ~~Förklara hur shrinking funkar, gärna med illustration/diagram.~~
 		- ~~I allmänhet är det nog konceptet shrinking som behöver förklaras~~
-
-### Active
  
-- Bevis - Gemensamt på fredag
-	- Lägg till förklaring av vad som sker i varje steg
-        - Introducera alla hjälpfunktioner
-	- give names to the definitions included in the definition list
-- Run code:
-  	-Lägg in komplexiteten av IterMaj 3 3 i appendix A
-  	- run for Maj 3 3, om någon tar mindre än 30 min.
-- Se över alla kommentarer i dokumentet.
-- Need more citations and sources, Go through our citations and evaluate if they are good
+- ~~Bevis - Gemensamt på fredag~~
+	- ~~Lägg till förklaring av vad som sker i varje steg~~
+        - ~~Introducera alla hjälpfunktioner~~
+	- ~~give names to the definitions included in the definition list~~
+- ~~Run code:~~
+  	-~~Lägg in komplexiteten av IterMaj 3 3 i appendix A~~
+  	- ~~run for Maj 3 3, om någon tar mindre än 30 min.~~
+
+- ~~Need more citations and sources, Go through our citations and evaluate if they are good~~
   
 - ~~make sure critical point report text is consistent with new code~~
 -  ~~Fixa bilden på framsidan, så att vi har en beskrivning av den~~
@@ -50,12 +48,17 @@
 - ~~förklara box plots och referera till dem i texten. - Arvid~~
 - ~~Se över properties och se att de är representativa för koden. Se även namn.~~
 - ~~Result - I allmänhet, gör hypoteser eller dra slutsatser om det diagrammen visar.~~
+- ~~Too many subsections with short paragraphs. Lack of transition - Gemensamt idag~~
+	- ~~expand on the sections~~
+	- ~~remove a lot of introduction sentences~~
+### Active
+ 
+- Se över alla kommentarer i dokumentet.
+
 
 ### Fix while reading through , Especially on final reads
 
-- Too many subsections with short paragraphs. Lack of transition - Gemensamt idag
-	- expand on the sections 
-	- remove a lot of introduction sentences
+
  - Se över alla ställen där vi använder math mode och se om det är mer logiskt att använda typewriter font istället.
  - Se över hur vi använder citationstecken
  - Se till att figures osv. hamnar på rimliga ställen.
