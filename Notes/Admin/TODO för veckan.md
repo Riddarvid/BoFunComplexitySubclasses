@@ -12,27 +12,22 @@
 + ~~Se till att captions alltid är under figures, listings, etc.~~
 + ~~I Introduction, nämn biblioteksnamn och inte bara source.~~
 + ~~Byt ut FlatMaj mot maj~~
-
- Active: 
-
- + p6: Def. 2.1.1: The "b" is "unbound" - please clarify that "Exists
-  b : Bool. Forall x : BFInput I. f(x) = b". Perhaps by inserting
-  "there is a b such that" before "f(x) = b".
-     - maybe solved?
 + ~~Se om vi vill lägga in visualiseringar och förklaringar från presentationen i rapporten, enligt Vera och Katris feedback.~~
        - ~~level-p-complexity~~ ~~Specifikt, förklara hur level-p complexity är kopplat till sannolikhet.~~
        - ~~normalization~~
        - ~~multi-composed~~
        - ~~iterated --> make new vizualizaion in latex~~
-+ Experimentera med om man kan t.ex. boxa in definitioner/lemmas för tydligare indelning.
-+ ~~Se över graferna, specifikt för att få bort overlapping.~~
-    - Selina: I used the two from the presentation for factor and maj_n, the others are commented out resulting in fewer diagrams. thoughts?
++ ~~Se över graferna, specifikt för att få bort overlapping. fixa graph i appendix~~
+ + ~~p6: Def. 2.1.1: The "b" is "unbound" - please clarify that "Exists~~
+  ~~b : Bool. Forall x : BFInput I. f(x) = b". Perhaps by inserting~~
+  ~~"there is a b such that" before "f(x) = b".~~
+     ~~- maybe solved?~~
++ ~~How BDD utilises uniqueness to save memory was more clear in the presentation than in the report.~~
+   
+ Active: 
 + Flytta flamegraphen för maj301 som threshold fun till resultatet (eller conclusion) istället.
-+ How BDD utilises uniqueness to save memory was more clear in the presentation than in the
-report.
 + Ta med saker från presentationen när vi beskriver FlameGraphs
 + Fixa bevis + referera korrekt till de bevis vi har när vi pratar om normalisering.
-+ Fix a better polynomial for the shrinking example
   
  While reading through it: 
   + Table of X: please unify the "font/style" of (function and type)
