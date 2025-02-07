@@ -25,9 +25,6 @@ source-repository head
 library
   exposed-modules:
       Algebraic
-      Archived.Algebraic
-      Archived.Counting
-      Archived.MatrixBridge
       Arity
       BDD.BDD
       BDD.BDDInstances
@@ -43,10 +40,10 @@ library
       Exploration.Eval
       Exploration.Filters
       Exploration.Measurements
+      Exploration.Measurements.IO
       Exploration.PrettyPrinting
       Exploration.Translations
       LibMain
-      MathStuff
       Poly.PiecewisePoly
       Poly.PolyCmp
       Poly.PolyInstances

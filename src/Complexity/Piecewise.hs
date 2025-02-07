@@ -2,8 +2,8 @@
 {-# LANGUAGE BlockArguments #-}
 
 -- This module exports two functions for calculating the complexity of BoFuns,
--- expressed as a PiecewisePoly. explicitComplexity is equivalent to complexity,
--- but it uses explicit memoization for increased efficiency.
+-- expressed as a PiecewisePoly. explicitComplexity is functionally equivalent to complexity,
+-- but it uses explicit memoization in order to utilize fast comparison of BDDs.
 module Complexity.Piecewise (
   complexity,
   explicitComplexity,

@@ -1,4 +1,6 @@
 {-# LANGUAGE InstanceSigs #-}
+
+-- Tis module contains functionality for finding critical points of piecewise polynomials.
 module Exploration.Critical (
   Critical(..),
   Location(..),

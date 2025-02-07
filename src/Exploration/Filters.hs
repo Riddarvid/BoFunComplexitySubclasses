@@ -1,5 +1,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+
+-- Some common filtering operations
 module Exploration.Filters (
   piecesPred,
   degreePred,
