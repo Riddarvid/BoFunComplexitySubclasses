@@ -4,7 +4,22 @@ Associated code for the paper "Exploring level-p-complexity for subclasses of Bo
 
 The code builds upon the library presented in the paper "Level-p-complexity of Boolean Functions using Thinning, Memoization, and Polynomials" (published in JFP as [https://doi.org/10.1017/S0956796823000102](https://www.cambridge.org/core/journals/journal-of-functional-programming/article/levelpcomplexity-of-boolean-functions-using-thinning-memoization-and-polynomials/58122B71C40F99E0D19ACD0FAFF867A9#article)) by Julia Jansson and Patrik Jansson, as well as the extensions added by Christian Sattler.
 
-## Defininga Boolean function
+## Overview
+
+The project contains the following modules:
+
+- BDD: Functionality and utilities regarding binary decision diagrams.
+- Complexity: Code regarding complexity computations.
+- Exploration: Various functionality for exploring Boolean functions and their complexities.
+- Poly: Code regarding polynomials and piecewise polynomials.
+- Subclasses: Representations of various subclasses of Boolean functions.
+- Testing: QuickCheck generators and properties.
+- Algebraic: Algebraic numbers.
+- Arity: Typeclasses regarding function arity.
+
+In addition to the Haskell code, the python script bench.py can be used to benchmark complexity calculations. The reason for this being done via python is that memoization interferes with native benchmarking. In order to use the script, one of the functions defined in Exploration.Measurements.IO must be called from main.
+
+## Defining a Boolean function
 
 Boolean functions are represented by the typeclass BoFun, found in the module Complexity.BoFun.
 The typeclass has three functions:

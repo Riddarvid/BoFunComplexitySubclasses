@@ -1,3 +1,5 @@
+# Python script for running measurements
+
 import subprocess
 import statistics
 from numpy import percentile
