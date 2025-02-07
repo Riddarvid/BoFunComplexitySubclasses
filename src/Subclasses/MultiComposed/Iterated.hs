@@ -134,6 +134,8 @@ instance (AllArity (SubFun f), Ord (SubFun f)) => AllArity (Iterated' f) where
     where
       subFuns = Set.map Iterated' $ allArity n
 
+-- This is the concrete type used in the report.
+
 type Iterated f = Iterated' (MultiComposed f)
 
 pattern Iterated :: BoFun f Int => f -> [Iterated f] -> Iterated f
