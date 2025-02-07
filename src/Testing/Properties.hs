@@ -50,9 +50,9 @@ import           Subclasses.GenFun.GenFun           (GenFun, eval,
                                                      generateGenFun, notG,
                                                      toGenFun)
 import           Subclasses.GenFun.NormalizedGenFun (mkNGF, ngfArity)
-import           Subclasses.Iterated.Iterated       (Iterated)
-import           Subclasses.Iterated.IteratedTH     ()
-import           Subclasses.LiftedTH                ()
+import           Subclasses.MultiComposed.Iterated       (Iterated)
+import           Subclasses.MultiComposed.IteratedTH     ()
+import           Subclasses.MultiComposed.MultiComposedTH                ()
 import qualified Subclasses.Symmetric               as Symm
 import           Subclasses.Symmetric               (SymmetricFun)
 import qualified Subclasses.Threshold               as Thresh

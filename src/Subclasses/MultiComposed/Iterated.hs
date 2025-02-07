@@ -7,7 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE UndecidableInstances  #-}
-module Subclasses.Iterated.Iterated (
+module Subclasses.MultiComposed.Iterated (
   Iterated'(Const, Id, Iterated),
   SubFun,
   Iterated,
@@ -25,7 +25,7 @@ import qualified Data.Set                   as Set
 import qualified DSLsofMath.Algebra         as A
 import           Exploration.PrettyPrinting (PrettyBoFun (prettyShow))
 import           GHC.Generics               (Generic)
-import           Subclasses.Lifted          (Lifted (Lifted))
+import           Subclasses.MultiComposed.MultiComposed          (Lifted (Lifted))
 import           Test.Feat                  (enumerate)
 import           Test.QuickCheck            (Arbitrary (arbitrary, shrink), Gen,
                                              chooseInt, oneof, sized)

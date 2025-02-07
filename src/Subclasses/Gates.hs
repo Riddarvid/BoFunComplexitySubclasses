@@ -19,7 +19,7 @@ import           Control.DeepSeq              (NFData)
 import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
 import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
-import           Subclasses.Iterated.Iterated (Iterated, Iterated' (Iterated))
+import           Subclasses.MultiComposed.Iterated (Iterated, Iterated' (Iterated))
 import           Test.QuickCheck              (Arbitrary, Gen, arbitrary,
                                                elements)
 import           Utils                        (naturals)

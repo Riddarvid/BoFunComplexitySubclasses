@@ -31,7 +31,7 @@ import           Data.Sequence                (Seq (Empty, (:<|), (:|>)))
 import qualified Data.Sequence                as Seq
 import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
-import           Subclasses.Iterated.Iterated (Iterated, iterateFun)
+import           Subclasses.MultiComposed.Iterated (Iterated, iterateFun)
 import           Test.QuickCheck              (Arbitrary (arbitrary), chooseInt,
                                                sized, vector)
 import           Test.QuickCheck.Gen          (Gen)
@@ -155,6 +155,7 @@ instance PrettyBoFun NonSymmSymmetricFun where
   prettyShow :: NonSymmSymmetricFun -> String
   prettyShow (SymmetricFun' f) = prettyShow f
 
+-- Wrapper for when a symmetric type is not desired.
 pattern NonSymmSymmetricFun :: Result -> NonSymmSymmetricFun
 pattern NonSymmSymmetricFun f = SymmetricFun' (SymmetricFun f)
 

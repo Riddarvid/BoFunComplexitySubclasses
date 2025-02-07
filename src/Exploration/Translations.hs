@@ -20,7 +20,7 @@ import           Subclasses.GenFun.GenFun           (GenFun (GenFun), constGF,
                                                      toGenFun)
 import           Subclasses.GenFun.NormalizedGenFun (NormalizedGenFun, mkNGF,
                                                      ngfArity)
-import           Subclasses.Iterated.Iterated       (Iterated)
+import           Subclasses.MultiComposed.Iterated       (Iterated)
 import           Subclasses.Symmetric               (SymmetricFun,
                                                      mkSymmetricFun)
 import           Subclasses.Threshold               (NonSymmThresholdFun,

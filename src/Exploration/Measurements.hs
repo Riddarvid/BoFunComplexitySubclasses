@@ -23,8 +23,8 @@ import           Data.Time                      (NominalDiffTime, diffUTCTime,
 import           Data.Vector                    (Vector, fromList)
 import           Statistics.Sample              (meanVariance, range)
 import           Subclasses.GenFun.GenFun       (GenFun, liftBDD)
-import           Subclasses.Iterated.IteratedTH ()
-import           Subclasses.LiftedTH            ()
+import           Subclasses.MultiComposed.IteratedTH ()
+import           Subclasses.MultiComposed.MultiComposedTH            ()
 import           Test.QuickCheck                (generate)
 
 ------------ Measuring a single complexity calculation once ----------------------

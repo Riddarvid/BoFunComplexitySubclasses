@@ -23,7 +23,7 @@ import           Subclasses.GenFun.CanonicalGenFun           (CanonicalGenFun)
 import           Subclasses.GenFun.GenFun                    (GenFun)
 import           Subclasses.GenFun.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun)
 import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun)
-import           Subclasses.Iterated.Iterated                (Iterated)
+import           Subclasses.MultiComposed.Iterated                (Iterated)
 import           Subclasses.Symmetric                        (NonSymmSymmetricFun,
                                                               SymmetricFun)
 import           Subclasses.Threshold                        (NonSymmThresholdFun,

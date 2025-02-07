@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
-module Subclasses.LiftedTH () where
+module Subclasses.MultiComposed.MultiComposedTH () where
 import           Data.Function.Memoize (deriveMemoizable)
-import           Subclasses.Lifted     (Lifted)
+import           Subclasses.MultiComposed.MultiComposed     (Lifted)
 
 $(deriveMemoizable ''Lifted)

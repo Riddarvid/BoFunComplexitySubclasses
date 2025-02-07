@@ -54,11 +54,10 @@ library
       Subclasses.GenFun.GenFun
       Subclasses.GenFun.NormalizedCanonicalGenFun
       Subclasses.GenFun.NormalizedGenFun
-      Subclasses.Iterated.Iterated
-      Subclasses.Iterated.IteratedSimplified
-      Subclasses.Iterated.IteratedTH
-      Subclasses.Lifted
-      Subclasses.LiftedTH
+      Subclasses.MultiComposed.Iterated
+      Subclasses.MultiComposed.IteratedTH
+      Subclasses.MultiComposed.MultiComposed
+      Subclasses.MultiComposed.MultiComposedTH
       Subclasses.Symmetric
       Subclasses.Threshold
       Testing.AllProperties

@@ -30,10 +30,10 @@ import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
 import           Control.DeepSeq              (NFData)
 import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
 import           GHC.Generics                 (Generic)
-import           Subclasses.Iterated.Iterated (Iterated,
+import           Subclasses.MultiComposed.Iterated (Iterated,
                                                Iterated' (Id, Iterated),
                                                iterateFun)
-import           Subclasses.Lifted            (Lifted (Lifted))
+import           Subclasses.MultiComposed.MultiComposed            (Lifted (Lifted))
 import           Test.QuickCheck              (chooseInt)
 import           Test.QuickCheck.Gen          (Gen)
 import           Utils                        (Square, naturals, partitions)
@@ -102,6 +102,7 @@ instance Constable ThresholdFun where
 thresholdFunArity :: ThresholdFun -> Int
 thresholdFunArity (ThresholdFun t) = thresholdArity t
 
+-- Wrapper for when a symmetric type is not desired.
 newtype NonSymmThresholdFun = ThresholdFun' ThresholdFun
   deriving (Memoizable, NFData, Show, ArbitraryArity, Read)
 
@@ -147,31 +148,6 @@ generateThreshold arity = do
   nt <- chooseInt (0, arity + 1)
   let nf = arity + 1 - nt
   return $ Threshold (nt, nf)
-
---------------- Enumeration -----------------------------
--- Is not really used for much right now.
-
--- enumerateNAry :: (Typeable f, Sized f) =>Int -> Shareable f ThresholdFun
--- enumerateNAry arity = aconcat $
---   [pure $ ThresholdFun $ Threshold (nt, arity + 1 - nt) | nt <- [0 .. arity + 1]]
-
--- -- We iterate over the number of subfunctions
--- instance (Enumerable g, Ord g) => Enumerable (LiftedThresholdFun g) where
---   enumerate :: (Typeable f, Sized f) => Shared f (LiftedThresholdFun g)
---   -- enumerate = datatype [c2 LiftedThresholdFun] -- This does not work since it generates illegal combinations of threshold and subfuns.
---   enumerate = share $ go 0
---     where
---       go nSubFuns = pay $ enumerateThresholdFun nSubFuns <|> go (nSubFuns + 1)
-
--- enumerateThresholdFun :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (LiftedThresholdFun g)
--- enumerateThresholdFun nSubFuns = toLifted <$> tupleF <*> multisetF
---   where
---     tupleF = ThresholdFun <$> enumerateThresholds nSubFuns
---     multisetF = enumerateMultiSet nSubFuns
-
--- -- Tuples are free
--- enumerateThresholds :: (Typeable f, Sized f) => Int -> Shareable f Threshold
--- enumerateThresholds nSubFuns = aconcat $ [pure $ Threshold (nt, nSubFuns + 1 - nt) | nt <- [0 .. nSubFuns + 1]]
 
 --------------- Exhaustive generation ------------------------------
 

@@ -5,8 +5,7 @@
 
 -- We have chosen to call a BDD canonical if its leftmost path reaches 0.
 -- This is equivalent with the output for an input consisting only of 0s being 0.
--- Other definitions might be better.
-
+-- The logic is that flipping all outputs of a BDD should not affect complexity.
 module Subclasses.GenFun.CanonicalGenFun (
   CanonicalGenFun,
   mkCGF,

@@ -106,15 +106,15 @@ Finally, Subclasses.GenFun.NormalizedCanonicalGenFun is the combination of both 
 
 ### Combining BoFuns
 
-As well as these classes, the library provides a way of combining and iterating Boolean functions over eachother. These are exposed in the Subclasses.Lifted and Subclasses.Iterated.Iterated modules.
+As well as these classes, the library provides a way of combining and iterating Boolean functions over eachother. These are exposed in the Subclasses.MultiComposed.MultiComposed and Subclasses.MultiComposed.Iterated modules.
 
 Lifting a function f over a list of functions gs basically means replacing each variable of f with a subfunction from gs. For example, if a 3-bit function is lifted over a 2-bit function, a 5-bit function and a 4-bit function, the resulting function would be a 11-bit function.
 
 Iterating a function takes the concept of lifting and repeats it, creating a tree-like structure of functions over subfunctions over subfunctions and so on, until either a constant function or the identity function is reached.
 
-Lifting is done via the pattern Lifted, defined in Subclasses.Lifted. Iterating a function over a list of iterated functions is done via the Iterated pattern, defined in Subclasses.Iterated.Iterated. This module also exposes the Id and Const constructors, facilitating the construction of iterated functions.
+Lifting is done via the pattern Lifted, defined in Subclasses.MultiComposed.MultiComposed. Iterating a function over a list of iterated functions is done via the Iterated pattern, defined in Subclasses.MultiComposed.Iterated. This module also exposes the Id and Const constructors, facilitating the construction of iterated functions.
 
-Another way of constructing an iterated function is to iterate a function over itself a set number of times. For example, 3 level iterated 3 bit majority is constructed by first replicating maj3 3 times, then lifting maj3 over this list of 3 functions. The process is then repeated until the desired number of levels is achieved. This functionality is expressed in the function iterFun in the Subclasses.Iterated.Iterated module.
+Another way of constructing an iterated function is to iterate a function over itself a set number of times. For example, 3 level iterated 3 bit majority is constructed by first replicating maj3 3 times, then lifting maj3 over this list of 3 functions. The process is then repeated until the desired number of levels is achieved. This functionality is expressed in the function iterFun in the Subclasses.MultiComposed.Iterated module.
 
 ```Haskell
 let maj33 = iterateFun 3 maj3 3

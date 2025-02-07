@@ -8,7 +8,7 @@
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE PatternSynonyms       #-}
-module Subclasses.Lifted (
+module Subclasses.MultiComposed.MultiComposed (
   Lifted(Lifted),
 ) where
 import           Arity                      (ArbitraryArity (arbitraryArity))
