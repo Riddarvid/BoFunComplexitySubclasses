@@ -20,23 +20,27 @@ module Subclasses.Threshold (
   allNAryITFs
 ) where
 
-import           Data.Function.Memoize        (Memoizable, deriveMemoizable)
-import           Prelude                      hiding (negate, sum, (+), (-))
+import           Data.Function.Memoize                  (Memoizable,
+                                                         deriveMemoizable)
+import           Prelude                                hiding (negate, sum,
+                                                         (+), (-))
 
-import           DSLsofMath.Algebra           (Additive (..), (-))
+import           DSLsofMath.Algebra                     (Additive (..), (-))
 
-import           Arity                        (ArbitraryArity (arbitraryArity))
-import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
-import           Control.DeepSeq              (NFData)
-import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
-import           GHC.Generics                 (Generic)
-import           Subclasses.MultiComposed.Iterated (Iterated,
-                                               Iterated' (Id, Iterated),
-                                               iterateFun)
-import           Subclasses.MultiComposed.MultiComposed            (Lifted (Lifted))
-import           Test.QuickCheck              (chooseInt)
-import           Test.QuickCheck.Gen          (Gen)
-import           Utils                        (Square, naturals, partitions)
+import           Arity                                  (ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun                       (BoFun (..),
+                                                         Constable (mkConst))
+import           Control.DeepSeq                        (NFData)
+import           Exploration.PrettyPrinting             (PrettyBoFun (prettyShow))
+import           GHC.Generics                           (Generic)
+import           Subclasses.MultiComposed.Iterated      (Iterated,
+                                                         Iterated' (Id, Iterated),
+                                                         iterateFun)
+import           Subclasses.MultiComposed.MultiComposed (MultiComposed (MultiComposed))
+import           Test.QuickCheck                        (chooseInt)
+import           Test.QuickCheck.Gen                    (Gen)
+import           Utils                                  (Square, naturals,
+                                                         partitions)
 
 --------------- Threshold ----------------------------------------
 
@@ -121,11 +125,11 @@ instance BoFun NonSymmThresholdFun Int where
   setBit :: (Int, Bool) -> NonSymmThresholdFun -> NonSymmThresholdFun
   setBit (_, v) (ThresholdFun' f) = ThresholdFun' $ setBit ((), v) f
 
------------------ Lifted Threshold Function ------------------
+----------------- MultiComposed Threshold Function ------------------
 
 -- | A thresholding function with copies of a single subfunction.
-thresholdFunReplicate :: (BoFun f i) => ThresholdFun -> f -> Lifted NonSymmThresholdFun f
-thresholdFunReplicate f g = Lifted (ThresholdFun' f) $ replicate (thresholdFunArity f) g
+thresholdFunReplicate :: (BoFun f i) => ThresholdFun -> f -> MultiComposed NonSymmThresholdFun f
+thresholdFunReplicate f g = MultiComposed (ThresholdFun' f) $ replicate (thresholdFunArity f) g
 
 -------------- Examples ------------------------------------
 
