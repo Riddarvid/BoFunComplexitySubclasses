@@ -2,13 +2,14 @@
 {-# LANGUAGE RebindableSyntax     #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 module Exploration.PrettyPrinting (
-  desmosPrintPW,
-  desmosShowPW,
-  desmosShowP,
-  PrettyBoFun(..)
+  PrettyBoFun(..),
+  prettyPrintPW,
+  prettyShowPW,
+  prettyPrintP,
+  prettyShowP
 ) where
 -- Contains functions for showing polynomials in a way that can be easily copied into
--- the graphical calculator desmos.
+-- a graphical calculator.
 
 import           Data.Ratio         (denominator, numerator)
 import           DSLsofMath.Algebra (Additive ((+)), ifThenElse, negate)
@@ -16,29 +17,32 @@ import           DSLsofMath.PSDS    (Poly (P))
 import           Poly.PiecewisePoly (PiecewisePoly, pieces)
 import           Prelude            hiding (negate, (+))
 
-desmosPrintPW :: PiecewisePoly Rational -> IO ()
-desmosPrintPW = putStrLn . desmosShowPW
+prettyPrintPW :: PiecewisePoly Rational -> IO ()
+prettyPrintPW = putStrLn . prettyShowPW
 
-desmosShowPW :: PiecewisePoly Rational -> String
-desmosShowPW pw = unlines $ zipWith desmosShowP (map (:[]) ['a' ..]) (pieces pw)
+prettyShowPW :: PiecewisePoly Rational -> String
+prettyShowPW pw = unlines $ zipWith prettyShowP (map (:[]) ['a' ..]) (pieces pw)
 
-desmosShowP :: String -> Poly Rational -> String
-desmosShowP name (P coeffs) = desmosShowL name coeffs
+prettyPrintP :: String -> Poly Rational -> IO ()
+prettyPrintP name = putStrLn . prettyShowP name
 
-desmosShowL :: String -> [Rational] -> String
-desmosShowL name cs = case desmosShowL' 0 cs of
+prettyShowP :: String -> Poly Rational -> String
+prettyShowP name (P coeffs) = prettyShowL name coeffs
+
+prettyShowL :: String -> [Rational] -> String
+prettyShowL name cs = case prettyShowL' 0 cs of
   "" -> name ++ "(x) = 0"
   s  -> name ++ "(x) = " ++ s
 
-desmosShowL' :: Int -> [Rational] -> String
-desmosShowL' _ [] = ""
-desmosShowL' d (c : cs)
-  | c == 0 = desmosShowL' (d + 1) cs
-  | otherwise = case desmosShowL' (d + 1) cs of
+prettyShowL' :: Int -> [Rational] -> String
+prettyShowL' _ [] = ""
+prettyShowL' d (c : cs)
+  | c == 0 = prettyShowL' (d + 1) cs
+  | otherwise = case prettyShowL' (d + 1) cs of
     []   -> sign ++ term
     rest -> sign ++ term ++ " " ++ rest
     where
-      term = desmosShowRational d c ++ d'
+      term = prettyShowRational d c ++ d'
       sign
         | c < 0 = "-"
         | d == 0 = ""
@@ -48,8 +52,8 @@ desmosShowL' d (c : cs)
         | d == 1 = "x"
         | otherwise = "x^" ++ show d
 
-desmosShowRational :: Int -> Rational -> String
-desmosShowRational d n = term
+prettyShowRational :: Int -> Rational -> String
+prettyShowRational d n = term
   where
   n' = if n < 0 then (-n) else n
   a = numerator n'

@@ -1,4 +1,6 @@
 {-# LANGUAGE InstanceSigs #-}
+
+-- Thinning, used by GenAlg
 module Complexity.Thin (
   Thin(..)
 ) where

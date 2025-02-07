@@ -1,4 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
+
+-- Typeclasses regarding arity.
 module Arity (
   ArbitraryArity(arbitraryArity),
   EnumerateArity(enumerateArity),
@@ -8,6 +10,8 @@ import           Control.Enumerable (Shareable, Sized, Typeable)
 import           Data.Set           (Set)
 import           Test.QuickCheck    (Gen)
 
+-- ArbitraryArity is an extension of QuickCheck's Arbitrary, that lets the caller specify the
+-- arity of the generated function.
 class ArbitraryArity a where
   arbitraryArity :: Int -> Gen a
 

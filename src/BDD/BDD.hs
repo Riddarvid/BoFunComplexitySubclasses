@@ -56,12 +56,8 @@ flipInputs bdd = substSet mapping bdd
 
 -------------------- Normalization -------------------------------
 
--- The problem that comparisons of BDDs take variable indeces into account.
--- The fact is that two BDDs for the same function and item order are
--- unique up to isomorphism. Thus, the same function CAN have different BDDs
--- describing it.
 -- normalizeBDD ensures that for n variables and an ascending order,
--- the function will return an equivalent function with variables [0 .. n - 1].
+-- the function will return an equivalent function (with regards to complexity) with variables [0 .. n - 1].
 
 -- The logic here is that if we assume an ascending order, then we should be able to simply
 -- map the variable indices to [0 .. n - 1] where n is the number of variables, without changing

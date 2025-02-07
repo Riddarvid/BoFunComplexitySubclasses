@@ -1,6 +1,8 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant guard" #-}
+
+-- Algebraic numbers for arbitrary precision
 module Algebraic (
   Algebraic(..),
   AlgRep(..),

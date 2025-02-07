@@ -1,9 +1,8 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant evaluate" #-}
 
--- This module isn't currently used very much, but it could be a starting point
--- for diving deeper into the topic.
-
+-- This module isn't currently very useful, but it could be a starting point
+-- for diving deeper into the topic of translating between function representations.
 module Exploration.Translations (
   genToBasicSymmetricNaive,
   ngfToIteratedThresholdFun,

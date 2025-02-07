@@ -63,8 +63,6 @@ library
       Subclasses.Threshold
       Testing.AllProperties
       Testing.Properties
-      UnusedSubclasses.Id
-      UnusedSubclasses.One
       Utils
   other-modules:
       Paths_exploring_level_p
