@@ -1,25 +1,32 @@
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveFunctor  #-}
 {-# LANGUAGE DeriveGeneric  #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# OPTIONS_GHC -Wno-missing-export-lists #-}
 module Poly.PolynomialExtra where
 
 import           Control.Arrow      (second, (***), (>>>))
 import           Data.Maybe         (fromJust, isJust)
 import           Data.Monoid        (Sum (..))
 import           Data.Ratio         (Ratio, denominator, numerator, (%))
-import           Prelude            hiding (negate, quot, recip, (*), (+), (-))
+import           Prelude            hiding (negate, quot, recip, sum, (*), (+),
+                                     (-), (/))
 import qualified Prelude            ((*))
 
 import           DSLsofMath.Algebra (AddGroup (negate), Additive (..),
-                                     Euclidean, Field, MulGroup (recip),
+                                     Euclidean, Field, MulGroup (recip, (/)),
                                      Multiplicative (one, (*)), Ring, generator,
-                                     quot)
-import           DSLsofMath.PSDS    (Poly (..), comP, gcdP, normalPoly, scaleL,
-                                     scaleP, xP, yun)
+                                     quot, sum, two)
+import           DSLsofMath.PSDS    (Poly (..), comP, degree, derP, factorials,
+                                     gcdP, isZero, normalPoly, scaleL, scaleP,
+                                     xP, yun)
 
 import           Control.DeepSeq    (NFData)
 import           GHC.Generics       (Generic)
+import           Test.QuickCheck    (Arbitrary (arbitrary), Gen)
 import           Utils              (Group (..), boolToMaybe, fromJustMonoid)
 
 
@@ -62,6 +69,15 @@ scaleInput c = unP >>> h one >>> P
 -- Precomposes the given polynomial with addition by the given factor.
 translateInput :: Ring a => a -> Poly a -> Poly a
 translateInput c = (`comP` P [c, one])
+
+-- Not currently used as it is a little slower than using comP
+translateInputTaylor :: (Ring a, Eq a, MulGroup a) => a -> Poly a -> Poly a
+translateInputTaylor offset p = sum terms
+  where
+    dx = offset -- If this doesn't work, try -offset
+    derivatives = takeWhile (not . isZero) $ iterate derP p
+    derivatives' = zip3 derivatives factorials (iterate (* dx) one)
+    terms = map (\(p', fac, dx') -> scaleP (dx' / fac) p') derivatives'
 
 -- Reparametrize by flipping the unit interval around.
 flipUnitIntervalPoly :: (Ring a) => Poly a -> Poly a
@@ -255,3 +271,12 @@ zipZero (xs, ys) = (x, y) : zipZero (xs', ys')
   where
   (x, xs') = viewZero xs
   (y, ys') = viewZero ys
+
+mirrorP :: (AddGroup a, Multiplicative a) => a -> Poly a -> Poly a
+mirrorP s p = scaleInput (negate one) $ translateInput (two * s) p
+
+genNonZeroPoly :: Gen (Poly Rational)
+genNonZeroPoly = do
+  xs <- arbitrary
+  let p = P xs
+  if degree p > 0 then return p else return $ P (0 : 1 : xs)

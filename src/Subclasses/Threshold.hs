@@ -1,63 +1,67 @@
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiWayIf             #-}
-{-# LANGUAGE TemplateHaskell        #-}
-{-# LANGUAGE UndecidableInstances   #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE FunctionalDependencies     #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE MultiWayIf                 #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE UndecidableInstances       #-}
+{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Replace case with maybe" #-}
-module Subclasses.Threshold where
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE PatternSynonyms            #-}
+module Subclasses.Threshold (
+  Threshold(Threshold),
+  ThresholdFun(ThresholdFun),
+  NonSymmThresholdFun(NonSymmThresholdFun),
+  majFun,
+  iteratedMajFun,
+  allNAryITFs
+) where
 
-import           Control.Arrow         ((>>>))
-import           Control.Monad.Free    (Free (..))
-import           Data.Function         ((&))
-import           Data.Function.Memoize (Memoizable (..), deriveMemoizable,
-                                        deriveMemoize)
-import           Data.Functor.Classes  (Eq1 (..), Eq2 (..), Ord1 (..),
-                                        Ord2 (..), Show1 (..), showsBinaryWith)
-import qualified Data.MultiSet         as MultiSet
-import           Prelude               hiding (negate, sum, (+), (-))
+import           Data.Function.Memoize                  (Memoizable,
+                                                         deriveMemoizable)
+import           Prelude                                hiding (negate, sum,
+                                                         (+), (-))
 
-import           DSLsofMath.Algebra    (AddGroup (..), Additive (..), sum, (-))
+import           DSLsofMath.Algebra                     (Additive (..), (-))
 
-import           BoFun                 (BoFun (..))
-import           Debug.Trace           (traceShow)
-import           Test.Feat             (deriveEnumerable)
-import           Utils                 (Square, boolToInt, chooseMany,
-                                        duplicate, lookupBool, naturals,
-                                        squareToList, tabulateBool)
+import           Arity                                  (ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun                       (BoFun (..),
+                                                         Constable (mkConst))
+import           Control.DeepSeq                        (NFData)
+import           Exploration.PrettyPrinting             (PrettyBoFun (prettyShow))
+import           GHC.Generics                           (Generic)
+import           Subclasses.MultiComposed.Iterated      (Iterated,
+                                                         Iterated' (Id, Iterated),
+                                                         iterateFun)
+import           Subclasses.MultiComposed.MultiComposed (MultiComposed (MultiComposed))
+import           Test.QuickCheck                        (chooseInt)
+import           Test.QuickCheck.Gen                    (Gen)
+import           Utils                                  (Square, naturals,
+                                                         partitions)
+
+--------------- Threshold ----------------------------------------
 
 -- | A threshold for a Boolean function.
 -- Number of inputs needed for 'True' and 'False' result, respectively.
 -- The sum of these thresholds equals the number of inputs plus one.
 -- Each threshold is non-negative.
 newtype Threshold = Threshold (Square Int)
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic, Read)
+
+instance NFData Threshold
 
 $(deriveMemoizable ''Threshold)
 
--- Pointwise (via Bool -> Int).
--- TODO: Derive automatically?
-instance Additive Threshold where
-  zero = Threshold $ tabulateBool $ const zero
-  Threshold a + Threshold b = Threshold $ tabulateBool $ \i -> lookupBool a i + lookupBool b i
--- TODO: perhaps generalise to some finite type instead of just Bool
-
-instance AddGroup Threshold where
-  negate (Threshold t) = Threshold $ tabulateBool $ lookupBool t >>> negate
-
--- TODO: What would be the type class for an algebra over the integers?
-thresholdScale :: Int -> Threshold -> Threshold
-thresholdScale x (Threshold t) = Threshold $ tabulateBool $ lookupBool t >>> (x *)
-
-thresholdNumInputs :: Threshold -> Int
-thresholdNumInputs (Threshold (nt, nf)) = nt + nf - 1
+thresholdArity :: Threshold -> Int
+thresholdArity (Threshold (nt, nf)) = nt + nf - 1
 
 -- A constant threshold (fixed result).
--- TODO-NEW: Figure out how we want to handle this bugfix.
--- fixed by changing == to /=
--- we also had to change to thresholdConst (not val) in the definition of setBit.
 thresholdConst :: Bool -> Threshold
-thresholdConst v = Threshold $ tabulateBool ((== v) >>> boolToInt)
+thresholdConst False = Threshold (1, 0)
+thresholdConst True  = Threshold (0, 1)
 
 thresholdIsConst :: Threshold -> Maybe Bool
 thresholdIsConst (Threshold (nt, nf)) = if
@@ -65,217 +69,122 @@ thresholdIsConst (Threshold (nt, nf)) = if
   | nf <= 0   -> Just False
   | otherwise -> Nothing
 
--- | A majority threshold.
-thresholdMaj :: Int -> Threshold
-thresholdMaj = duplicate >>> Threshold
+reduceThreshold :: Bool -> Threshold -> Threshold
+reduceThreshold v (Threshold (nt, nf)) = if v
+  then Threshold (nt - 1, nf)
+  else Threshold (nt, nf - 1)
 
+---------------------- Threshold function ----------------------------
 
--- QUESTION: How does this represent a threshold function? Is the threshold tuple the number of 0/1s?
+newtype ThresholdFun = ThresholdFun Threshold
+  deriving (Eq, Ord, Generic, Show, Read)
 
--- | A threshold-type Boolean function.
-data ThresholdFun f = ThresholdFun {
-  threshold          :: Threshold,
-  -- The subfunctions.
-  -- None of the subfunctions are constant.
-  -- Normalization condition: if one of the thresholds is zero, then there are no subfunctions.
-  thresholdFunctions :: MultiSet.MultiSet f
-  -- Arvid's comment: Right now, all the elements of thresholdFunctions must have the same
-  -- type, i.e. Symmetric or ThresholdFun etc. Doesn't this limit what we can express?
-} deriving (Show)
+$(deriveMemoizable ''ThresholdFun)
 
--- Necessitated by misdesign of Haskell typeclasses.
-instance Eq1 ThresholdFun where
-  liftEq eq' (ThresholdFun t us) (ThresholdFun t' us') =
-    liftEq2 (==) (liftEq eq') (t, us) (t', us')
-
-instance Ord1 ThresholdFun where
-  liftCompare compare' (ThresholdFun t us) (ThresholdFun t' us') =
-    liftCompare2 compare (liftCompare compare') (t, us) (t', us')
-
--- TODO: use record fields.
-instance Show1 ThresholdFun where
-  liftShowsPrec showsPrec' showList' p (ThresholdFun t u) =
-    showsBinaryWith showsPrec (liftShowsPrec showsPrec' showList') "ThresholdFun" p t u
-
--- TODO: instance Read1 ThresholdFun
-
-{-
-TODO:
-Figure out why this doesn't work.
-The error message is:
-    • ‘Threshold’ is not in the type environment at a reify
-    • In the untyped splice: $(deriveMemoize ''ThresholdFun)
--}
--- instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
---   memoize = $(deriveMemoize ''ThresholdFun)
-
--- TODO: Special case of transport of a type class along an isomorphism.
-instance (Ord x, Memoizable x) => Memoizable (ThresholdFun x) where
-  memoize f = m >>> memoize (n >>> f) where
-    -- Back and forth.
-    m (ThresholdFun t us) = (t, us)
-    n (t, us) = ThresholdFun t us
-
-thresholdFunConst :: Bool -> ThresholdFun f
-thresholdFunConst val = ThresholdFun (thresholdConst val) MultiSet.empty
-
--- | Normalizes threshold functions equivalent to a constant function.
-thresholdFunNormalize :: (Eq f, BoFun f i) => ThresholdFun f -> ThresholdFun f
-thresholdFunNormalize u = case thresholdIsConst (threshold u) of
-  Just val -> thresholdFunConst val
-  Nothing  -> u
-
--- Reduces constant subfunctions in a threshold function.
--- Not used for anything right now.
-{-
-thresholdFunNormalizeSub :: (Eq f, BoFun f i) => ThresholdFun f -> ThresholdFun f
-thresholdFunNormalizeSub (ThresholdFun t us) = ThresholdFun (t - s) (MultiSet.fromAscOccurList us') where
-  (reduced, us') = us
-    & MultiSet.toOccurList
-    & map (first viewConst >>> (\(x, k) -> bimap (, k) (, k) x))
-    & partitionEithers
-  s = reduced
-    & map (\(val, k) -> thresholdScale k (thresholdConst val))
-    & sum
--}
-
--- QUESTION: It seems like we start by having a BoFun f and then "promoting" it to a
--- ThresholdFun. It is a bit unclear what the variable type actually means.
--- How does setBit work here?
-
--- OUR UNDERSTANDING: A threshold function is made up of a list of sub-functions.
--- The variables of our function can then be described by a combination of sub-function
--- and sub-function-variable. The basic principle is that any time a sub function becomes
--- fully evaluated, we can reduce the appropriate threshold variable by one, and if the
--- threshold becomes zero, then we are done.
-
--- TODO: Figure out why this needs UndecidableInstances. (Haskell...)
-instance (Ord f, BoFun f i) => BoFun (ThresholdFun f) (Int, i) where
-  isConst = threshold >>> thresholdIsConst
-
-  variables (ThresholdFun _ us) = do
-    (i, (u, _)) <- us & MultiSet.toAscOccurList & zip naturals
-    v <- variables u
-    return (i, v)
-
-  setBit ((i, v), val) (ThresholdFun t us) = case isConst u' of
-    Just _  -> thresholdFunNormalize $ ThresholdFun t' us'
-    Nothing -> ThresholdFun t $ MultiSet.insert u' us'
+instance PrettyBoFun ThresholdFun where
+  prettyShow :: ThresholdFun -> String
+  prettyShow f@(ThresholdFun (Threshold (nt, _))) = show arity ++ "-bit threshold function, threshold at " ++ show nt
     where
-    (u, _) = MultiSet.toAscOccurList us !! i
-    us' = us & MultiSet.delete u
-    u' = setBit (v, val) u
-    t' = t - thresholdConst val--(not val)
+      arity = thresholdFunArity f
+
+instance NFData ThresholdFun
+
+instance BoFun ThresholdFun () where
+  isConst :: ThresholdFun -> Maybe Bool
+  isConst (ThresholdFun th) = thresholdIsConst th
+  variables :: ThresholdFun -> [()]
+  variables f = case isConst f of
+    Just _  -> []
+    Nothing -> [()]
+  setBit :: ((), Bool) -> ThresholdFun -> ThresholdFun
+  setBit (_, v) (ThresholdFun th) = ThresholdFun $ reduceThreshold v th
+
+instance Constable ThresholdFun where
+  mkConst :: Bool -> ThresholdFun
+  mkConst = ThresholdFun . thresholdConst
+
+thresholdFunArity :: ThresholdFun -> Int
+thresholdFunArity (ThresholdFun t) = thresholdArity t
+
+-- Wrapper for when a symmetric type is not desired.
+newtype NonSymmThresholdFun = ThresholdFun' ThresholdFun
+  deriving (Memoizable, NFData, Show, ArbitraryArity, Read)
+
+pattern NonSymmThresholdFun :: Threshold -> NonSymmThresholdFun
+pattern NonSymmThresholdFun th = ThresholdFun' (ThresholdFun th)
+
+instance PrettyBoFun NonSymmThresholdFun where
+  prettyShow :: NonSymmThresholdFun -> String
+  prettyShow (ThresholdFun' f) = prettyShow f
+
+instance BoFun NonSymmThresholdFun Int where
+  isConst :: NonSymmThresholdFun -> Maybe Bool
+  isConst (ThresholdFun' f) = isConst f
+  variables :: NonSymmThresholdFun -> [Int]
+  variables (ThresholdFun' f) = take (thresholdFunArity f) naturals
+  setBit :: (Int, Bool) -> NonSymmThresholdFun -> NonSymmThresholdFun
+  setBit (_, v) (ThresholdFun' f) = ThresholdFun' $ setBit ((), v) f
+
+----------------- MultiComposed Threshold Function ------------------
 
 -- | A thresholding function with copies of a single subfunction.
-thresholdFunReplicate :: (Ord f) => Threshold -> f -> ThresholdFun f
-thresholdFunReplicate t u = ThresholdFun t $ MultiSet.fromOccurList [(u, thresholdNumInputs t)]
+thresholdFunReplicate :: (BoFun f i) => ThresholdFun -> f -> MultiComposed NonSymmThresholdFun f
+thresholdFunReplicate f g = MultiComposed (ThresholdFun' f) $ replicate (thresholdFunArity f) g
 
+-------------- Examples ------------------------------------
 
--- | Boolean functions built from iterated thresholding.
-type IteratedThresholdFun f = Free ThresholdFun f
-
--- Could special case the above type to avoid pulling in the Kmettiverse.
--- data IteratedThresholdFun f = Pure f | Free (IteratedThresholdFun (IteratedThresholdFun f))
---   deriving (Show, Eq, Ord)
-
-instance (Ord f, Memoizable f) => Memoizable (IteratedThresholdFun f) where
-  memoize = $(deriveMemoize ''Free)
-
-iteratedThresholdFunConst :: Bool -> IteratedThresholdFun f
-iteratedThresholdFunConst = thresholdFunConst >>> Free
-
-{-
--- General instance.
--- Conflicts with the specialized instance for IteratedThresholdFun' given below.
-instance (Ord f, BoFun f i) => BoFun (IteratedThresholdFun f) ([Int], i) where
-  isConst (Pure u) = isConst u
-  isConst (Free v) = isConst v
-
-  variables (Pure u) = variables u & map ([],)
-  variables (Free v) = variables v & map (\(i, (is, j)) -> (i : is, j))
-
-  setBit (([], j), val) (Pure u) = Pure $ setBit (j, val) u
-  setBit ((i : is, j), val) (Free v) = Free $ setBit ((i, (is, j)), val) v
--}
-
-type IteratedThresholdFun' = IteratedThresholdFun ()
-
-instance BoFun IteratedThresholdFun' [Int] where
-  isConst (Pure ()) = Nothing
-  isConst (Free u)  = isConst u
-
-  variables (Pure ()) = [[]]
-  variables (Free v)  = variables v & map (uncurry (:))
-
-  setBit ([], val) (Pure u)     = iteratedThresholdFunConst val
-  setBit (i : is, val) (Free v) = Free $ setBit ((i, is), val) v
-
-
--- Example Boolean functions.
-
--- | Majority on five bits
-maj5 :: ThresholdFun (Maybe Bool)
-maj5 = majThreshold 5
-
-majThreshold :: Int -> ThresholdFun (Maybe Bool)
-majThreshold n = thresholdFunReplicate (thresholdMaj n') Nothing
+majFun :: Int -> ThresholdFun
+majFun bits = ThresholdFun $ Threshold (n, n)
   where
-    n' = (n `div` 2) + 1
+    n = (bits `div` 2) + 1
 
-iteratedThresholdFun :: [Threshold] -> IteratedThresholdFun'
-iteratedThresholdFun [] = Pure ()
-iteratedThresholdFun (t : ts) = Free $ thresholdFunReplicate t $ iteratedThresholdFun ts
+iteratedMajFun :: Int -> Int -> Iterated NonSymmThresholdFun
+iteratedMajFun bits = iterateFun bits (ThresholdFun' $ majFun bits)
 
--- | Reachable excluding constant functions.
-numReachable' :: [Threshold] -> Integer
-numReachable' [] = 1
-numReachable' (t@(Threshold v) : ts) = sum $ do
-  let n = numReachable' ts
-  let vs = squareToList v
-  i <- take (sum vs) naturals
-  let factor = vs & map (toInteger >>> subtract i >>> min 0) & sum & (+ i)
-  return $ factor * chooseMany n i
+-------------- Generation of ITFs ---------------------------------------
 
-{-
-Number of Boolean functions reachable from 'iteratedThresholdFun ts' by setting variables.
-That is:
->>> length $ reachable $ iteratedThresholdFun ts'
--}
-numReachable :: [Threshold] -> Integer
-numReachable = numReachable' >>> (+ 2)
+instance ArbitraryArity ThresholdFun where
+  arbitraryArity :: Int -> Gen ThresholdFun
+  arbitraryArity arity = ThresholdFun <$> generateThreshold arity
 
-iteratedMajFun :: [Int] -> IteratedThresholdFun'
-iteratedMajFun = map thresholdMaj >>> iteratedThresholdFun
+generateThreshold :: Int -> Gen Threshold
+generateThreshold arity = do
+  nt <- chooseInt (0, arity + 1)
+  let nf = arity + 1 - nt
+  return $ Threshold (nt, nf)
 
--- Argument are votes needed at each stage and number of stages.
-iteratedMajFun' :: Int -> Int -> IteratedThresholdFun'
-iteratedMajFun' threshold numStages = replicate numStages threshold & iteratedMajFun
+--------------- Exhaustive generation ------------------------------
 
-iteratedMaj3 :: Int -> IteratedThresholdFun'
-iteratedMaj3 = iteratedMajFun' 2
-{-
-The number of Boolean functions reachable from iteratedMaj3 is 2 plus s_n where
-* s_0 = 1,
-* s_{n+1} = s_n (s_n + 2) (s_n + 7) / 6.
-For example:
-* s_0 = 1,
-* s_1 = 4
-* s_2 = 44,
-* s_3 = 17204,
-* s_4 = 849110490844,
--}
+-- Gives all possible representations of n-bit ITFs, except for the ones with
+-- 0-ary functions as their subfunctions, as this would lead to an infinite
+-- number of representations.
+allNAryITFs :: Int -> [Iterated NonSymmThresholdFun]
+allNAryITFs = (map nAryITFEnum' [0 ..] !!)
+  where
+    nAryITFEnum' 0 =
+      [mkConst False, mkConst True]
+    nAryITFEnum' 1 =
+      [mkConst False, mkConst True, Id]
+    nAryITFEnum' n = do
+      (subFuns, nSubFuns) <- allSubFunCombinations n
+      threshold' <- allThresholds nSubFuns
+      return $ Iterated (NonSymmThresholdFun threshold') subFuns
 
-iteratedMaj5 :: Int -> IteratedThresholdFun'
-iteratedMaj5 = iteratedMajFun' 3
-{-
-The number of Boolean functions reachable from iteratedMaj5 is 2 plus t_n where
-* t_0 = 1,
-* t_{n+1} = t_n (t_n + 2) (t_n + 3) (t_n ^ 2 + 15 t_n + 74) / 120
-For example:
-* t_0 = 1,
-* t_1 = 9,
-* t_2 = 2871,
-* t_3 = 1636845671105073,
-* t_4 = 97916848002123806402045274379974531999764335775612939415896877758995991565.
--}
+-- Gives all the thresholds satisfying the following properties:
+-- 0 <= tn <= n + 1
+-- tn + tf = n + 1
+allThresholds :: Int -> [Threshold]
+allThresholds n = do
+  nt <- [0 .. n + 1]
+  let nf = n + 1 - nt
+  return $ Threshold (nt, nf)
+
+-- Generates all possible partitions of positive integers that add up to n.
+-- The member elements of these partions represent the arities of the subfunctions.
+-- For each arity, we then generate all possible subFunctions.
+allSubFunCombinations :: Int -> [([Iterated NonSymmThresholdFun], Int)]
+allSubFunCombinations n = do
+  partition <- partitions n
+  subFuns <- mapM allNAryITFs partition
+  return (subFuns, length subFuns)
+

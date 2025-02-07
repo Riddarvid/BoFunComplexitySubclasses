@@ -1,5 +1,4 @@
 \begin{code}
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE ConstraintKinds #-}
@@ -7,11 +6,11 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module DSLsofMath.PSDS where
 import Prelude (Int, Double,
-                Show, String, 
+                Show, String,
                 Ord, Ordering, (<), (<=), (>=), compare,
                 Eq, Bool, (==), (/=), (&&), otherwise, snd,
                 error, (.),
-                (++), zipWith, map, null, head, tail, init, last, take, reverse, length, replicate)
+                (++), zipWith, map, null, head, tail, init, last, take, reverse, length, replicate, (||), Maybe (..), ($))
 import qualified Prelude
 import DSLsofMath.FunExp
 import DSLsofMath.Algebra (Additive((+),zero), AddGroup(negate), (-),
@@ -25,6 +24,7 @@ import Debug.Trace (traceShow)
 import Control.DeepSeq (NFData)
 import GHC.Generics (Generic)
 import Data.Ratio (numerator, denominator)
+import Data.Maybe (isJust)
 \end{code}
 
 Chapter 6. Taylor and Maclaurin series
@@ -328,6 +328,17 @@ isZero = isZeroL . unP
 
 isZeroL :: (Eq a, Additive a) => [a] -> Bool
 isZeroL = Prelude.all (zero==)
+
+isConstP :: (Eq a, Additive a) => Poly a -> Bool
+isConstP = isJust . constP
+
+constP :: (Additive a, Eq a) => Poly a -> Maybe a
+constP p
+  | deg == 0 = Just $ head $ unP p
+  | deg == (-1) = Just zero
+  | otherwise = Nothing
+  where
+    deg = degree p
 \end{code}
 
 \begin{code}

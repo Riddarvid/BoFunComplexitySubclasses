@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -25,34 +25,43 @@ source-repository head
 library
   exposed-modules:
       Algebraic
-      Algorithm.Algor
-      Algorithm.GenAlg
-      Algorithm.GenAlgPW
-      Archived.Algebraic
-      Archived.MatrixBridge
-      BDD
+      Arity
+      BDD.BDD
       BDD.BDDInstances
-      BoFun
+      Complexity.Algor
+      Complexity.BoFun
+      Complexity.GenAlg
+      Complexity.Piecewise
+      Complexity.Thin
       DSLsofMath.Algebra
       DSLsofMath.FunExp
       DSLsofMath.PSDS
-      Filters
+      Exploration.Critical
+      Exploration.Eval
+      Exploration.Filters
+      Exploration.Measurements
+      Exploration.Measurements.IO
+      Exploration.PrettyPrinting
+      Exploration.Translations
       LibMain
       Poly.PiecewisePoly
       Poly.PolyCmp
       Poly.PolyInstances
       Poly.PolynomialExtra
       Poly.Utils
-      PrettyPrinting
-      Subclasses.Comparisons
-      Subclasses.Even
-      Subclasses.General
-      Subclasses.Id
-      Subclasses.Monotone
-      Subclasses.One
+      Subclasses.Gates
+      Subclasses.GenFun.CanonicalGenFun
+      Subclasses.GenFun.GenFun
+      Subclasses.GenFun.NormalizedCanonicalGenFun
+      Subclasses.GenFun.NormalizedGenFun
+      Subclasses.MultiComposed.Iterated
+      Subclasses.MultiComposed.IteratedTH
+      Subclasses.MultiComposed.MultiComposed
+      Subclasses.MultiComposed.MultiComposedTH
       Subclasses.Symmetric
       Subclasses.Threshold
-      Thin
+      Testing.AllProperties
+      Testing.Properties
       Utils
   other-modules:
       Paths_exploring_level_p
@@ -69,10 +78,18 @@ library
     , decision-diagrams >=0.2.0.0
     , deepseq >=1.4.8.0
     , free >=5.1.10
+    , ghc
+    , hashable
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , random
+    , size-based
+    , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
+    , time >=1.2.12
+    , unordered-containers >=0.2.19.1
+    , vector
   default-language: Haskell2010
 
 executable exploring-level-p-exe
@@ -93,10 +110,18 @@ executable exploring-level-p-exe
     , deepseq >=1.4.8.0
     , exploring-level-p
     , free >=5.1.10
+    , ghc
+    , hashable
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , random
+    , size-based
+    , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
+    , time >=1.2.12
+    , unordered-containers >=0.2.19.1
+    , vector
   default-language: Haskell2010
 
 test-suite exploring-level-p-test
@@ -118,8 +143,16 @@ test-suite exploring-level-p-test
     , deepseq >=1.4.8.0
     , exploring-level-p
     , free >=5.1.10
+    , ghc
+    , hashable
     , memoize >=1.1
     , mtl >=2.2
     , multiset >=0.3.4.3
+    , random
+    , size-based
+    , statistics >=0.16.2.1
     , testing-feat >=1.1.1.1
+    , time >=1.2.12
+    , unordered-containers >=0.2.19.1
+    , vector
   default-language: Haskell2010

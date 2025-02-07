@@ -1,0 +1,250 @@
+Alg: genAlg
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+9.544604928
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+9.412070011
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.078617442
+
+Alg: genAlg
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.080960057
+
+Alg: genAlg
+Function type: ThresholdFun
+Function: maj_11
+Sample size: 5
+0.000412027
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: maj_11
+Sample size: 5
+0.000189696
+
+Alg: genAlg
+Function type: SymmetricFun
+Function: maj_11
+Sample size: 5
+0.000859492
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: maj_11
+Sample size: 5
+0.000201162
+
+----------------------------------------------
+
+Alg: genAlg
+Function type: GenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.652688976
+
+Alg: genAlg
+Function type: CanonicalGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.651867966
+
+Alg: genAlg
+Function type: NormalizedGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.061016555
+
+Alg: genAlg
+Function type: BothGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.06051835
+
+Alg: genAlg
+Function type: IterThresholdFun
+Function: iterMaj_3_2
+Sample size: 5
+0.021483054
+
+Alg: genAlg
+Function type: IterSymmetricFun
+Function: iterMaj_3_2
+Sample size: 5
+0.020083988
+
+-------------------------------------
+
+Alg: complexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+9.555692878
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+11.296266123
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.078191556
+
+Alg: complexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.086953129
+
+Alg: complexity
+Function type: ThresholdFun
+Function: maj_11
+Sample size: 5
+0.000559353
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: maj_11
+Sample size: 5
+0.000224166
+
+Alg: complexity
+Function type: SymmetricFun
+Function: maj_11
+Sample size: 5
+0.001351405
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: maj_11
+Sample size: 5
+0.000241272
+
+---------------------------------------
+
+Alg: complexity
+Function type: GenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.966664211
+
+Alg: complexity
+Function type: CanonicalGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.961128935
+
+Alg: complexity
+Function type: NormalizedGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.097428924
+
+Alg: complexity
+Function type: BothGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.094211344
+
+Alg: complexity
+Function type: IterThresholdFun
+Function: iterMaj_3_2
+Sample size: 5
+0.050318111
+
+Alg: complexity
+Function type: IterSymmetricFun
+Function: iterMaj_3_2
+Sample size: 5
+0.053427028
+
+--------------------------------------
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+1.354271346
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+1.362127982
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.015216734
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.015577532
+
+-------------------------------------
+
+Alg: explicitComplexity
+Function type: GenFun
+Function: maj_11
+Sample size: 5
+1.354271346
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: maj_11
+Sample size: 5
+1.362127982
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: maj_11
+Sample size: 5
+0.015216734
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: maj_11
+Sample size: 5
+0.015577532
+
+  ~/pr/exploring-level-p   exploration *2 !14 ?1 ❯ python bench.py                    20s  ghc-9.4.8  15:11:09
+Alg: explicitComplexity
+Function type: GenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.577114604
+
+Alg: explicitComplexity
+Function type: CanonicalGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.578612003
+
+Alg: explicitComplexity
+Function type: NormalizedGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.062683966
+
+Alg: explicitComplexity
+Function type: BothGenFun
+Function: iterMaj_3_2
+Sample size: 5
+0.063380128

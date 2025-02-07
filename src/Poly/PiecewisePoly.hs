@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -w #-} -- Code not central to the work, just used as library
 {-# LANGUAGE DeriveAnyClass         #-}
 {-# LANGUAGE DeriveFunctor          #-}
 {-# LANGUAGE DeriveGeneric          #-}
@@ -7,6 +6,14 @@
 {-# LANGUAGE InstanceSigs           #-}
 {-# LANGUAGE MultiWayIf             #-}
 {-# LANGUAGE RankNTypes             #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+{-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# OPTIONS_GHC -Wno-unused-local-binds #-}
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
+{-# OPTIONS_GHC -Wno-unused-do-bind #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-missing-export-lists #-}
 module Poly.PiecewisePoly where
 
 import           Control.Applicative  (Applicative (..))
@@ -23,10 +30,12 @@ import qualified Prelude
 import           DSLsofMath.Algebra
 import           DSLsofMath.PSDS      (Poly (unP), comP, degree, evalP)
 
-import           Algorithm.Algor      (DecTree)
+import           Complexity.Algor     (DecTree)
 import           Control.DeepSeq      (NFData)
+import           Data.Either          (lefts)
 import           GHC.Generics         (Generic)
 import           Poly.PolynomialExtra
+import           Test.QuickCheck      (Property, (===))
 import           Utils
 
 
@@ -220,7 +229,11 @@ data PiecewisePoly a =
     PWPoly (ZoomedPoly a)
   | PWIntersect (Intersect a)
   | PWBisect (Square (PiecewisePoly a))
-  deriving (Eq, Ord, Show, Generic, NFData)
+  deriving (Eq, Ord, Generic, NFData)
+
+instance Show (PiecewisePoly Rational) where
+  show :: PiecewisePoly Rational -> String
+  show = showPW
 
 instance Functor PiecewisePoly where fmap = fmapPW
 
@@ -346,8 +359,7 @@ Precondition: p == q or diffRadical generates the same radical as p - q.
   - v_0 /= v_1,
   - on the left/right of the intersection: if v_{0/1} then p < q else p > q.
 -}
-comparePoly :: (Show a, Ring a, Ord a) =>
-    Square (Poly a) -> Poly a -> Maybe (Either Bool (Square Bool))
+comparePoly :: (Ring a, Ord a) =>Square (Poly a) -> Poly a -> Maybe (Either Bool (Square Bool))
 comparePoly (p, q) diffRadical = case descartesUnitInterval True diffRadical of
   Nothing  ->  Just $ Left True
   Just 0   ->  Just $ Left smaller_0
@@ -643,3 +655,19 @@ instance (AddGroup a, MulGroup a, Eq a, Show a) => Show (BothPW a) where
   show :: BothPW a -> String
   show (BothPW pw lookupPolys) = showPWAny pw ++ "\n" ++ unlines
     (map (\(poly, al) -> show poly ++ ":\t\t" ++ show al) lookupPolys)
+
+
+pieces :: (AddGroup a, MulGroup a, Eq a) => PiecewisePoly a -> [Poly a]
+pieces = lefts . linearizePW
+
+mirrorPW :: (AddGroup a, MulGroup a, Show a, Ord a) =>
+  a -> PiecewisePoly a -> PiecewisePoly a
+mirrorPW m pw = minPWs $ map (piecewiseFromPoly . mirrorP m) $ pieces pw
+
+isMirrorPW :: (AddGroup a, MulGroup a, Show a, Ord a) =>
+  a -> PiecewisePoly a -> PiecewisePoly a -> Bool
+isMirrorPW m pw1 pw2 = pieces pw1 == pieces (mirrorPW m pw2)
+
+propIsMirrorPW :: (AddGroup a, MulGroup a, Show a, Ord a) =>
+  a -> PiecewisePoly a -> PiecewisePoly a -> Property
+propIsMirrorPW m pw1 pw2 = pieces pw1 === pieces (mirrorPW m pw2)

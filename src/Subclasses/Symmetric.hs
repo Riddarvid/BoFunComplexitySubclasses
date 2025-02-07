@@ -1,94 +1,202 @@
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE InstanceSigs          #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE UndecidableInstances       #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE PatternSynonyms            #-}
 module Subclasses.Symmetric (
-  BasicSymmetric,
-  mkBasicSymmetric,
-  Symmetric,
-  symmResultvector,
-  symmSubFuns,
-  majSymm,
-  majSymmBasic
+  SymmetricFun,
+  NonSymmSymmetricFun(NonSymmSymmetricFun),
+  mkSymmetricFun,
+  mkNonSymmSymmetricFun,
+  arity,
+  majFun,
+  iteratedMajFun
 ) where
 
-import           BoFun                 (BoFun (..))
-import           Control.Arrow         ((>>>))
-import           Data.Function         ((&))
-import           Data.Function.Memoize (Memoizable (memoize), deriveMemoizable)
-import           Data.MultiSet         (MultiSet)
-import qualified Data.MultiSet         as MultiSet
-import           Utils                 (naturals)
+import           Arity                        (ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun             (BoFun (..), Constable (mkConst))
+import           Control.Arrow                ((>>>))
+import           Control.DeepSeq              (NFData)
+import           Data.Foldable                (Foldable (foldl', toList))
+import           Data.Function.Memoize        (Memoizable (memoize),
+                                               deriveMemoizable)
+import           Data.List                    (intercalate)
+import           Data.List.NonEmpty           (NonEmpty ((:|)))
+import qualified Data.List.NonEmpty           as NE
+import           Data.Sequence                (Seq (Empty, (:<|), (:|>)))
+import qualified Data.Sequence                as Seq
+import           Exploration.PrettyPrinting   (PrettyBoFun (prettyShow))
+import           GHC.Generics                 (Generic)
+import           Subclasses.MultiComposed.Iterated (Iterated, iterateFun)
+import           Test.QuickCheck              (Arbitrary (arbitrary), chooseInt,
+                                               sized, vector)
+import           Test.QuickCheck.Gen          (Gen)
+import           Utils                        (naturals)
 
---------- BasicSymmetric -----------------------------
+--------- Ranges -----------------------------
 
-newtype BasicSymmetric = BasicSymmetric [Bool]
-  deriving Show
+-- A result is defined as a sequence of ints, each describing the number of False/Trues,
+-- switching value each time we encounter a new segment.
+-- A bool signifies whether we start with a sequence of Falses or Trues.
+type Range = (Int, Int)
+type Result = (Bool, Seq Int)
 
-instance BoFun BasicSymmetric () where
-  isConst :: BasicSymmetric -> Maybe Bool
-  isConst (BasicSymmetric xs)
-    | and xs = Just True
-    | all not xs = Just False
-    | otherwise = Nothing
-  variables :: BasicSymmetric -> [()]
-  variables (BasicSymmetric xs)
-    | length xs <= 1 = []
-    | otherwise = [()]
-  setBit :: ((), Bool) -> BasicSymmetric -> BasicSymmetric
-  setBit (_, v) (BasicSymmetric xs)
-    | v = BasicSymmetric $ tail xs
-    | otherwise = BasicSymmetric $ init xs
-
-$(deriveMemoizable ''BasicSymmetric)
-
--- eval must be defined for [0 .. nBits]
-mkBasicSymmetric :: Int -> (Int -> Bool) -> BasicSymmetric
-mkBasicSymmetric nBits eval = BasicSymmetric $ map eval [0 .. nBits]
-
--- Only defined for positive, odd values of n.
-majSymmBasic :: Int -> BasicSymmetric
-majSymmBasic n = mkBasicSymmetric n (>= threshold)
+resultVectorFromList :: NonEmpty Bool -> Result
+resultVectorFromList res@(v :| _) = (v, Seq.fromList $ map NE.length $ NE.group res')
   where
-    threshold = (n `div` 2) + 1
+    res' = NE.toList res
 
----------------- Symmetric -----------------------------------------
+removeLowest :: Result -> Result
+removeLowest (v, length' :<| xs)
+  | length' == 1 = (not v, xs)
+  | otherwise = (v, length' - 1 :<| xs)
+removeLowest (_, Empty) = undefined
 
-data Symmetric f = Symmetric {
-  symmResultvector :: [Bool],
-  symmSubFuns      :: MultiSet f
-}
+removeHighest :: Result -> Result
+removeHighest (v, xs :|> length')
+  | length' == 1 = (v, xs)
+  | otherwise = (v, xs :|> length' - 1)
+removeHighest (_, Empty) = undefined
 
-instance (Ord f, Memoizable f) => Memoizable (Symmetric f) where
-  memoize :: (Symmetric f -> a) -> Symmetric f -> a
-  memoize f = m >>> memoize (n >>> f) where
-    -- Back and forth.
-    m (Symmetric rv subFuns) = (rv, subFuns)
-    n (rv, subFuns) = Symmetric rv subFuns
+resultLength :: Result -> Int
+resultLength (_, xs) = sum xs
 
-instance (Ord f, BoFun f i) => BoFun (Symmetric f) (Int, i) where
-  isConst :: Symmetric f -> Maybe Bool
-  isConst f
-    | and $ symmResultvector f = Just True
-    | all not $ symmResultvector f = Just False
-    | otherwise = Nothing
-  variables :: Symmetric f -> [(Int, i)]
-  variables (Symmetric _ subFuns) = do
-    (i, (u, _)) <- subFuns & MultiSet.toAscOccurList & zip naturals
-    v <- variables u
-    return (i, v)
-  setBit :: ((Int, i), Bool) -> Symmetric f -> Symmetric f
-  setBit ((i, v), val) (Symmetric rv subFuns) = case isConst subFun' of
-    Just res  -> Symmetric rv' subFuns'
-      where rv' = if res then tail rv else init rv
-    Nothing -> Symmetric rv $ MultiSet.insert subFun' subFuns'
+instance Memoizable a => Memoizable (Seq a) where
+  memoize :: (Seq a -> v) -> Seq a -> v
+  memoize f = toList >>> memoize (Seq.fromList >>> f)
+
+--------- Symmetric Functions ---------------------
+
+newtype SymmetricFun = SymmetricFun Result
+  deriving (Show, Eq, Ord, Generic, Read)
+
+instance PrettyBoFun SymmetricFun where
+  prettyShow :: SymmetricFun -> String
+  prettyShow f = "F: " ++ showRanges fRanges ++ "; T: " ++ showRanges tRanges
     where
-    (subFun, _) = MultiSet.toAscOccurList subFuns !! i
-    subFuns' = subFuns & MultiSet.delete subFun
-    subFun' = setBit (v, val) subFun
+      (fRanges, tRanges) = divideRanges f
 
-majSymm :: Int -> Symmetric (Maybe Bool)
-majSymm n = Symmetric (replicate n' False ++ replicate n' True) $ MultiSet.fromOccurList [(Nothing, n)]
+showRanges :: [Range] -> String
+showRanges ranges = intercalate ", " (map showRange ranges)
+
+showRange :: Range -> String
+showRange (low, high)
+  | low == high = show low
+  | otherwise = show low ++ "-" ++ show high
+
+divideRanges :: SymmetricFun -> ([Range], [Range])
+divideRanges (SymmetricFun (startVal, lengths))
+  | startVal = (evens, odds)
+  | otherwise = (odds, evens)
   where
-    n' = (n `div` 2) + 1
+    (odds, evens) = everyOther ranges
+    ranges = snd $ foldl' addRange (0, []) lengths
+    addRange (start, ranges') length' =
+      let end = start + length' - 1
+      in (end + 1, (start, end) : ranges')
+
+everyOther :: [a] -> ([a], [a])
+everyOther = everyOther' False
+
+everyOther' :: Bool -> [a] -> ([a], [a])
+everyOther' _ [] = ([], [])
+everyOther' v (x : xs) = if v then (x : odds, evens) else (odds, x : evens)
+  where
+    (odds, evens) = everyOther' (not v) xs
+
+instance NFData SymmetricFun
+
+-- The input vector represents the result for zero 1's, one 1, two 1's etc.
+mkSymmetricFun :: NonEmpty Bool -> SymmetricFun
+mkSymmetricFun = SymmetricFun . resultVectorFromList
+
+arity :: SymmetricFun -> Int
+arity (SymmetricFun res) = resultLength res - 1
+
+$(deriveMemoizable ''SymmetricFun)
+
+instance Arbitrary SymmetricFun where
+  arbitrary :: Gen SymmetricFun
+  arbitrary = sized $ \n -> do
+    arity' <- chooseInt (0, n)
+    arbitraryArity arity'
+
+instance ArbitraryArity SymmetricFun where
+  arbitraryArity :: Int -> Gen SymmetricFun
+  arbitraryArity arity' = do
+    SymmetricFun . resultVectorFromList . NE.fromList <$> vector (arity' + 1)
+
+instance BoFun SymmetricFun () where
+  isConst :: SymmetricFun -> Maybe Bool
+  isConst (SymmetricFun ranges) = case ranges of
+    (val, _ :<| Empty) -> Just val
+    _                  -> Nothing
+  variables :: SymmetricFun -> [()]
+  variables f@(SymmetricFun _) = case isConst f of
+    Nothing -> [()]
+    Just _  -> []
+  setBit :: ((), Bool) -> SymmetricFun -> SymmetricFun
+  setBit (_, val) (SymmetricFun rv) = SymmetricFun rv'
+    where
+      rv' = if val then removeLowest rv else removeHighest rv
+
+instance Constable SymmetricFun where
+  mkConst :: Bool -> SymmetricFun
+  mkConst val = SymmetricFun (val, Seq.singleton 1)
+
+newtype NonSymmSymmetricFun = SymmetricFun' SymmetricFun
+  deriving (Memoizable, NFData, ArbitraryArity, Show, Read)
+
+instance PrettyBoFun NonSymmSymmetricFun where
+  prettyShow :: NonSymmSymmetricFun -> String
+  prettyShow (SymmetricFun' f) = prettyShow f
+
+-- Wrapper for when a symmetric type is not desired.
+pattern NonSymmSymmetricFun :: Result -> NonSymmSymmetricFun
+pattern NonSymmSymmetricFun f = SymmetricFun' (SymmetricFun f)
+
+mkNonSymmSymmetricFun :: NonEmpty Bool -> NonSymmSymmetricFun
+mkNonSymmSymmetricFun = NonSymmSymmetricFun . resultVectorFromList
+
+instance BoFun NonSymmSymmetricFun Int where
+  isConst :: NonSymmSymmetricFun -> Maybe Bool
+  isConst (SymmetricFun' f) = isConst f
+  variables :: NonSymmSymmetricFun -> [Int]
+  variables (SymmetricFun' f) = take (arity f) naturals
+  setBit :: (Int, Bool) -> NonSymmSymmetricFun -> NonSymmSymmetricFun
+  setBit (_, v) (SymmetricFun' f) = SymmetricFun' $ setBit ((), v) f
+
+----------------- Examples -----------------------
+
+majFun :: Int -> SymmetricFun
+majFun bits = SymmetricFun (False, Seq.fromList [n, n])
+  where
+    n = (bits `div` 2) + 1
+
+iteratedMajFun :: Int -> Int -> Iterated NonSymmSymmetricFun
+iteratedMajFun bits = iterateFun bits (SymmetricFun' $ majFun bits)
+
+-------------------- Enumeration ------------------------
+
+-- TODO-NEW generalize and move to Iterated
+
+-- We iterate over the number of subfunctions
+{-instance (Enumerable g, Ord g) => Enumerable (Symmetric g) where
+  enumerate :: (Typeable f, Sized f) => Shared f (Symmetric g)
+  enumerate = share $ go 0
+    where
+      go n = pay $ enumerateSymmetric n <|> go (n + 1)
+
+enumerateSymmetric :: (Typeable f, Sized f, Ord g, Enumerable g) => Int -> Shareable f (Symmetric g)
+enumerateSymmetric n = Symmetric <$> enumerateResults n <*> enumerateMultiSet n
+
+enumerateResults :: (Typeable f, Sized f) => Int -> Shareable f Result
+enumerateResults n = aconcat $ map pure $ do
+  v <- [False, True]
+  seqList <- partitions (n + 1)
+  return (v, Seq.fromList seqList)-}
+
