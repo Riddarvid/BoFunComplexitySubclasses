@@ -1,1 +1,0 @@
-- Borde vi ha med både MultiComposed och Iterated i presentationen?
