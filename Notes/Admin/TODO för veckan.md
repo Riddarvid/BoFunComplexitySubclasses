@@ -3,7 +3,7 @@
 + Abstract:
   + ~~"Jansson[1]" := "Jansson [1]" - leave a (non-breaking) space~~
     ~~before \cite{...} in general.~~
-  + "mem-oization" := "memo-ization" (line break)
+  + "mem-oization" := "memo-ization" (line break) - selina: not sure how to fix this?
   + ~~"a large number of ... has been" := "... have been".~~ ~~But I suggest
     you rewrite the sentence a bit to make it more direct, perhaps "A
     large number of properties have been implemented (using
@@ -16,8 +16,8 @@
     on the line.~~
 + p4: ~~"greater separation" := "better separation"~~
 + p4: ~~"more generalized" := "more general"~~
-+ p5: citation [11] looks a bit strange (on p.59): "E. of Mathematics"
-  := "Encyclopedia of Mathematics"
++ p5: ~~citation [11] looks a bit strange (on p.59): "E. of Mathematics"
+  := "Encyclopedia of Mathematics"~~
 + ~~p5: "The majority function" := "Majority functions". I also suggest
   you take this opportunity to introduce maj_n for all odd n.~~
 + p6: Def. 2.1.1: I don't quite understand: you first introduce the
