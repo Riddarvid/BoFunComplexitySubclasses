@@ -20,22 +20,22 @@
   := "Encyclopedia of Mathematics"~~
 + ~~p5: "The majority function" := "Majority functions". I also suggest
   you take this opportunity to introduce maj_n for all odd n.~~
-+ p6: Def. 2.1.1: I don't quite understand: you first introduce the
-  notation BF(I) for "the type of Boolean functions defined over a set
-  of variables 𝐼". But then after "where" you seem to introduce a
-  different notation using the same two characters "𝐵𝐹 ∶ (𝐼 → B) → B →
-  𝐵𝐹 (𝐼)". If I should read this as a constructor (I call it BFC to be
-  clear) this constructor takes two argument: one function of type
-  (I->B) which I call a vector and a value of type B (a bit). Then
-  (BFC vector bit) is claimed to have type BF I. Perhaps you mean that
-  BF I = (I->B) -> B? or that BFC : ((I->B)->B) -> BF I?
-+ p7: Why not Haskell mode/style for this setBit?
-  𝑠𝑒𝑡𝐵𝑖𝑡 ∶ 𝐼𝑛𝑑𝑒𝑥 → B → 𝐵𝑜𝐹𝑢𝑛 → 𝐵𝑜𝐹𝑢𝑛
-  𝑠𝑒𝑡𝐵𝑖𝑡(𝑖, 𝑏, 𝑓) = 𝜆𝑣 → 𝑓(𝑣′ )
-    where
-       𝑣′(𝑗) = if 𝑖 = 𝑗 then 𝑏 else 𝑣(𝑗)
-+ p7: "(𝐼 − 𝑖)" := "(𝐼 − {𝑖})" (if "−" is set subtraction). Also in
-  Def. 2.3.1 (and probably elsewhere as well).
++ ~~p6: Def. 2.1.1: I don't quite understand: you first introduce the~~
+  ~~notation BF(I) for "the type of Boolean functions defined over a set~~
+  ~~of variables 𝐼". But then after "where" you seem to introduce a~~
+  ~~different notation using the same two characters "𝐵𝐹 ∶ (𝐼 → B) → B →~~
+  ~~𝐵𝐹 (𝐼)". If I should read this as a constructor (I call it BFC to be~~
+  ~~clear) this constructor takes two argument: one function of type~~
+  ~~(I->B) which I call a vector and a value of type B (a bit). Then~~
+  ~~(BFC vector bit) is claimed to have type BF I. Perhaps you mean that~~
+  ~~BF I = (I->B) -> B? or that BFC : ((I->B)->B) -> BF I?~~
++ ~~p7: Why not Haskell mode/style for this setBit?~~
+  ~~𝑠𝑒𝑡𝐵𝑖𝑡 ∶ 𝐼𝑛𝑑𝑒𝑥 → B → 𝐵𝑜𝐹𝑢𝑛 → 𝐵𝑜𝐹𝑢𝑛~~
+  ~~𝑠𝑒𝑡𝐵𝑖𝑡(𝑖, 𝑏, 𝑓) = 𝜆𝑣 → 𝑓(𝑣′ )~~
+    ~~where~~
+       ~~𝑣′(𝑗) = if 𝑖 = 𝑗 then 𝑏 else 𝑣(𝑗)~~ - FÖR ATT VI VILL UTTRYCKA ETT MATEMATISKT SAMBAND, INTE GE EN DEFINITION.
++ ~~p7: "(𝐼 − 𝑖)" := "(𝐼 − {𝑖})" (if "−" is set subtraction). Also in~~
+  ~~Def. 2.3.1 (and probably elsewhere as well).~~ - SER INTE VAD DETTA GÖR FÖR SKILLNAD.
 + ~~p7: "functions that" := "functions which" ?~~
 + ~~p7 (same sentence): the \cite placement is confusing - it looks like
   it belongs to "the report" but it is something completely
@@ -261,57 +261,32 @@
 + ~~pVI: criticalPointBetweenPieces or criticalPointsBetweenPieces ? The
   listing caption has one name, the function has another.~~
 
-## Remaining
+# Remaining
 
-- p6: Def. 2.1.1: I don't quite understand: you first introduce the
-  notation BF(I) for "the type of Boolean functions defined over a set
-  of variables 𝐼". But then after "where" you seem to introduce a
-  different notation using the same two characters "𝐵𝐹 ∶ (𝐼 → B) → B →
-  𝐵𝐹 (𝐼)". If I should read this as a constructor (I call it BFC to be
-  clear) this constructor takes two argument: one function of type
-  (I->B) which I call a vector and a value of type B (a bit). Then
-  (BFC vector bit) is claimed to have type BF I. Perhaps you mean that
-  BF I = (I->B) -> B? or that BFC : ((I->B)->B) -> BF I?
-+ p7: Why not Haskell mode/style for this setBit?
-  𝑠𝑒𝑡𝐵𝑖𝑡 ∶ 𝐼𝑛𝑑𝑒𝑥 → B → 𝐵𝑜𝐹𝑢𝑛 → 𝐵𝑜𝐹𝑢𝑛
-  𝑠𝑒𝑡𝐵𝑖𝑡(𝑖, 𝑏, 𝑓) = 𝜆𝑣 → 𝑓(𝑣′ )
-    where
-       𝑣′(𝑗) = if 𝑖 = 𝑗 then 𝑏 else 𝑣(𝑗)
-+ p7: "(𝐼 − 𝑖)" := "(𝐼 − {𝑖})" (if "−" is set subtraction). Also in
-  Def. 2.3.1 (and probably elsewhere as well).
-+ p8: There is something wrong with the type of multiCompose and it
-  cannot be expressed without dependent types. I'll try to explain:
-  multiCompose : BF(I) -> ((i:I) -> BF (J i)) -> BF (DepPair I J)
-    where the typing rule for DepPair is:
-      (i, j) : DepPair I J   when i : I and j : J i
-    (DepPair is also called a Sigma type)
-+ p8(near end): "𝐴𝑁𝐷2", "𝐴𝑁𝐷3", "𝐴𝑁𝐷": unequal spacing, but on the
-  last line of the page "AND" has reasonable spacing.
-+ p11: Fig. 2.4: The resolution is a bit low - perhaps you can find a
-  better version? -NOPE, THERE IS NO BETTER (Cries inside)
-+ p15: "𝐼 − 𝑖" := "𝐼 − {𝑖}" in a few subscripts
-+ p16: Def. 2.3.4: I think you got the definition backwards: "if, for
-  all input vectors 𝑣, 𝑓(𝑣𝑖→0 ) = 𝑓(𝑣𝑖→1)" then the function is
-  *independent* of the bit (index) i.
-+ p16 (and earlier): when writing "long" (more than one chacter) names
-  in math mode you need to surround the name with \mathit{} or similar
-  to get the spacing right. (Most visible with AND_2 and friends
-  earlier, but also visible for restrictDomain here.)  Easiest may be
-  to create a few LaTeX macros and then add backslash in front of such
-  names. Example:
-  \newcommand{\AND}{\ensuremath{\mathit{AND}}}
-+ p16: def of restrictDomain: then and else need to be indented
-+ p18: The LHS calculation is unnecessarily long and thin. I suggest
-  to let at least the first if statement fit on one line. (I made such
-  a change in overleaf as a suggestion.)
-+ p19: The length makes this hard to read - please first introduce a
-  few names - such as your
-    
-    t_0' = restrictDomain_{DT}(J - i, t_0, v\vert_{I - i})\\
-    t_1' = restrictDomain_{DT}(J - i, t_1, v\vert_{I - i})\\
++ p37/38: The reasoning here feels a bit convoluted. Perhaps instead
+  you can use this chain of equalities (of Booleans):
+  
+    nt >= kt
+  == {Invariants}
+    (n-nf) >= (n+1-kf)
+  == {subtract n}
+    -nf >= 1-kf
+  == {multiply by -1}
+    nf <= kf-1
+  == {integer property}
+    nf < kf
+  == {negated ordering}
+    not (nf >= kf)
+## Fixa bevis
 
-  and then just use them without the "where-clauses".
-+ p19: "Note that since i notElem J" - I don't quite understand where
+- Fixa t_0' och t_1'
+	+ p19: The length makes this hard to read - please first introduce a few names - such as your
+	    
+	    t_0' = restrictDomain_{DT}(J - i, t_0, v\vert_{I - i})\\
+	    t_1' = restrictDomain_{DT}(J - i, t_1, v\vert_{I - i})\\
+
+	  and then just use them without the "where-clauses".
+- p19: "Note that since i notElem J" - I don't quite understand where
   this is used? On the line of the comment, no J is mentioned.
 + p19: In general, try to use names of subexpressions in such a way
   that the reader can easily spot what is changed in each step of the
@@ -350,39 +325,31 @@
   directly.
 + p36: "propNormalizedComplexity" - please also refer back to the
   corresponding lemma / proof.
-+ p37/38: The reasoning here feels a bit convoluted. Perhaps instead
-  you can use this chain of equalities (of Booleans):
-  
-    nt >= kt
-  == {Invariants}
-    (n-nf) >= (n+1-kf)
-  == {subtract n}
-    -nf >= 1-kf
-  == {multiply by -1}
-    nf <= kf-1
-  == {integer property}
-    nf < kf
-  == {negated ordering}
-    not (nf >= kf)
-- I think the Fig. 4.1 would be helpful already in the section on
-  properties and proofs (to illustrate I, J, etc. with an example). So
-  perhaps move it much earlier and then refer to it here. Or mention
-  it in the earlier section and keep it here.
-- p39: Step 2: As you use f' and g' (and f'' and g'') in the
-  explanation, it may be good to add them to the figure as well. That
-  would make your two steps easier to follow.
-- p51: It is a bit hard to read when Fig. 6.3 is two pages away from
-  the text.
-- p57: "While adding canonicalization": around here you move from
+
+## Att diskutera
+
++ p16 (and earlier): when writing "long" (more than one chacter) names
+  in math mode you need to surround the name with \mathit{} or similar
+  to get the spacing right. (Most visible with AND_2 and friends
+  earlier, but also visible for restrictDomain here.)  Easiest may be
+  to create a few LaTeX macros and then add backslash in front of such
+  names. Example:
+  \newcommand{\AND}{\ensuremath{\mathit{AND}}} - JAG HÅLLER INTE MED OM DETTA, TYCKER DET SER BRA UT ATT restrictDomain ÄR ITALICIZED.
++ Ersätt I - i med I - {i}
++ Fixa spacing för AND_n
++ p57: "While adding canonicalization": around here you move from
   specialized to general optim. which, I think, deserves a more
   visible transition. Perhaps a \paragraph{Specialized classes} at the
   start of paragraph 2 and \paragraph{General optimizations} at the
   start of this paragraph? (and perhaps label the last paragraph as
   well) - Selina: I disagree. we do not have enough text to split into sections
-- pVI: rename "_low_" to "low" or something similar. Haskell praxis is
-  to use initial underscores only when a variable name is _not_ used
-  on the RHS.
- 
++ I think the Fig. 4.1 would be helpful already in the section on
+  properties and proofs (to illustrate I, J, etc. with an example). So
+  perhaps move it much earlier and then refer to it here. Or mention
+  it in the earlier section and keep it here.
+	+ p39: Step 2: As you use f' and g' (and f'' and g'') in the explanation, it may be good to add them to the figure as well. That would make your two steps easier to follow.
++ p51: It is a bit hard to read when Fig. 6.3 is two pages away from
+  the text.
 ## TODO final
 
 - Se till att inga rubriker hamnar precis innan sidbyte
