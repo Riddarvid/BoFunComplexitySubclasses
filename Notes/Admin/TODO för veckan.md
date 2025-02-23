@@ -261,39 +261,10 @@
 + ~~pVI: criticalPointBetweenPieces or criticalPointsBetweenPieces ? The
   listing caption has one name, the function has another.~~
 
-# Remaining
-
-+ p37/38: The reasoning here feels a bit convoluted. Perhaps instead
-  you can use this chain of equalities (of Booleans):
-  
-    nt >= kt
-  == {Invariants}
-    (n-nf) >= (n+1-kf)
-  == {subtract n}
-    -nf >= 1-kf
-  == {multiply by -1}
-    nf <= kf-1
-  == {integer property}
-    nf < kf
-  == {negated ordering}
-    not (nf >= kf)
 ## Fixa bevis
 
-- Fixa t_0' och t_1'
-	+ p19: The length makes this hard to read - please first introduce a few names - such as your
-	    
-	    t_0' = restrictDomain_{DT}(J - i, t_0, v\vert_{I - i})\\
-	    t_1' = restrictDomain_{DT}(J - i, t_1, v\vert_{I - i})\\
-
-	  and then just use them without the "where-clauses".
 - p19: "Note that since i notElem J" - I don't quite understand where
   this is used? On the line of the comment, no J is mentioned.
-+ p19: In general, try to use names of subexpressions in such a way
-  that the reader can easily spot what is changed in each step of the
-  equality chain. Right now it becomes a blur of symbols for me.
-+ p20: RHS = restrictDomain on two consecutive lines
-+ p21: "𝐿𝐻𝑆 = 𝑅𝐻𝑆, so we have proved the base case." := "𝐿𝐻𝑆 >= 𝑅𝐻𝑆, so we have proved the base case."
-+ p22: Again, avoid repeating the def. of short names (t0' and t1')
 + p22: "In the first branch ...": I don't understand this reasoning.
   In the first branch we still have cost(t,...) which is not what the
   IndHyp talks about. (It only talks about the smaller t0 and t1.) On
@@ -306,50 +277,11 @@
   let t* = minarg c
   Then c t* <= c t' for all t' (by def. of minarg)
   Then combine with the lemmas to get an inequality chain.
-+ p24: You seem to define mapping for all functions e : I->J, not only
-  for bijections, and this works fine. But then the property
-    ∀ 𝑓 ∶ 𝐵𝐹 (𝐼), 𝑒 ∶ (𝐼 → 𝐽 ). 𝐷𝑝 (𝑓) = 𝐷𝑝 (𝑚𝑎𝑝𝐵𝐹 (𝑒, 𝑓))
-  does not hold. You need to add "e bijective =>".
-+ (p25: I think this holds as is, thus for all functions e, not only
-  bijections.)
-+ p26: last step: indent then and else.
-+ p27: I think these if-then-else's would fit without line breaks (and
-  be more readable thus).
-+ p28: indent then and else
-+ p29: 2.3.10: add "bijective e =>"
-+ p29: "By lemma 2.3.7, we have 𝑓 = 𝑚𝑎𝑝𝐵𝐹 (𝑒−1 , 𝑓)." :=
-       "By lemma 2.3.7, we have 𝑓 = 𝑚𝑎𝑝𝐵𝐹 (𝑒−1 , g)."
-       (Note the g near the end.)
 + p29: Again I don't understand why you formulate the last paragraph
   with "double negation" (cannot have lower) instead of positively /
   directly.
 + p36: "propNormalizedComplexity" - please also refer back to the
   corresponding lemma / proof.
-
-## Att diskutera
-
-+ p16 (and earlier): when writing "long" (more than one chacter) names
-  in math mode you need to surround the name with \mathit{} or similar
-  to get the spacing right. (Most visible with AND_2 and friends
-  earlier, but also visible for restrictDomain here.)  Easiest may be
-  to create a few LaTeX macros and then add backslash in front of such
-  names. Example:
-  \newcommand{\AND}{\ensuremath{\mathit{AND}}} - JAG HÅLLER INTE MED OM DETTA, TYCKER DET SER BRA UT ATT restrictDomain ÄR ITALICIZED.
-+ Ersätt I - i med I - {i}
-+ Fixa spacing för AND_n
-+ p57: "While adding canonicalization": around here you move from
-  specialized to general optim. which, I think, deserves a more
-  visible transition. Perhaps a \paragraph{Specialized classes} at the
-  start of paragraph 2 and \paragraph{General optimizations} at the
-  start of this paragraph? (and perhaps label the last paragraph as
-  well) - Selina: I disagree. we do not have enough text to split into sections
-+ I think the Fig. 4.1 would be helpful already in the section on
-  properties and proofs (to illustrate I, J, etc. with an example). So
-  perhaps move it much earlier and then refer to it here. Or mention
-  it in the earlier section and keep it here.
-	+ p39: Step 2: As you use f' and g' (and f'' and g'') in the explanation, it may be good to add them to the figure as well. That would make your two steps easier to follow.
-+ p51: It is a bit hard to read when Fig. 6.3 is two pages away from
-  the text.
 ## TODO final
 
 - Se till att inga rubriker hamnar precis innan sidbyte
