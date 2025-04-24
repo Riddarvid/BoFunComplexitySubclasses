@@ -3,8 +3,8 @@
 {-# HLINT ignore "Use list comprehension" #-}
 module Testing.Properties (
   CritLimitInput,
-  propNormalizedCorrectVars,
-  propNormalizedComplexity,
+  propMinimizedCorrectVars,
+  propMinimizedComplexity,
   propFlipOutputCorrect,
   propFlipOutputComplexity,
   propFlipInputComplexity,
@@ -20,50 +20,51 @@ module Testing.Properties (
   propKnownCrits,
   propIteratedNoLoop
 ) where
-import           Algebraic                          (Algebraic (Rational),
-                                                     signAtAlgebraic,
-                                                     signAtRational,
-                                                     toAlgebraic,
-                                                     translateRational)
-import           BDD.BDDInstances                   ()
-import           Complexity.BoFun                   (BoFun (variables))
-import           Complexity.GenAlg                  (genAlgThinMemoPoly)
-import           Complexity.Piecewise               (complexity,
-                                                     explicitComplexity)
-import           Data.List                          (isInfixOf, sort)
-import           Data.Ratio                         ((%))
-import qualified Data.Set                           as Set
-import           DSLsofMath.PSDS                    (Poly (P), degree)
-import           Exploration.Critical               (Critical (Maximum, Minimum),
-                                                     criticalPointsInPiece,
-                                                     determineUncertain)
-import           Exploration.Eval                   (evalNonSymmetric,
-                                                     evalSymmetric)
-import           Exploration.Translations           (genToBasicSymmetricNaive)
-import           Poly.PiecewisePoly                 (minPWs, pieces,
-                                                     piecewiseFromPoly,
-                                                     propIsMirrorPW)
-import           Poly.PolynomialExtra               (genNonZeroPoly)
-import qualified Subclasses.GenFun.GenFun           as Gen
-import           Subclasses.GenFun.GenFun           (GenFun, eval,
-                                                     flipInputsGenFun,
-                                                     generateGenFun, notG,
-                                                     toGenFun)
-import           Subclasses.GenFun.NormalizedGenFun (mkNGF, ngfArity)
-import           Subclasses.MultiComposed.Iterated       (Iterated)
-import           Subclasses.MultiComposed.IteratedTH     ()
-import           Subclasses.MultiComposed.MultiComposedTH                ()
-import qualified Subclasses.Symmetric               as Symm
-import           Subclasses.Symmetric               (SymmetricFun)
-import qualified Subclasses.Threshold               as Thresh
-import           Subclasses.Threshold               (NonSymmThresholdFun)
-import           Test.QuickCheck                    (Arbitrary (arbitrary, shrink),
-                                                     Property,
-                                                     Testable (property),
-                                                     chooseInt, conjoin,
-                                                     elements, sized, total,
-                                                     vector, (=/=), (===))
-import           Test.QuickCheck.Gen                (Gen)
+import           Algebraic                                (Algebraic (Rational),
+                                                           signAtAlgebraic,
+                                                           signAtRational,
+                                                           toAlgebraic,
+                                                           translateRational)
+import           BDD.BDDInstances                         ()
+import           Complexity.BoFun                         (BoFun (variables))
+import           Complexity.GenAlg                        (genAlgThinMemoPoly)
+import           Complexity.Piecewise                     (complexity,
+                                                           explicitComplexity)
+import           Data.List                                (isInfixOf, sort)
+import           Data.Ratio                               ((%))
+import qualified Data.Set                                 as Set
+import           DSLsofMath.PSDS                          (Poly (P), degree)
+import           Exploration.Critical                     (Critical (Maximum, Minimum),
+                                                           criticalPointsInPiece,
+                                                           determineUncertain)
+import           Exploration.Eval                         (evalNonSymmetric,
+                                                           evalSymmetric)
+import           Exploration.Translations                 (genToBasicSymmetricNaive)
+import           Poly.PiecewisePoly                       (minPWs, pieces,
+                                                           piecewiseFromPoly,
+                                                           propIsMirrorPW)
+import           Poly.PolynomialExtra                     (genNonZeroPoly)
+import qualified Subclasses.GenFun.GenFun                 as Gen
+import           Subclasses.GenFun.GenFun                 (GenFun, eval,
+                                                           flipInputsGenFun,
+                                                           generateGenFun, notG,
+                                                           toGenFun)
+import           Subclasses.GenFun.MinimizedGenFun        (mkNGF, ngfArity)
+import           Subclasses.MultiComposed.Iterated        (Iterated)
+import           Subclasses.MultiComposed.IteratedTH      ()
+import           Subclasses.MultiComposed.MultiComposedTH ()
+import qualified Subclasses.Symmetric                     as Symm
+import           Subclasses.Symmetric                     (SymmetricFun)
+import qualified Subclasses.Threshold                     as Thresh
+import           Subclasses.Threshold                     (NonSymmThresholdFun)
+import           Test.QuickCheck                          (Arbitrary (arbitrary, shrink),
+                                                           Property,
+                                                           Testable (property),
+                                                           chooseInt, conjoin,
+                                                           elements, sized,
+                                                           total, vector, (=/=),
+                                                           (===))
+import           Test.QuickCheck.Gen                      (Gen)
 
 ----------------- Types --------------------------------------
 
@@ -115,21 +116,21 @@ propFlipInputComplexity gf = propIsMirrorPW (1 % 2)
   (complexity gf)
   (complexity (flipInputsGenFun gf))
 
-------------------- Normalization ------------------------------------
+------------------- Minimization ------------------------------------
 
--- After normalizing a GenFun, it should have the variables [1 .. n], where
+-- After minimizing a GenFun, it should have the variables [1 .. n], where
 -- n is the number of variables in the original GenFun.
-propNormalizedCorrectVars :: GenFun -> Property
-propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
+propMinimizedCorrectVars :: GenFun -> Property
+propMinimizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
   where
     ngf = mkNGF gf
     vars = sort $ variables ngf
     arity = ngfArity ngf
     n = length $ variables gf
 
--- Normalization should not affect the complexity of a GenFun
-propNormalizedComplexity :: GenFun -> Property
-propNormalizedComplexity gf = complexity gf === complexity (mkNGF gf)
+-- Minimization should not affect the complexity of a GenFun
+propMinimizedComplexity :: GenFun -> Property
+propMinimizedComplexity gf = complexity gf === complexity (mkNGF gf)
 
 -------------------- Algorithms ----------------------------------
 -- Properties comparing the correctness of the complexity algorithms

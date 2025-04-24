@@ -8,7 +8,7 @@ module BDD.BDD (
   majFun,
   iteratedFun,
   flipInputs,
-  normalizeBDD,
+  minimizeBDD,
   allNAryBDDs
 ) where
 import           Data.DecisionDiagram.BDD (AscOrder, BDD (Leaf), ItemOrder,
@@ -54,9 +54,9 @@ flipInputs bdd = substSet mapping bdd
     vars = IS.toList $ support bdd
     mapping = IM.fromList $ map (\x -> (x, notB (var x))) vars
 
--------------------- Normalization -------------------------------
+-------------------- Minimization -------------------------------
 
--- normalizeBDD ensures that for n variables and an ascending order,
+-- minimizeBDD ensures that for n variables and an ascending order,
 -- the function will return an equivalent function (with regards to complexity) with variables [0 .. n - 1].
 
 -- The logic here is that if we assume an ascending order, then we should be able to simply
@@ -64,8 +64,8 @@ flipInputs bdd = substSet mapping bdd
 -- the order.
 -- We assume that the second parameter in the result of toGraph represents the number of
 -- nodes in the graph, which shouldn't change by simply changing the indeces.
-normalizeBDD :: BDD AscOrder -> (BDD AscOrder, Int)
-normalizeBDD bdd
+minimizeBDD :: BDD AscOrder -> (BDD AscOrder, Int)
+minimizeBDD bdd
   | all (uncurry (==)) mapList = (bdd, nVars)
   | otherwise = (bdd', nVars)
   where

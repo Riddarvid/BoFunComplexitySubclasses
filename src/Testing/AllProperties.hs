@@ -12,9 +12,9 @@ import           Testing.Properties (propAlgebraicTranslation,
                                      propFlipOutputCorrect, propIterRepsCorrect,
                                      propIteratedNoLoop, propKnownCrits,
                                      propMaxNumCritical,
-                                     propNormalizedComplexity,
-                                     propNormalizedCorrectVars,
-                                     propRationalSign, propRepsCorrect)
+                                     propMinimizedComplexity,
+                                     propMinimizedCorrectVars, propRationalSign,
+                                     propRepsCorrect)
 
 data Check = forall p. Testable p => Check p Args
 
@@ -26,8 +26,8 @@ allProps = [
   Check propIteratedNoLoop stdArgs'{maxSize = 10},
   Check propRationalSign stdArgs'{maxSize = 5},
   Check propAlgebraicTranslation stdArgs'{maxSize = 7},
-  Check propNormalizedCorrectVars stdArgs'{maxSize = 10},
-  Check propNormalizedComplexity stdArgs'{maxSize = 5},
+  Check propMinimizedCorrectVars stdArgs'{maxSize = 10},
+  Check propMinimizedComplexity stdArgs'{maxSize = 5},
   Check propRepsCorrect stdArgs'{maxSize = 5},
   Check propIterRepsCorrect stdArgs'{maxSize = 5},
   Check propFlipOutputCorrect stdArgs'{maxSize = 10},

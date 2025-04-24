@@ -9,28 +9,28 @@ module Exploration.Measurements.IO (
   measureThresholdStdOut,
   generateSamplesToFile
 ) where
-import           Arity                                       (ArbitraryArity (arbitraryArity))
-import           Complexity.BoFun                            (BoFun)
-import           Control.DeepSeq                             (NFData)
-import           Control.Monad                               (replicateM)
-import           Data.Function.Memoize                       (Memoizable)
-import           Data.Hashable                               (Hashable)
-import           Data.Time                                   (NominalDiffTime)
-import           Exploration.Measurements                    (measureTimeGenAlg,
-                                                              measureTimePiecewiseComplexity,
-                                                              measureTimePiecewiseExplicitComplexity)
-import           Subclasses.GenFun.CanonicalGenFun           (CanonicalGenFun)
-import           Subclasses.GenFun.GenFun                    (GenFun)
-import           Subclasses.GenFun.NormalizedCanonicalGenFun (NormalizedCanonicalGenFun)
-import           Subclasses.GenFun.NormalizedGenFun          (NormalizedGenFun)
-import           Subclasses.MultiComposed.Iterated                (Iterated)
-import           Subclasses.Symmetric                        (NonSymmSymmetricFun,
-                                                              SymmetricFun)
-import           Subclasses.Threshold                        (NonSymmThresholdFun,
-                                                              Threshold (Threshold),
-                                                              ThresholdFun (ThresholdFun))
-import           System.Environment                          (getArgs)
-import           Test.QuickCheck                             (generate)
+import           Arity                                      (ArbitraryArity (arbitraryArity))
+import           Complexity.BoFun                           (BoFun)
+import           Control.DeepSeq                            (NFData)
+import           Control.Monad                              (replicateM)
+import           Data.Function.Memoize                      (Memoizable)
+import           Data.Hashable                              (Hashable)
+import           Data.Time                                  (NominalDiffTime)
+import           Exploration.Measurements                   (measureTimeGenAlg,
+                                                             measureTimePiecewiseComplexity,
+                                                             measureTimePiecewiseExplicitComplexity)
+import           Subclasses.GenFun.CanonicalGenFun          (CanonicalGenFun)
+import           Subclasses.GenFun.GenFun                   (GenFun)
+import           Subclasses.GenFun.MinimizedCanonicalGenFun (MinimizedCanonicalGenFun)
+import           Subclasses.GenFun.MinimizedGenFun          (MinimizedGenFun)
+import           Subclasses.MultiComposed.Iterated          (Iterated)
+import           Subclasses.Symmetric                       (NonSymmSymmetricFun,
+                                                             SymmetricFun)
+import           Subclasses.Threshold                       (NonSymmThresholdFun,
+                                                             Threshold (Threshold),
+                                                             ThresholdFun (ThresholdFun))
+import           System.Environment                         (getArgs)
+import           Test.QuickCheck                            (generate)
 
 -- Example code for generating test cases
 genSampleData :: IO ()
@@ -72,9 +72,9 @@ benchmarkGenAlg :: String -> Int -> IO ()
 benchmarkGenAlg funStr arity = do
   ImplicitMemoFun f <- case funStr of
     "GenFun"           -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO GenFun)
-    "NormalizedGenFun" -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO NormalizedGenFun)
+    "NormalizedGenFun" -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO MinimizedGenFun)
     "CanonicalGenFun"  -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO CanonicalGenFun)
-    "BothGenFun"       -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO NormalizedCanonicalGenFun)
+    "BothGenFun"       -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO MinimizedCanonicalGenFun)
     "ThresholdFun"     -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO ThresholdFun)
     "SymmetricFun"     -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO SymmetricFun)
     "IterThresholdFun" -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO (Iterated NonSymmThresholdFun))
@@ -87,9 +87,9 @@ benchmarkComplexity :: String -> Int -> IO ()
 benchmarkComplexity funStr arity = do
   ImplicitMemoFun f <- case funStr of
     "GenFun"           -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO GenFun)
-    "NormalizedGenFun" -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO NormalizedGenFun)
+    "NormalizedGenFun" -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO MinimizedGenFun)
     "CanonicalGenFun"  -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO CanonicalGenFun)
-    "BothGenFun"       -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO NormalizedCanonicalGenFun)
+    "BothGenFun"       -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO MinimizedCanonicalGenFun)
     "ThresholdFun"     -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO ThresholdFun)
     "SymmetricFun"     -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO SymmetricFun)
     "IterThresholdFun" -> ImplicitMemoFun <$> (generate $ arbitraryArity arity :: IO (Iterated NonSymmThresholdFun))
@@ -102,9 +102,9 @@ benchmarkExplicitComplexity :: String -> Int -> IO ()
 benchmarkExplicitComplexity funStr arity = do
   ExplicitMemoFun f <- case funStr of
     "GenFun"           -> ExplicitMemoFun <$> (generate $ arbitraryArity arity :: IO GenFun)
-    "NormalizedGenFun" -> ExplicitMemoFun <$> (generate $ arbitraryArity arity :: IO NormalizedGenFun)
+    "NormalizedGenFun" -> ExplicitMemoFun <$> (generate $ arbitraryArity arity :: IO MinimizedGenFun)
     "CanonicalGenFun"  -> ExplicitMemoFun <$> (generate $ arbitraryArity arity :: IO CanonicalGenFun)
-    "BothGenFun"       -> ExplicitMemoFun <$> (generate $ arbitraryArity arity :: IO NormalizedCanonicalGenFun)
+    "BothGenFun"       -> ExplicitMemoFun <$> (generate $ arbitraryArity arity :: IO MinimizedCanonicalGenFun)
     _                  -> error ("Illegel function: " ++ funStr)
   time <- measureTimePiecewiseExplicitComplexity f
   putStr $ showTime time
@@ -171,9 +171,9 @@ generateSampleString :: String -> Int -> Int -> IO (String, Int, String)
 generateSampleString funType arity nSamples = do
   BoFunsBox sample <- case funType of
     "GenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [GenFun])
-    "NormalizedGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [NormalizedGenFun])
+    "NormalizedGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [MinimizedGenFun])
     "CanonicalGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [CanonicalGenFun])
-    "BothGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [NormalizedCanonicalGenFun])
+    "BothGenFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [MinimizedCanonicalGenFun])
     "ThresholdFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [ThresholdFun])
     "SymmetricFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [SymmetricFun])
     "IterThresholdFun" -> BoFunsBox <$> (generateSample arity nSamples :: IO [Iterated NonSymmThresholdFun])
@@ -201,9 +201,9 @@ measureExplicitComplexity' (ExplicitMemoFun f) = measureTimePiecewiseExplicitCom
 readSampleImplicitMemo :: String -> String -> ImplicitMemoFun
 readSampleImplicitMemo funType funStr = case funType of
   "GenFun"           -> ImplicitMemoFun (read funStr :: GenFun)
-  "NormalizedGenFun" -> ImplicitMemoFun (read funStr :: NormalizedGenFun)
+  "NormalizedGenFun" -> ImplicitMemoFun (read funStr :: MinimizedGenFun)
   "CanonicalGenFun"  -> ImplicitMemoFun (read funStr :: CanonicalGenFun)
-  "BothGenFun"       -> ImplicitMemoFun (read funStr :: NormalizedCanonicalGenFun)
+  "BothGenFun"       -> ImplicitMemoFun (read funStr :: MinimizedCanonicalGenFun)
   "ThresholdFun"     -> ImplicitMemoFun (read funStr :: ThresholdFun)
   "SymmetricFun"     -> ImplicitMemoFun (read funStr :: SymmetricFun)
   "IterThresholdFun" -> ImplicitMemoFun (read funStr :: Iterated NonSymmThresholdFun)
@@ -213,7 +213,7 @@ readSampleImplicitMemo funType funStr = case funType of
 readSampleExplicitMemo :: String -> String -> ExplicitMemoFun
 readSampleExplicitMemo funType funStr = case funType of
   "GenFun"           -> ExplicitMemoFun (read funStr :: GenFun)
-  "NormalizedGenFun" -> ExplicitMemoFun (read funStr :: NormalizedGenFun)
+  "NormalizedGenFun" -> ExplicitMemoFun (read funStr :: MinimizedGenFun)
   "CanonicalGenFun"  -> ExplicitMemoFun (read funStr :: CanonicalGenFun)
-  "BothGenFun"       -> ExplicitMemoFun (read funStr :: NormalizedCanonicalGenFun)
+  "BothGenFun"       -> ExplicitMemoFun (read funStr :: MinimizedCanonicalGenFun)
   _                  -> error ("Unrecognized fun type: " ++ funStr)
