@@ -2,11 +2,11 @@
 {-# LANGUAGE BlockArguments #-}
 
 -- This module exports two functions for calculating the complexity of BoFuns,
--- expressed as a PiecewisePoly. explicitComplexity is equivalent to complexity,
+-- expressed as a PiecewisePoly. explicitpiecewiseComplexity is equivalent to piecewiseComplexity,
 -- but it uses explicit memoization for increased efficiency.
 module Complexity.Piecewise (
-  complexity,
-  explicitComplexity,
+  piecewiseComplexity,
+  explicitpiecewiseComplexity,
   complexityAndAlgorithms
 ) where
 import           Complexity.BoFun      (BoFun (..))
@@ -39,8 +39,8 @@ complexityStep = Endo $ \recCall fun -> if isJust (isConst fun)
         return $ factor * recCall (setBit (i, value) fun)
     return $ a + b
 
-complexity :: (BoFun f i, Memoizable f) => f -> PiecewisePoly Rational
-complexity = fix $ appEndo complexityStep >>> memoize
+piecewiseComplexity :: (BoFun f i, Memoizable f) => f -> PiecewisePoly Rational
+piecewiseComplexity = fix $ appEndo complexityStep >>> memoize
 
 ---------------------- A version of complexity with explicit memoization -------------
 
@@ -50,11 +50,11 @@ type ComputeState f = HashMap f Complexity
 
 type ComputeAction f = State (ComputeState f) Complexity
 
-explicitComplexity :: (BoFun f i, Hashable f) => f -> Complexity
-explicitComplexity f = evalState (explicitComplexity' f) HM.empty
+explicitpiecewiseComplexity :: (BoFun f i, Hashable f) => f -> Complexity
+explicitpiecewiseComplexity f = evalState (explicitpiecewiseComplexity' f) HM.empty
 
-explicitComplexity' :: (BoFun f i, Hashable f) => f -> ComputeAction f
-explicitComplexity' f = case isConst f of
+explicitpiecewiseComplexity' :: (BoFun f i, Hashable f) => f -> ComputeAction f
+explicitpiecewiseComplexity' f = case isConst f of
   Just _ -> return zero
   Nothing -> do
     memoMap <- get
@@ -79,7 +79,7 @@ subComplexity f i = do
 
 subComplexity' :: (BoFun f i, Hashable f) => f -> i -> (Bool, Complexity) -> ComputeAction f
 subComplexity' f i (v, factor) = do
-  c <- explicitComplexity' (setBit (i, v) f)
+  c <- explicitpiecewiseComplexity' (setBit (i, v) f)
   return $ factor * c
 
 -- Saved in case we want to explore mirrored complexities further.

@@ -55,8 +55,8 @@ library
       Subclasses.Gates
       Subclasses.GenFun.CanonicalGenFun
       Subclasses.GenFun.GenFun
-      Subclasses.GenFun.NormalizedCanonicalGenFun
-      Subclasses.GenFun.NormalizedGenFun
+      Subclasses.GenFun.MinimizedCanonicalGenFun
+      Subclasses.GenFun.MinimizedGenFun
       Subclasses.Iterated.Iterated
       Subclasses.Iterated.IteratedSimplified
       Subclasses.Iterated.IteratedTH

@@ -2,8 +2,8 @@
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-module Subclasses.GenFun.NormalizedGenFun (
-  NormalizedGenFun,
+module Subclasses.GenFun.MinimizedGenFun (
+  MinimizedGenFun,
   mkNGF,
   ngfBDD,
   ngfArity,
@@ -21,36 +21,36 @@ import           GHC.Generics               (Generic)
 import           Subclasses.GenFun.GenFun   (GenFun (GenFun))
 import           Test.QuickCheck            (Gen)
 
-newtype NormalizedGenFun = NormalizedGenFun GenFun
+newtype MinimizedGenFun = MinimizedGenFun GenFun
   deriving (Generic, Eq, Show, Read)
 
-$(deriveMemoizable ''NormalizedGenFun)
+$(deriveMemoizable ''MinimizedGenFun)
 
-instance Hashable NormalizedGenFun
+instance Hashable MinimizedGenFun
 
-instance NFData NormalizedGenFun
+instance NFData MinimizedGenFun
 
-mkNGF :: GenFun -> NormalizedGenFun
-mkNGF = NormalizedGenFun . normalizeGenFun
+mkNGF :: GenFun -> MinimizedGenFun
+mkNGF = MinimizedGenFun . normalizeGenFun
 
-unlift :: (GenFun -> a) -> NormalizedGenFun -> a
-unlift f (NormalizedGenFun gf) = f gf
+unlift :: (GenFun -> a) -> MinimizedGenFun -> a
+unlift f (MinimizedGenFun gf) = f gf
 
-ngfBDD :: NormalizedGenFun -> BDD AscOrder
-ngfBDD (NormalizedGenFun (GenFun bdd _)) = bdd
+ngfBDD :: MinimizedGenFun -> BDD AscOrder
+ngfBDD (MinimizedGenFun (GenFun bdd _)) = bdd
 
-ngfArity :: NormalizedGenFun -> Int
-ngfArity (NormalizedGenFun (GenFun _ n)) = n
+ngfArity :: MinimizedGenFun -> Int
+ngfArity (MinimizedGenFun (GenFun _ n)) = n
 
-instance BoFun  NormalizedGenFun Int where
-  isConst :: NormalizedGenFun -> Maybe Bool
+instance BoFun  MinimizedGenFun Int where
+  isConst :: MinimizedGenFun -> Maybe Bool
   isConst = unlift isConst
-  variables :: NormalizedGenFun -> [Int]
+  variables :: MinimizedGenFun -> [Int]
   variables = variablesNGF
-  setBit :: (Int, Bool) -> NormalizedGenFun -> NormalizedGenFun
-  setBit v = NormalizedGenFun . normalizeGenFun . unlift (setBit v)
+  setBit :: (Int, Bool) -> MinimizedGenFun -> MinimizedGenFun
+  setBit v = MinimizedGenFun . normalizeGenFun . unlift (setBit v)
 
-variablesNGF :: NormalizedGenFun -> [Int]
+variablesNGF :: MinimizedGenFun -> [Int]
 variablesNGF ngf = [1 .. ngfArity ngf]
 
 normalizeGenFun :: GenFun -> GenFun
@@ -59,13 +59,13 @@ normalizeGenFun (GenFun bdd _) = GenFun bdd' n'
     (bdd', n') = normalizeBDD bdd
 
 -- The resulting NGF will not necessarily be an n-bit function. However, it
--- is the normalized version of an n-bit GenFun, which is what we're comparing.
-instance ArbitraryArity NormalizedGenFun where
-  arbitraryArity :: Int -> Gen NormalizedGenFun
+-- is the minimized version of an n-bit GenFun, which is what we're comparing.
+instance ArbitraryArity MinimizedGenFun where
+  arbitraryArity :: Int -> Gen MinimizedGenFun
   arbitraryArity arity = do
     gf <- arbitraryArity arity
     return $ mkNGF gf
 
-instance PrettyBoFun NormalizedGenFun where
-  prettyShow :: NormalizedGenFun -> String
-  prettyShow (NormalizedGenFun f@(GenFun _ n)) = "Normalized general function with arity " ++ show n ++ "\n" ++ prettyShow f
+instance PrettyBoFun MinimizedGenFun where
+  prettyShow :: MinimizedGenFun -> String
+  prettyShow (MinimizedGenFun f@(GenFun _ n)) = "Minimized general function with arity " ++ show n ++ "\n" ++ prettyShow f

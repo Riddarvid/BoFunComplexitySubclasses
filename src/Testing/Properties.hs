@@ -3,14 +3,14 @@
 {-# HLINT ignore "Use list comprehension" #-}
 module Testing.Properties (
   CritLimitInput,
-  propNormalizedCorrectVars,
-  propNormalizedComplexity,
+  propMinimizedCorrectVars,
+  propMinimizedComplexity,
   propFlipOutputCorrect,
   propFlipOutputComplexity,
   propFlipInputComplexity,
-  propComputeMinCorrect,
+  propPiecewiseComplexityCorrect,
   propConversionSymm,
-  propComputeMin'Correct,
+  propExplicitpiecewiseComplexityCorrect,
   propRepsCorrect,
   propIterRepsCorrect,
   propRationalSign,
@@ -20,50 +20,49 @@ module Testing.Properties (
   propKnownCrits,
   propIteratedNoLoop
 ) where
-import           Algebraic                          (Algebraic (Rational),
-                                                     signAtAlgebraic,
-                                                     signAtRational,
-                                                     toAlgebraic,
-                                                     translateRational)
-import           BDD.BDDInstances                   ()
-import           Complexity.BoFun                   (BoFun (variables))
-import           Complexity.GenAlg                  (genAlgThinMemoPoly)
-import           Complexity.Piecewise               (complexity,
-                                                     explicitComplexity)
-import           Data.List                          (isInfixOf, sort)
-import           Data.Ratio                         ((%))
-import qualified Data.Set                           as Set
-import           DSLsofMath.PSDS                    (Poly (P), degree)
-import           Exploration.Critical               (Critical (Maximum, Minimum),
-                                                     criticalPointsInPiece,
-                                                     determineUncertain)
-import           Exploration.Eval                   (evalNonSymmetric,
-                                                     evalSymmetric)
-import           Exploration.Translations           (genToBasicSymmetricNaive)
-import           Poly.PiecewisePoly                 (minPWs, pieces,
-                                                     piecewiseFromPoly,
-                                                     propIsMirrorPW)
-import           Poly.PolynomialExtra               (genNonZeroPoly)
-import qualified Subclasses.GenFun.GenFun           as Gen
-import           Subclasses.GenFun.GenFun           (GenFun, eval,
-                                                     flipInputsGenFun,
-                                                     generateGenFun, notG,
-                                                     toGenFun)
-import           Subclasses.GenFun.NormalizedGenFun (mkNGF, ngfArity)
-import           Subclasses.Iterated.Iterated       (Iterated)
-import           Subclasses.Iterated.IteratedTH     ()
-import           Subclasses.LiftedTH                ()
-import qualified Subclasses.Symmetric               as Symm
-import           Subclasses.Symmetric               (SymmetricFun)
-import qualified Subclasses.Threshold               as Thresh
-import           Subclasses.Threshold               (NonSymmThresholdFun)
-import           Test.QuickCheck                    (Arbitrary (arbitrary, shrink),
-                                                     Property,
-                                                     Testable (property),
-                                                     chooseInt, conjoin,
-                                                     elements, sized, total,
-                                                     vector, (=/=), (===))
-import           Test.QuickCheck.Gen                (Gen)
+import           Algebraic                         (Algebraic (Rational),
+                                                    signAtAlgebraic,
+                                                    signAtRational, toAlgebraic,
+                                                    translateRational)
+import           BDD.BDDInstances                  ()
+import           Complexity.BoFun                  (BoFun (variables))
+import           Complexity.GenAlg                 (genAlgThinMemoPoly)
+import           Complexity.Piecewise              (explicitpiecewiseComplexity,
+                                                    piecewiseComplexity)
+import           Data.List                         (isInfixOf, sort)
+import           Data.Ratio                        ((%))
+import qualified Data.Set                          as Set
+import           DSLsofMath.PSDS                   (Poly (P), degree)
+import           Exploration.Critical              (Critical (Maximum, Minimum),
+                                                    criticalPointsInPiece,
+                                                    determineUncertain)
+import           Exploration.Eval                  (evalNonSymmetric,
+                                                    evalSymmetric)
+import           Exploration.Translations          (genToBasicSymmetricNaive)
+import           Poly.PiecewisePoly                (minPWs, pieces,
+                                                    piecewiseFromPoly,
+                                                    propIsMirrorPW)
+import           Poly.PolynomialExtra              (genNonZeroPoly)
+import qualified Subclasses.GenFun.GenFun          as Gen
+import           Subclasses.GenFun.GenFun          (GenFun, eval,
+                                                    flipInputsGenFun,
+                                                    generateGenFun, notG,
+                                                    toGenFun)
+import           Subclasses.GenFun.MinimizedGenFun (mkNGF, ngfArity)
+import           Subclasses.Iterated.Iterated      (Iterated)
+import           Subclasses.Iterated.IteratedTH    ()
+import           Subclasses.LiftedTH               ()
+import qualified Subclasses.Symmetric              as Symm
+import           Subclasses.Symmetric              (SymmetricFun)
+import qualified Subclasses.Threshold              as Thresh
+import           Subclasses.Threshold              (NonSymmThresholdFun)
+import           Test.QuickCheck                   (Arbitrary (arbitrary, shrink),
+                                                    Property,
+                                                    Testable (property),
+                                                    chooseInt, conjoin,
+                                                    elements, sized, total,
+                                                    vector, (=/=), (===))
+import           Test.QuickCheck.Gen               (Gen)
 
 ----------------- Types --------------------------------------
 
@@ -107,20 +106,20 @@ propFlipOutputCorrect (GenFunAndInput gf input) = eval gf input =/= eval (notG g
 
 -- The complexity should not change when inverting the output
 propFlipOutputComplexity :: GenFun -> Property
-propFlipOutputComplexity gf = complexity gf === complexity (notG gf)
+propFlipOutputComplexity gf = piecewiseComplexity gf === piecewiseComplexity (notG gf)
 
 -- The complexity should be mirrored in x=1/2 when inverting the inputs
 propFlipInputComplexity :: GenFun -> Property
 propFlipInputComplexity gf = propIsMirrorPW (1 % 2)
-  (complexity gf)
-  (complexity (flipInputsGenFun gf))
+  (piecewiseComplexity gf)
+  (piecewiseComplexity (flipInputsGenFun gf))
 
 ------------------- Normalization ------------------------------------
 
 -- After normalizing a GenFun, it should have the variables [1 .. n], where
 -- n is the number of variables in the original GenFun.
-propNormalizedCorrectVars :: GenFun -> Property
-propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
+propMinimizedCorrectVars :: GenFun -> Property
+propMinimizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
   where
     ngf = mkNGF gf
     vars = sort $ variables ngf
@@ -128,24 +127,24 @@ propNormalizedCorrectVars gf = (vars, arity)  === ([1 .. n], n)
     n = length $ variables gf
 
 -- Normalization should not affect the complexity of a GenFun
-propNormalizedComplexity :: GenFun -> Property
-propNormalizedComplexity gf = complexity gf === complexity (mkNGF gf)
+propMinimizedComplexity :: GenFun -> Property
+propMinimizedComplexity gf = piecewiseComplexity gf === piecewiseComplexity (mkNGF gf)
 
 -------------------- Algorithms ----------------------------------
 -- Properties comparing the correctness of the complexity algorithms
 
 -- complexity and genAlg should yield equivalent PWs for the same function
-propComputeMinCorrect :: GenFun -> Property
-propComputeMinCorrect gf =
-  pieces (complexity gf) ===
+propPiecewiseComplexityCorrect :: GenFun -> Property
+propPiecewiseComplexityCorrect gf =
+  pieces (piecewiseComplexity gf) ===
   pieces (minPWs $ map piecewiseFromPoly $ Set.toList $ genAlgThinMemoPoly gf)
 
--- complexity and explicitComplexity should yield the same result for the same function
-propComputeMin'Correct :: GenFun -> Property
-propComputeMin'Correct gf = complexity gf === explicitComplexity gf
+-- complexity and explicitpiecewiseComplexity should yield the same result for the same function
+propExplicitpiecewiseComplexityCorrect :: GenFun -> Property
+propExplicitpiecewiseComplexityCorrect gf = piecewiseComplexity gf === explicitpiecewiseComplexity gf
 
 propIteratedNoLoop :: Iterated NonSymmThresholdFun -> Property
-propIteratedNoLoop = total . complexity
+propIteratedNoLoop = total . piecewiseComplexity
 
 ------------------- Conversions ----------------------------
 
@@ -224,7 +223,7 @@ propIterRepsCorrect (IMI (IterInput bits levels input)) = conjoin [
 -- Static test that ensures that the Gen, Symm, and Thresh representations of
 -- maj 3 2 yield the same complexity.
 -- This property is obsolete since we show
--- propRepsCorrect and propComputeMinCorrect + propComputeMin'Correct
+-- propRepsCorrect and propPiecewiseComplexityCorrect + propExplicitpiecewiseComplexityCorrect
 {-propRepsComplexity :: IterMajInput -> Property
 propRepsComplexity (IMI (IterInput bits levels)) = conjoin
   [

@@ -70,7 +70,7 @@ restrictGenFun i v (GenFun bdd n) = GenFun (restrict i v bdd) (n - 1)
 
 ------------- QuickCheck ---------------------------
 
--- Instance for not necessarily normalized GenFuns
+-- Instance for not necessarily minimized GenFuns
 instance Arbitrary GenFun where
   arbitrary :: Gen GenFun
   arbitrary = sized $ \n -> do

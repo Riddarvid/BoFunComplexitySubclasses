@@ -260,28 +260,6 @@
   on the RHS.
 + ~~pVI: criticalPointBetweenPieces or criticalPointsBetweenPieces ? The
   listing caption has one name, the function has another.~~
-
-## Fixa bevis
-
-- p19: "Note that since i notElem J" - I don't quite understand where
-  this is used? On the line of the comment, no J is mentioned.
-+ p22: "In the first branch ...": I don't understand this reasoning.
-  In the first branch we still have cost(t,...) which is not what the
-  IndHyp talks about. (It only talks about the smaller t0 and t1.) On
-  the other hand, this first branch is very similar to the LHS, so
-  perhaps no IndHyp is needed here (some other lemma?).
-+ p23 "Together, ...": I cannot follow this. Why the negative "cannot
-  have lower" structure? I find it hard to understand. Can it be
-  formulated in the positive direction? Some facts: choose a v. Then
-  let c t = cost (t,v)
-  let t* = minarg c
-  Then c t* <= c t' for all t' (by def. of minarg)
-  Then combine with the lemmas to get an inequality chain.
-+ p29: Again I don't understand why you formulate the last paragraph
-  with "double negation" (cannot have lower) instead of positively /
-  directly.
-+ p36: "propNormalizedComplexity" - please also refer back to the
-  corresponding lemma / proof.
 ## TODO final
 
 - Se till att inga rubriker hamnar precis innan sidbyte

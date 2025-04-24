@@ -10,23 +10,23 @@ module Exploration.Translations (
   boFunToGenFun,
   areEquivalent
 ) where
-import           BDD.BDD                            (pick)
-import           Complexity.BoFun                   (BoFun (isConst, setBit, variables))
-import           Data.DecisionDiagram.BDD           (AscOrder, BDD, evaluate)
-import           Data.IntMap                        (IntMap)
-import qualified Data.IntMap                        as IM
-import           Data.List.NonEmpty                 (NonEmpty)
-import qualified Data.List.NonEmpty                 as NE
-import           Subclasses.GenFun.GenFun           (GenFun (GenFun), constGF,
-                                                     toGenFun)
-import           Subclasses.GenFun.NormalizedGenFun (NormalizedGenFun, mkNGF,
-                                                     ngfArity)
-import           Subclasses.Iterated.Iterated       (Iterated)
-import           Subclasses.Symmetric               (SymmetricFun,
-                                                     mkSymmetricFun)
-import           Subclasses.Threshold               (NonSymmThresholdFun,
-                                                     allNAryITFs)
-import           Utils                              (permutations)
+import           BDD.BDD                           (pick)
+import           Complexity.BoFun                  (BoFun (isConst, setBit, variables))
+import           Data.DecisionDiagram.BDD          (AscOrder, BDD, evaluate)
+import           Data.IntMap                       (IntMap)
+import qualified Data.IntMap                       as IM
+import           Data.List.NonEmpty                (NonEmpty)
+import qualified Data.List.NonEmpty                as NE
+import           Subclasses.GenFun.GenFun          (GenFun (GenFun), constGF,
+                                                    toGenFun)
+import           Subclasses.GenFun.MinimizedGenFun (MinimizedGenFun, mkNGF,
+                                                    ngfArity)
+import           Subclasses.Iterated.Iterated      (Iterated)
+import           Subclasses.Symmetric              (SymmetricFun,
+                                                    mkSymmetricFun)
+import           Subclasses.Threshold              (NonSymmThresholdFun,
+                                                    allNAryITFs)
+import           Utils                             (permutations)
 
 --------------- Basic symmetric ---------------------
 
@@ -65,11 +65,11 @@ toResult bdd inputs
 
 -- Very inefficient, does not use the structure of the function, rather, it
 -- generates all possible functions and filters out the correct ones.
-ngfToIteratedThresholdFun :: NormalizedGenFun -> [Iterated NonSymmThresholdFun]
+ngfToIteratedThresholdFun :: MinimizedGenFun -> [Iterated NonSymmThresholdFun]
 ngfToIteratedThresholdFun gf =
   filter (areEquivalent gf) $ allNAryITFs (ngfArity gf)
 
-areEquivalent :: NormalizedGenFun -> Iterated NonSymmThresholdFun -> Bool
+areEquivalent :: MinimizedGenFun -> Iterated NonSymmThresholdFun -> Bool
 areEquivalent gf f = mkNGF (toGenFun (ngfArity gf) f) == gf
 
 ------------------- From BoFun to Algor -----------------------------
